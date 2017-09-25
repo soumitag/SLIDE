@@ -1,0 +1,125 @@
+<%-- any content can be specified here e.g.: --%>
+
+<%@page import="structure.AnalysisContainer"%>
+<%@page import="java.text.DecimalFormat"%>
+<%@page import="java.util.Collections"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="graphics.Heatmap"%>
+<%@page import="utils.Logger"%>
+<%@page import="structure.Data"%>
+
+<%@ page pageEncoding="UTF-8" %>
+
+<%
+    String analysis_name = request.getParameter("analysis_name");
+    AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
+
+    double y_offset = 0.0;
+    String y_offset_str = request.getParameter("y_offset");
+    if (y_offset_str != null) {
+        try {
+            y_offset = Double.parseDouble(y_offset_str);
+        } catch (Exception e) {
+            y_offset = 0.0;
+        }
+    }
+    
+    Heatmap heatmap = analysis.heatmap;
+    Logger logger = analysis.logger;
+
+    heatmap.hist.normalizeHist();
+    double y_label_width = 60.0;
+    //double x_label_height = 80.0;
+    double histWidth = 400.0;
+    double histHeight = 200.0;
+    //double imgWidth = histWidth + y_label_width;
+    //double imgHeight = histHeight + x_label_height;
+    double barWidth = (histWidth) / heatmap.hist.frequencies.length;
+    List<Integer> list = new ArrayList<Integer>();
+    List<Double> normedFreqs = new ArrayList<Double>();
+    heatmap.hist.normalizeHist();
+    for (int i = 0; i < heatmap.hist.normedFrequencies.length; i++) {
+        list.add(heatmap.hist.frequencies[i]);
+        normedFreqs.add(heatmap.hist.normedFrequencies[i]);
+    }
+
+    double max_val = Collections.max(list);
+    double max_normed_val = Collections.max(normedFreqs);
+    double scaling_factor = histHeight / max_val;
+    //double v = Math.ceil((max_val + (double)10/2) / 10) * 10;
+    DecimalFormat df = new DecimalFormat("0.00");
+    DecimalFormat df2 = new DecimalFormat("0.00");
+    DecimalFormat df3 = new DecimalFormat("0.000");
+
+    int exponent = 0;
+    double decival = max_val;
+    while (decival > 9.0) {
+        exponent++;
+        decival = decival / 10.0;
+    }
+
+    int num_y_ticks = 10;
+
+    int num_x_tick_skips = 1;
+    if (barWidth < 20.0) {
+        num_x_tick_skips = (int) Math.ceil(20.0 / barWidth);
+    }
+%>
+
+<g id="histogram_g">
+
+    <g class="bar">
+        <% for (int i = 0; i < heatmap.hist.normedFrequencies.length; i++) {
+                double h = heatmap.hist.frequencies[i] * scaling_factor;
+                double x_bar = (i * barWidth) + y_label_width;
+                double y_bar = histHeight - h;
+        %>
+        <rect x="<%=x_bar%>" y="<%=y_offset + y_bar%>" width="<%=(barWidth - 1)%>" height="<%=h%>" style="fill:rgb(<%=(int) heatmap.hist.rgb[i][0]%>,<%=(int) heatmap.hist.rgb[i][1]%>,<%=(int) heatmap.hist.rgb[i][2]%>);stroke-width:1;stroke:rgb(47,79,79)"  />
+
+        <% } %>
+    </g>
+
+    <g class="xaxis">
+        <% for (int i = 0; i < heatmap.hist.normedFrequencies.length; i = i + num_x_tick_skips) {
+                double x_text = ((i + 0.5) * barWidth) + y_label_width;
+                double y_text = y_offset + histHeight + 15;    // the additional 15 is to shift the text down, so that the left edge of the text and not the center of text is at histHeight
+        %>
+        <line x1="<%=y_label_width%>" x2="<%=(y_label_width + histWidth)%>" y1="<%=y_offset + histHeight%>" y2="<%=y_offset + histHeight%>" stroke="black" vector-effect="non-scaling-stroke"></line>
+        <line x1="<%=x_text%>" x2="<%=x_text%>" y1="<%=y_offset + histHeight%>" y2="<%=y_offset + histHeight + 5%>" stroke="black" vector-effect="non-scaling-stroke"></line>
+        <text x="<%=x_text - 5.0%>" y="<%=y_text%>" font-family="Verdana" font-size="12" text-anchor="start" transform="rotate(45,<%=x_text%>,<%=y_text%>)"><%= df2.format(heatmap.hist.bincenters[i])%></text>
+
+        <% }%>
+
+        <text x="<%=(histWidth / 2.0) + y_label_width%>" y="<%=(y_offset + histHeight + 50)%>" font-family="Verdana" font-size="14" text-anchor="middle">Value</text>
+    </g>
+
+    <g class="yaxis">
+        <line x1="<%=y_label_width%>" y1="<%=y_offset%>" x2="<%=y_label_width%>" y2="<%=(y_offset + histHeight)%>" stroke="black"></line>
+        <line x1="<%=(histWidth + y_label_width)%>" y1="<%=y_offset%>" x2="<%=(histWidth + y_label_width)%>" y2="<%=(y_offset + histHeight)%>" stroke="black"></line>
+            <g class="y_ticks">
+                <%
+                    double y_tick_step = (max_val * scaling_factor) / num_y_ticks;
+                    double y_val_step_normed = max_normed_val / num_y_ticks;
+                    double y_val_step = max_val / num_y_ticks;
+                    for (int i = 0; i < num_y_ticks; i++) {
+                        double y_tick_pos = (i * y_tick_step) + y_offset;
+                        double y_val_actual = max_normed_val - (i * y_val_step_normed);
+                        double y_val_actual_right = (max_val - (i * y_val_step)) / Math.pow(10, exponent);
+                %>
+                <line x1="<%=y_label_width - 5%>" x2="<%=y_label_width%>" y1="<%=y_tick_pos%>" y2="<%=y_tick_pos%>" stroke="black"></line>
+                <text x="<%=y_label_width - 22%>" y="<%=y_tick_pos + 4%>" font-family="Verdana" font-size="12" text-anchor="middle" ><%= df.format(y_val_actual)%></text>
+                <line x1="<%=(histWidth + y_label_width)%>" x2="<%=(histWidth + y_label_width) + 5%>" y1="<%=y_tick_pos%>" y2="<%=y_tick_pos%>" stroke="black"></line>
+                <text x="<%=(histWidth + y_label_width + 7)%>" y="<%=y_tick_pos + 4%>" font-family="Verdana" font-size="12" text-anchor="start" ><%= df3.format(y_val_actual_right)%></text>
+                <%
+                    }
+                %>
+                <text x="<%=(histWidth + y_label_width + 50)%>" y="<%=(y_offset + 4)%>" font-family="Verdana" font-size="12" text-anchor="start" >x10</text>
+                <text x="<%=(histWidth + y_label_width + 73)%>" y="<%=y_offset%>" font-family="Verdana" font-size="6" text-anchor="start" ><%=(exponent)%></text>
+            </g>
+
+        <text x="<%=y_label_width - 40%>" y="<%=(histHeight / 2.0) + y_offset%>" font-family="Verdana" font-size="14" text-anchor="middle" transform="rotate(-90,<%=(y_label_width - 40)%>,<%=((histHeight / 2.0) + y_offset)%>)">Probability</text>
+        <text x="<%=(histWidth + y_label_width) + 50%>" y="<%=(histHeight / 2.0) + y_offset%>" font-family="Verdana" font-size="14" text-anchor="middle" transform="rotate(90,<%=(histWidth + y_label_width) + 50%>,<%=((histHeight / 2.0) + y_offset)%>)">Count</text>
+    </g>
+
+</g>
