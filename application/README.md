@@ -1,0 +1,1 @@
+This folder contains pre-compiled SLIDE application files. Download this folder and run configure_slide.bat to setup SLIDE. To start and stop SLIDE run bin/start-slide.bat and bin/stop-slide.bat respectively.
