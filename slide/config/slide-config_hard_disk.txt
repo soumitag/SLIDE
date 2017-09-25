@@ -1,0 +1,10 @@
+# install-dir
+E:\SOUMITA\4_Sep_2017\slide\
+# java-dir
+C:\Program Files\Java\jdk1.8.0_102
+# glassfish-dir
+C:\Program Files\glassfish-4.1.1\bin
+# mongodb-dir
+C:\Program Files\MongoDB\Server\3.4\bin
+# python-dir
+C:\Program Files\Anaconda3
