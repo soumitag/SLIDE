@@ -1,0 +1,1 @@
+Do not delete this folder. This folder is used by SLIDE for session management.
