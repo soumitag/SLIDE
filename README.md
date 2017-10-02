@@ -2,7 +2,7 @@
 #### User-driven Visualization of Large-scale -omics Data on a Web-browser with Flexible Customized Graphics
 
 SLIDE is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. It can be useful to perform intuitive and fast visualization
-as well as real-time expliration of the data with direct user input.
+as well as real-time exploration of the data with direct user input.
 
 The respository contains the following three folders:
 <dl>
