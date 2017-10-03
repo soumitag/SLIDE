@@ -6,13 +6,14 @@ This manual is a step-by-step installation and configuration guide for running S
 
 SLIDE has been tested on various systems. The table below shows a typical system configuration that would work well with SLIDE:
 
-Operating System	Windows 10 or Windows 7
-CPU			Intel Xeon CPU E5-1620 v4 @ 3.50 GHz
-			Intel Core i7-6700HQ CPU @2.60 GHz
-			Intel Core i7-4600U CPU @2.10 GHz
-Memory			16 GB RAM
-Web browser		Microsoft Internet Explorer (recommended)
 
+| ---------------------|:----------------------:| 
+| Operating System     | Windows 10 or Windows 7|
+| CPU                  | Intel Xeon CPU E5-1620 v4 @ 3.50 GHz |
+|                      | Intel Core i7-6700HQ CPU @2.60 GHz   |
+|                      | Intel Core i7-4600U CPU @2.10 GHz    |
+| Memory               | 16 GB RAM    |
+| Web browser          | Microsoft Internet Explorer (recommended)   |
 
 2. **Prerequisites**
 
