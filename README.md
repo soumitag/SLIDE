@@ -9,7 +9,7 @@ The respository contains the following three folders:
 
 <dt>application</dt> 
 <dd>The entire content of this folder needs to be downloaded to install SLIDE locally on your PC.</dd>
-Windows installation guide is provided [here](application/slide/SLIDE_Windows_Installation_Guide.pdf).
+Windows installation guide is provided [here](https://github.com/soumitag/SLIDE/tree/master/application/slide).
 
 <dt>data</dt>
 <dd>This folder contains example datasets and sample mapping files.</dd>
