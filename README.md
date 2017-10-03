@@ -7,6 +7,7 @@ as well as real-time exploration of the data with direct user input.
 #### **Installation Instructions**
 Windows installation guide is provided [here](https://github.com/soumitag/SLIDE/tree/master/application/slide).
 
+#### **Repository Structure**
 The respository contains the following three folders:
 <dl>
 
