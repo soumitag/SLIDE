@@ -8,8 +8,8 @@ The respository contains the following three folders:
 <dl>
 
 <dt>application</dt> 
-<dd>The entire content of this folder needs to be downloaded to install SLIDE locally on your PC.</dd>
-<dd>Windows installation guide is provided in the */application/slide folder*.</dd>
+<dd>The entire content of this folder needs to be downloaded to install SLIDE locally on your PC.
+Windows installation guide is provided in the <i>application/slide</i> folder.</dd>
 
 <dt>data</dt>
 <dd>This folder contains example datasets and sample mapping files.</dd>
