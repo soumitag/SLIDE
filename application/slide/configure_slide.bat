@@ -91,7 +91,7 @@ mkdir %install_dir%lib\WEB-INF
 SET install_dir_wo_end_slash=%install_dir:~0,-1%
 @echo %install_dir_wo_end_slash%> %install_dir%lib\WEB-INF\slide-web-config.txt
 cd /D %install_dir%lib
-"%java_dir%\bin\java" -jar uf VTBox.war WEB-INF\slide-web-config.txt
+"%java_dir%\bin\jar" uf VTBox.war WEB-INF\slide-web-config.txt
 rmdir /s /q WEB-INF
 cd ..
 
@@ -119,6 +119,7 @@ del %install_dir%src\import_check.txt
 REM Import Data Into MongoDB
 @echo Importing data into MongoDB
 CALL %install_dir%bin\start-mongo
+timeout 10
 "%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_geneMap2 --drop --file "%install_dir%db\HS_geneMap2.json"
 "%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_aliasEntrezMap --drop --file "%install_dir%db\HS_aliasEntrezMap.json"
 "%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_entrezAliasMap --drop --file "%install_dir%db\HS_entrezAliasMap.json"
