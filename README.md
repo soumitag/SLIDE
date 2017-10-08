@@ -1,11 +1,11 @@
 ### Systems-Level Interactive Data Exploration ([SLIDE](https://f1000research.com/posters/6-1462))
 #### User-driven Visualization of Large-scale -omics Data on a Web-browser with Flexible Customized Graphics
 
-SLIDE is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. It can be used for intuitive and fast visualization
-as well as real-time exploration of the data with direct user input.
+SLIDE is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. It can be used for intuitive and fast visualization as well as real-time exploration of the data with direct user input.
 
 #### **Installation Instructions**
-Windows installation guide is provided [here](https://github.com/soumitag/SLIDE/tree/master/application/slide).
+Click [here](https://github.com/soumitag/SLIDE/blob/master/application/slide.zip) to download an installable version of SLIDE.
+Windows installation guide is available [here](https://github.com/soumitag/SLIDE/blob/master/application/slide/SLIDE_Windows_Installation_Guide.pdf).
 
 #### **Repository Structure**
 The respository contains the following three folders:
@@ -24,5 +24,5 @@ The respository contains the following three folders:
 
 
 #### **Reference**
-Ghosh S, Datta A and Choi H. Systems-Level Interactive Data Exploration (SLIDE): user-driven visualization of large-scale –omics data on a web browser with flexible customized graphics [version 1; not peer reviewed]. F1000Research 2017, 6(ISCB Comm J):1462 (poster)(doi:[10.7490/f1000research.1114707.1](https://f1000research.com/posters/6-1462))
+Ghosh S, Datta A and Choi H. Systems-Level Interactive Data Exploration (SLIDE): user-driven visualization of large-scale â€“omics data on a web browser with flexible customized graphics [version 1; not peer reviewed]. F1000Research 2017, 6(ISCB Comm J):1462 (poster)(doi:[10.7490/f1000research.1114707.1](https://f1000research.com/posters/6-1462))
 
