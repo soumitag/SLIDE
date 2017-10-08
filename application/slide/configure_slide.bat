@@ -118,19 +118,19 @@ del %install_dir%src\import_check.txt
 
 REM Import Data Into MongoDB
 @echo Importing data into MongoDB
-REM CALL %install_dir%bin\start-mongo
-REM "%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_geneMap2 --drop --file "%install_dir%db\HS_geneMap2.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_aliasEntrezMap --drop --file "%install_dir%db\HS_aliasEntrezMap.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_entrezAliasMap --drop --file "%install_dir%db\HS_entrezAliasMap.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_goMap2 --drop --file "%install_dir%db\HS_goMap2.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_pathwayMap --drop --file "%install_dir%db\HS_pathwayMap.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_aliasEntrezMap --drop --file "%install_dir%db\MM_aliasEntrezMap.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_entrezAliasMap --drop --file "%install_dir%db\MM_entrezAliasMap.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_geneMap2 --drop --file "%install_dir%db\MM_geneMap2.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_goMap2 --drop --file "%install_dir%db\MM_goMap2.json"
-REM "%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_pathwayMap --drop --file "%install_dir%db\MM_pathwayMap.json"
-REM timeout 3
-REM taskkill /f /im mongod.exe
+CALL %install_dir%bin\start-mongo
+"%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_geneMap2 --drop --file "%install_dir%db\HS_geneMap2.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_aliasEntrezMap --drop --file "%install_dir%db\HS_aliasEntrezMap.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_entrezAliasMap --drop --file "%install_dir%db\HS_entrezAliasMap.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_goMap2 --drop --file "%install_dir%db\HS_goMap2.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_HomoSapiens --collection HS_pathwayMap --drop --file "%install_dir%db\HS_pathwayMap.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_aliasEntrezMap --drop --file "%install_dir%db\MM_aliasEntrezMap.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_entrezAliasMap --drop --file "%install_dir%db\MM_entrezAliasMap.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_geneMap2 --drop --file "%install_dir%db\MM_geneMap2.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_goMap2 --drop --file "%install_dir%db\MM_goMap2.json"
+"%mongodb_dir%\mongoimport" --db geneVocab_MusMusculus --collection MM_pathwayMap --drop --file "%install_dir%db\MM_pathwayMap.json"
+timeout 3
+taskkill /f /im mongod.exe
 
 REM Finally Done
 @echo SLIDE Configuration is complete.
