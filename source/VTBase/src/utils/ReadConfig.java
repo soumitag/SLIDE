@@ -51,7 +51,7 @@ public class ReadConfig {
             }
             
             br.close();
-            nameValuePairs.put("py-module-path", nameValuePairs.get("install-dir") + "src");
+            nameValuePairs.put("py-module-path", nameValuePairs.get("install-dir") + File.separator + "src");
             return nameValuePairs;
             
         } catch (Exception e) {
