@@ -1,0 +1,21 @@
+SMAP
+featurelabels_jsp.java
+JSP
+*S JSP
+*F
++ 0 featurelabels.jsp
+featurelabels.jsp
+*L
+5,12:51
+18,44:64
+61,7:108
+68:115,5
+69,4:120
+73,16:125
+88,2:141
+90:143,7
+91,2:150
+93,3:153
+95,10:156
+106,8:167
+*E

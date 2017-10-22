@@ -8,7 +8,7 @@ package structure;
 import algorithms.clustering.BinaryTree;
 import algorithms.enrichment.EnrichmentAnalysis;
 import graphics.Heatmap;
-import java.io.File;
+
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class AnalysisContainer implements Serializable {
     public HashMap <String, String> visualization_params;
     public HashMap <String, Double> enrichment_params;
     
-    public HashMap <String, Double> state_variables;
+    public StateVariables state_variables;
     
     public Searcher searcher;
     public Logger logger;
@@ -62,6 +62,7 @@ public class AnalysisContainer implements Serializable {
     public AnalysisContainer () { 
         isTreeAvailable = false;
         visualizationType = AnalysisContainer.GENE_LEVEL_VISUALIZATION;
+        state_variables = new StateVariables();
     }
     
     public void setAnalysisName (String analysis_name) {
@@ -88,9 +89,11 @@ public class AnalysisContainer implements Serializable {
         this.enrichment_params = enrichment_params;
     }
     
+    /*
     public void setStateVariables (HashMap <String, Double> state_variables) {
         this.state_variables = state_variables;
     }
+    */
     
     public void setSearchResults (ArrayList <ArrayList <CompactSearchResultContainer>> search_results) {
         this.search_results = search_results;
@@ -173,10 +176,12 @@ public class AnalysisContainer implements Serializable {
         visualization_params.put("bin_range_end", "-1");
         sub_analysis.setVisualizationParams(visualization_params);
         
+        /*
         state_variables = new HashMap <String, Double> ();
         state_variables.put("detailed_view_start", 0.0);
         state_variables.put("detailed_view_end", 37.0);
         sub_analysis.setStateVariables(state_variables);
+        */
         
         ArrayList<ArrayList<CompactSearchResultContainer>> search_results
                                     = new ArrayList<ArrayList<CompactSearchResultContainer>>();

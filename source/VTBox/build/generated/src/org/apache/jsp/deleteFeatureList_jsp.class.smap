@@ -1,0 +1,17 @@
+SMAP
+deleteFeatureList_jsp.java
+JSP
+*S JSP
+*F
++ 0 deleteFeatureList.jsp
+deleteFeatureList.jsp
+*L
+5,15:53
+21,9:69
+29,9:78
+38:87,3
+39,5:90
+44:95,3
+45,6:98
+52,8:105
+*E

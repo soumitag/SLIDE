@@ -12,28 +12,28 @@ import structure.AnalysisContainer;
 
 /**
  *
- * @author soumita
+ * @author abhik
  */
 public class SessionUtils {
-
+    
     public static void logException (HttpSession session, HttpServletRequest request, Exception e) {
-
+        
         try {
-
+            
             System.out.println("An exception occured while serving: " + request.getRequestURI());
             System.out.println(e);
             System.out.println(Arrays.toString(e.getStackTrace()));
-
+            
             String analysis_name = request.getParameter("analysis_name");
             AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
             analysis.logger.writeLog(1, request.getRequestURI(), "FATAL", e.toString());
-
+            
         } catch (Exception e1) {
-
+            
             System.out.println("An exception occured in SessionUtils.logException() while logging...");
             System.out.println(e1);
             System.out.println(Arrays.toString(e1.getStackTrace()));
         }
-
+        
     }
 }

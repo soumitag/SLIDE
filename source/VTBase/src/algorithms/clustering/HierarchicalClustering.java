@@ -141,7 +141,7 @@ public class HierarchicalClustering {
                 Thread.currentThread().interrupt();
                 System.out.println(e);
             }
-            if (waiting > 1500) {
+            if (waiting > 6000) {
                 isClusteringSuccessful = false;
                 break;
             }

@@ -1,0 +1,15 @@
+SMAP
+deleteSearch_jsp.java
+JSP
+*S JSP
+*F
++ 0 deleteSearch.jsp
+deleteSearch.jsp
+*L
+5,10:49
+16,12:60
+27,2:72
+29:74,2
+30:76
+33,8:79
+*E

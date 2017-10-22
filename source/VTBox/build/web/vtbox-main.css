@@ -1,0 +1,203 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 4, 2017, 1:02:27 AM
+    Author     : soumita
+*/
+
+.loader {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: url('images/loader1.gif') 50% 50% no-repeat rgb(249,249,249);
+}
+
+button {
+    background-color: #F8F8F8;
+    padding: 5px 16px;
+    font-size: 11px;
+    color: #505050;
+    text-transform: uppercase;
+    border: 1px solid #505050;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 2px;
+}
+
+button:hover {
+    border-color: rgb(255,99,23);
+    color: rgb(255,99,0);
+    background-color: #fbfbfb;
+}
+
+button:disabled {
+    border-color: #505050;
+    color: #505050;
+    background: #dddddd;
+    cursor: wait;
+}
+
+.dropbtn {
+    background-color: #F8F8F8;
+    padding: 5px 16px;
+    font-size: 11px;
+    color: #505050;
+    text-transform: uppercase;
+    border: 1px solid #505050;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 2px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 5px 16px;
+    font-family: verdana;
+    font-size: 12px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    border-color: rgb(255,99,23);
+    color: rgb(255,99,0);
+    background-color: #fbfbfb;
+}
+
+.e:hover{
+    background-color:#CCCCCC;
+}
+
+.h {
+    text-align:left;
+    font-family: verdana;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.e {
+    text-align:left;
+    cursor:pointer;
+    border-radius: 7px; 
+    border: 1px solid #CCCCCC; 
+    padding: 2px; 
+    float: left; 
+    display: inline-block;
+    background-color:#FDFDFD;
+    margin-left: 10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    font-family: verdana;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.e1 {
+    text-align:left;
+    border-radius: 7px; 
+    border: 1px solid #CCCCCC; 
+    padding: 5px 16px; 
+    float: left; 
+    display: inline-block;
+    background-color:#FDFDFD;
+    margin-left: 10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    font-family: verdana;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.ebad {
+    text-align:center;
+    cursor:pointer;
+    border-radius: 7px; 
+    border: 1px solid #CCCCCC; 
+    padding: 2px; 
+    float: left; 
+    width: 100px;
+    background-color:#FDFDFD;
+    margin-left: 10px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    font-family: verdana;
+    font-size: 12px;
+    color: #AAAAAA;
+}
+
+
+
+.exception_msg {
+    text-align: center;
+    font-family: verdana;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: italic;
+    color: #BBB;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    top: 50px;
+}
+
+
+.msg {
+    text-align: center;
+    font-family: verdana;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: italic;
+    color: #BBB;
+    text-align: center;
+}
+
+.sys_msg {
+    text-align: center;
+    font-family: verdana;
+    font-size: 14px;
+    font-weight: normal;
+    color: #000;
+    text-align: center;
+}
+
+.msg_ribbon {
+    text-align: center;
+    font-family: verdana;
+    font-size: 14px;
+    font-weight: normal;
+    color: #000;
+    text-align: center;
+    width: 60%;
+    background-color: #ffff80;
+    display: none;
+    position: absolute;
+    top: 0px;
+    z-index: 1;
+    height: 30px;
+}

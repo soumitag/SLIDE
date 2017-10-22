@@ -189,10 +189,14 @@ public class AnalysisReInitializer extends HttpServlet {
             visualization_params.put("bin_range_end", rangeEnd + "");
             analysis.setVisualizationParams(visualization_params);
             
+            /*
             HashMap <String, Double> state_variables = new HashMap <String, Double> ();
             state_variables.put("detailed_view_start", 0.0);
             state_variables.put("detailed_view_end", 37.0);
             analysis.setStateVariables(state_variables);
+            */
+            analysis.state_variables.setDetailedViewStart(0);
+            analysis.state_variables.setDetailedViewEnd(37);
             
             getServletContext().getRequestDispatcher("/visualizationHome.jsp?analysis_name=" + analysis_name).forward(request, response);
             

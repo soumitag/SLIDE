@@ -61,7 +61,7 @@ public class AnalysisInitializer extends HttpServlet {
             SessionManager.createAnalysisDirs(analysis);
 
             Logger log = new Logger(analysis.base_path, "server.log");
-            log.writeLog(0, "init.jsp", Logger.MESSAGE, "Log Created");
+            log.writeLog(0, "AnalysisInitializer.java", Logger.MESSAGE, "Log Created");
        
             String filename_in = request.getParameter("fileinputname");
             String sample_series_mapping_filename_in = request.getParameter("mapfilename");
@@ -192,11 +192,13 @@ public class AnalysisInitializer extends HttpServlet {
             visualization_params.put("bin_range_end", "-1");
             analysis.setVisualizationParams(visualization_params);
             
+            /*
             HashMap <String, Double> state_variables = new HashMap <String, Double> ();
             state_variables.put("detailed_view_start", 0.0);
             state_variables.put("detailed_view_end", 37.0);
             analysis.setStateVariables(state_variables);
-
+            */
+            
             ArrayList <ArrayList<CompactSearchResultContainer>> search_results = 
                                     new ArrayList <ArrayList<CompactSearchResultContainer>> ();
 

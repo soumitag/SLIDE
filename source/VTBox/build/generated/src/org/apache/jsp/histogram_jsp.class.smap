@@ -1,0 +1,17 @@
+SMAP
+histogram_jsp.java
+JSP
+*S JSP
+*F
++ 0 histogram.jsp
+histogram.jsp
+*L
+5,16:54
+22,12:71
+33,7:83
+40:90,5
+41:95
+42:96,2
+45,7:98
+53,8:106
+*E

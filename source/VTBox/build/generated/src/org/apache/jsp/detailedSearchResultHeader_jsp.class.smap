@@ -1,0 +1,22 @@
+SMAP
+detailedSearchResultHeader_jsp.java
+JSP
+*S JSP
+*F
++ 0 detailedSearchResultHeader.jsp
+detailedSearchResultHeader.jsp
+*L
+5,8:47
+14,7:56
+20,100:63
+120:163,3
+121,13:166
+134:179,3
+135,2:182,7
+137:196
+138:197,3
+139:200
+140:201,3
+141,8:204
+150,8:213
+*E
