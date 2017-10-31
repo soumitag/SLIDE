@@ -4,9 +4,9 @@
 SLIDE is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. It can be used for intuitive and fast visualization as well as real-time exploration of the data with direct user input.
 
 #### **Installation Instructions**
-Click [here](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip) to download an installable version of SLIDE.
-Windows installation guide is available [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf).
-macOS installation guide is available [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_macOS_Installation_Guide.pdf).
+Click [here](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip) to download an installable version of SLIDE.  
+Windows installation guide is available [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf).  
+macOS installation guide is available [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_macOS_Installation_Guide.pdf).  
 
 
 #### **Repository Structure**
