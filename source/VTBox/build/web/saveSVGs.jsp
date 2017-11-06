@@ -119,21 +119,31 @@ try {
             
             function saveGlobalView() {
                 
-                if (document.getElementById('global_view_incl_search_tags').checked) {
-                    gvi_search_tags = document.getElementById('global_view_incl_search_tags').value;
-                }
-                
-                if (document.getElementById('global_view_incl_hist').checked) {
-                    gvi_hist = document.getElementById('global_view_incl_hist').value;
-                }
-                
-                if (document.getElementById('global_view_incl_dend') != null) {
-                    if (document.getElementById('global_view_incl_dend').checked) {
-                        gvi_dend = document.getElementById('global_view_incl_dend').value;
+                var incl_search_tags = document.getElementsByName('global_view_incl_search_tags');
+                for(var i = 0; i < incl_search_tags.length; i++){
+                    if (incl_search_tags[i].checked) {
+                        gvi_search_tags = incl_search_tags[i].value;
                     }
-                } else {
-                    gvi_dend = "no";
                 }
+                
+                var incl_hist = document.getElementsByName('global_view_incl_hist');
+                for(var i = 0; i < incl_hist.length; i++){
+                    if (incl_hist[i].checked) {
+                        gvi_hist = incl_hist[i].value;
+                    }
+                }
+                                
+                var incl_dend = document.getElementsByName('global_view_incl_dend');                 
+                for(var i = 0; i < incl_dend.length; i++){
+                    if (incl_dend[i] != null) {
+                        if (incl_dend[i].checked) {
+                            gvi_dend = incl_dend[i].value;
+                        }
+                    } else {
+                            gvi_dend = "no";
+                    }
+                }
+                
                 
                 //alert("2");
                 
@@ -145,22 +155,31 @@ try {
             
             function saveDendrogramView() {
                 
-                if (document.getElementById('dend_view_incl_search_tags').checked) {
-                    gvi_search_tags = document.getElementById('dend_view_incl_search_tags').value;
-                }
-                
-                if (document.getElementById('dend_view_incl_hist').checked) {
-                    gvi_hist = document.getElementById('dend_view_incl_hist').value;
-                }
-                
-                if (document.getElementById('dend_view_incl_dend') != null) {
-                    if (document.getElementById('dend_view_incl_dend').checked) {
-                        gvi_dend = document.getElementById('dend_view_incl_dend').value;
+                var incl_search_tags = document.getElementsByName('dend_view_incl_search_tags');                
+                for(var i = 0; i < incl_search_tags.length; i++){
+                    if (incl_search_tags[i].checked) {
+                        gvi_search_tags = incl_search_tags[i].value;
+                    }                    
+                }   
+               
+                var incl_hist = document.getElementsByName('dend_view_incl_hist');
+                for(var i = 0; i < incl_hist.length; i++){
+                    if (incl_hist[i].checked) {
+                        gvi_hist = incl_hist[i].value;
                     }
-                } else {
-                    gvi_dend = "no";
                 }
                 
+                var incl_dend = document.getElementsByName('dend_view_incl_dend');
+                for(var i = 0; i < incl_dend.length; i++){
+                    if (incl_dend[i] != null) {
+                        if (incl_dend[i].checked) {
+                            gvi_dend = incl_dend[i].value;
+                        }
+                    } else {
+                            gvi_dend = "no";
+                    }
+                }
+                                
                 //alert("2");
                 
                 var mapview_url = "<%=base_url%>saveViz_GlobalView.jsp?analysis_name=<%=analysis_name%>" + 
@@ -176,24 +195,38 @@ try {
             }
     
             function saveDetailedView() {
-                
-                if (document.getElementById('detailed_view_incl_search_tags').checked) {
-                    dvi_search_tags = document.getElementById('detailed_view_incl_search_tags').value;
+                var incl_search_tags = document.getElementsByName('detailed_view_incl_search_tags');
+                for (var i = 0; i < incl_search_tags.length; i++){
+                    if (incl_search_tags[i].checked) {
+                        //alert(incl_search_tags[i].value);
+                        dvi_search_tags = incl_search_tags[i].value;
+                    }               
                 }
-                
-                if (document.getElementById('detailed_view_incl_hist').checked) {
-                    dvi_hist = document.getElementById('detailed_view_incl_hist').value;
+                             
+                var incl_hist = document.getElementsByName('detailed_view_incl_hist');
+                for (var i = 0; i < incl_hist.length; i++){
+                    if (incl_hist[i].checked){
+                        dvi_hist = incl_hist[i].value;
+                    }
                 }
                 //alert( document.getElementById('detailed_view_start').value);
-                dvi_start = document.getElementById('detailed_view_start').value;
-                dvi_end = document.getElementById('detailed_view_end').value;
+                dvi_start = document.getElementById('detailed_view_start').value - 1;
+                dvi_end = document.getElementById('detailed_view_end').value - 1;
+                dvi_sample_height = document.getElementById('detailed_view_sample_height').value;
+                dvi_feat_width = document.getElementById('detailed_view_feature_width').value;
                 //alert("2");
                 
                 row_range = dvi_end - dvi_start;
                 if (row_range > <%=max_rows%>) {
                     alert("The maximum number of rows to be displayed must be less than <%=max_rows%>.");
                 } else {
-                    var mapview_url = "<%=base_url%>saveViz_MapView.jsp?analysis_name=<%=analysis_name%>&detailed_view_incl_search_tags=" + dvi_search_tags + "&detailed_view_incl_hist=" + dvi_hist + "&start=" + dvi_start + "&end=" + dvi_end;
+                    var mapview_url = "<%=base_url%>saveViz_MapView.jsp?analysis_name=<%=analysis_name%>" + 
+                                      "&detailed_view_incl_search_tags=" + 
+                                      dvi_search_tags + "&detailed_view_incl_hist=" + 
+                                      dvi_hist + "&start=" + 
+                                      dvi_start + "&end=" + 
+                                      dvi_end + "&sample_height=" + 
+                                      dvi_sample_height + "&feature_width=" + dvi_feat_width;
                     var popup = window.open(mapview_url);
                 }
                 
@@ -211,8 +244,12 @@ try {
         
         
         <div id="GlobalMap" class="tabcontent">
-            <h3>Global Map</h3>
             <table>
+                <tr>
+                    <td colspan="2">
+                        <label><b>Global Map</b></label>
+                    </td>
+                </tr>
                 <tr>
                     <td width="35%">
                         Include Search Tags
@@ -254,15 +291,19 @@ try {
 
         
         <div id="DetailedView" class="tabcontent">
-            <h3>Detailed View</h3>
             <table>
+                <tr>
+                    <td colspan="2">
+                        <label><b>Detailed View</b></label>
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         Start Row
                     </td>
                     <td>
-                        <input type="text" id="detailed_view_start" name="detailed_view_start" value="<%=start%>">&nbsp;
-                        Current Value: <%=start%>
+                        <input type="text" id="detailed_view_start" name="detailed_view_start" value="<%=(start+1)%>">&nbsp;
+                        Current Value: <%=(start+1)%>
                     </td>
                 </tr>
                 <tr>
@@ -270,8 +311,8 @@ try {
                         End Row
                     </td>
                     <td>
-                        <input type="text" id="detailed_view_end" name="detailed_view_end" value="<%=end%>">&nbsp;
-                        Current Value: <%=end%>. Maximum <%=max_rows%> Rows Allowed.
+                        <input type="text" id="detailed_view_end" name="detailed_view_end" value="<%=(end+1)%>">&nbsp;
+                        Current Value: <%=(end+1)%>. Maximum <%=max_rows%> Rows Allowed.
                     </td>
                 </tr>
                 <tr>
@@ -293,6 +334,29 @@ try {
                     </td>
                 </tr>
                 <tr>
+                    <td>
+                        Sample Name Height
+                    </td>
+                    <td>
+                        <input type="text" id="detailed_view_sample_height" name="detailed_view_sample_height" value="95">&nbsp;
+                        Default Value: 95.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Feature Name Width
+                    </td>
+                    <td>
+                        <% if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) { %>
+                        <input type="text" id="detailed_view_feature_width" name="detailed_view_feature_width" value="200">&nbsp;
+                        Default Value: 200.
+                        <% } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) { %>
+                        <input type="text" id="detailed_view_feature_width" name="detailed_view_feature_width" value="350">&nbsp;
+                        Default Value: 350.
+                        <% } %>
+                    </td>
+                </tr>
+                <tr>
                     <td colspan="2">
                         <!--<input type="button" value="Generate" onclick="saveDetailedView()">-->
                         <button type="button" id="generate_svg" title="Generate Visualization" onclick="saveDetailedView()">Generate</button>
@@ -302,8 +366,12 @@ try {
         </div>
 
         <div id="DendrogramView" class="tabcontent">
-            <h3>Dendrogram View</h3>
             <table>
+                <tr>
+                    <td colspan="2">
+                        <label><b>Dendrogram View</b></label>
+                    </td>
+                </tr>
                 <tr>
                     <td width="35%">
                         Include Search Tags

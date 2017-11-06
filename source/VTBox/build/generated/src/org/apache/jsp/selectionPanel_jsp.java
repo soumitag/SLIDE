@@ -55,6 +55,12 @@ public final class selectionPanel_jsp extends org.apache.jasper.runtime.HttpJspB
       out.write("\n");
 
 try {
+    
+    String analysis_name = request.getParameter("analysis_name");
+    AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
+    Data database = analysis.database;
+    String data_min = String.format("%.3f", database.DATA_MIN_MAX[0]);
+    String data_max = String.format("%.3f", database.DATA_MIN_MAX[1]);
 
       out.write("\n");
       out.write("\n");
@@ -89,17 +95,25 @@ try {
       out.write("                document.getElementById(\"txtRangeStart\").disabled = true;\n");
       out.write("                document.getElementById(\"txtRangeEnd\").disabled = true;\n");
       out.write("            }\n");
+      out.write("            \n");
+      out.write("            function checkDataMin() {\n");
+      out.write("                var curr = document.getElementById(\"log2flag\").checked;\n");
+      out.write("                if (curr) {\n");
+      out.write("                    var data_min = ");
+      out.print(database.RAW_DATA_MIN);
+      out.write(";\n");
+      out.write("                    if (data_min < 0.0) {\n");
+      out.write("                        alert(\"Data has negative values. Log base 2 transformation cannot be applied.\");\n");
+      out.write("                        document.getElementById(\"log2flag\").checked = false;\n");
+      out.write("                    } else if (data_min === 0.0) {\n");
+      out.write("                        alert(\"Data has zero values. A small positive offset (2 raised to the power -149) will be added to all cells. If you do not wish to do this, uncheck the log base 2 transformation option.\");\n");
+      out.write("                    }\n");
+      out.write("                }\n");
+      out.write("            }\n");
+      out.write("            \n");
       out.write("        </script>\n");
       out.write("    </head>\n");
-      out.write("    ");
-
-        String analysis_name = request.getParameter("analysis_name");
-        AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
-        Data database = analysis.database;
-        String data_min = String.format("%.3f", database.DATA_MIN_MAX[0]);
-        String data_max = String.format("%.3f", database.DATA_MIN_MAX[1]);
-    
-      out.write("\n");
+      out.write("    \n");
       out.write("    <body>\n");
       out.write("        <form name=\"SelectionForm\" method=\"get\" action=\"AnalysisReInitializer\" target=\"visualizationPanel\"> \n");
       out.write("            <input type=\"hidden\" name=\"analysis_name\" value=\"");
@@ -148,17 +162,27 @@ try {
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\">\n");
-      out.write("                    ");
- if (database.isDataLogTransformed) { 
-      out.write("\n");
-      out.write("                        <input type=\"checkbox\" id=\"log2flag\" name=\"log2flag\" checked=\"checked\"> Perform log base 2 transformation</input>\n");
-      out.write("                    ");
- } else { 
-      out.write("\n");
-      out.write("                        <input type=\"checkbox\" id=\"log2flag\" name=\"log2flag\"> Perform log base 2 transformation</input>\n");
-      out.write("                    ");
- } 
-      out.write("\n");
+      out.write("                    <input type=\"checkbox\" id=\"log2flag\" name=\"log2flag\" onclick=\"checkDataMin()\"> Perform log base 2 transformation</input>\n");
+      out.write("                </td>\n");
+      out.write("            </tr>\n");
+      out.write("            \n");
+      out.write("            <tr>\n");
+      out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
+      out.write("                    <b><label>Column Scaling: </label></b><br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"0\" checked=\"checked\"> None <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"1\"> Scale Columns to 0-1 <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"2\"> Make Columns Standard Normal <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"3\"> Pareto Scaling  <br>\n");
+      out.write("                </td>\n");
+      out.write("            </tr>\n");
+      out.write("            \n");
+      out.write("            <tr>\n");
+      out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
+      out.write("                    <b><label>Row Scaling: </label></b><br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Row\" value=\"0\" checked=\"checked\"> None <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Row\" value=\"1\"> Scale Rows to 0-1 <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Row\" value=\"2\"> Mean Center Rows <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Row\" value=\"3\"> Make Rows Standard Normal <br>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
@@ -220,33 +244,16 @@ try {
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
-      out.write("            ");
-  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
-      out.write("\n");
-      out.write("            \n");
-      out.write("            <tr>\n");
-      out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
-      out.write("                    <b><label>Data Scaling for Clustering: </label></b><br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Clustering\" value=\"0\" checked=\"checked\"> None <br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Clustering\" value=\"1\"> Normalize Rows <br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Clustering\" value=\"2\"> Normalize Columns <br>\n");
-      out.write("                </td>\n");
-      out.write("            </tr>\n");
-      out.write("            \n");
-      out.write("            ");
-  }   
-      out.write("\n");
-      out.write("            \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label>Linkage Function: </label></b><br>\n");
-      out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"single\" checked=\"checked\"> Single<br>\n");
+      out.write("                    <!--<input type=\"radio\" name=\"linkFunc\" value=\"single\" checked=\"checked\"> Single<br>-->\n");
+      out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"average\" checked=\"checked\"> Average<br>\n");
       out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"complete\"> Complete<br>\n");
-      out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"average\"> Average<br>\n");
       out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"median\"> Median<br>\n");
       out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"centroid\"> Centroid<br>\n");
       out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"ward\"> Ward<br>\n");
-      out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"weighted\"> Weighted<br>                \n");
+      out.write("                    <input type=\"radio\" name=\"linkFunc\" value=\"weighted\"> Weighted<br>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
@@ -264,19 +271,21 @@ try {
       out.write("            <tr> <td colspan='4' align=center height=\"20\"> <b>Visualization Controls</b> </td></tr>\n");
       out.write("            \n");
       out.write("            ");
-  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
+ // if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
       out.write("\n");
+      out.write("            <!--\n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label>Data Scaling for Visualization: </label></b><br>\n");
       out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"0\" checked=\"checked\"> None <br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"1\"> Scale Rows to 0-1 Range <br>\n");
       out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"2\"> Mean Center Rows <br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"3\"> Standardize Rows (Standard Normal) <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"3\"> Make Rows Standard Normal <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"1\"> Scale Rows to 0-1 Range <br>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
+      out.write("            -->\n");
       out.write("            ");
-  }   
+ // }   
       out.write("\n");
       out.write("            \n");
       out.write("            <tr>\n");

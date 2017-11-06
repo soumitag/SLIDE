@@ -34,6 +34,12 @@ function getinputfilenamefromtext(usecase, app_type){
     }
 }
 
+function getimputevalue(){
+    var d = document.getElementById("imputeD");
+    var optionImpute = d.options[d.selectedIndex].value;
+    document.getElementById("imputeval").value = optionImpute;   
+}
+
 function getdelimitervalue(){
     var d = document.getElementById("delimS");
     var optionDelim = d.options[d.selectedIndex].value;
@@ -75,12 +81,36 @@ function mapFilePreview(){
     
 }
 
-function submitform(f){
+function checkselectoptions(){
+    
+    var x = 1;
+    if(document.getElementById("imputeval").value == ""){
+        x = 0;
+        alert("Please select a data imputation strategy.");
+    }
+    if(document.getElementById("delimval").value == ""){
+        x = 0;
+        alert("Please select a data delimiter.");
+    }
+    if(document.getElementById("species_name").value == ""){
+        x = 0;
+        alert("Please select the species type.");
+    }
+    
+    return x;
+    
+}
+
+function createNewExp(){
     //document.fileInputForm.setAttribute("action","init.jsp");
-    document.getElementById('EnterNewExperiment').innerHTML = 'Creating...';
-    document.getElementById("EnterNewExperiment").disabled = true;
-    document.fileInputForm.setAttribute("action","AnalysisInitializer");
-    document.fileInputForm.submit();
+    var x = checkselectoptions();
+    //alert(x);
+    if(x === 1) {
+        document.getElementById('EnterNewExperiment').innerHTML = 'Creating...';
+        document.getElementById("EnterNewExperiment").disabled = true;
+        document.fileInputForm.setAttribute("action","AnalysisInitializer");
+        document.fileInputForm.submit();
+    }
 }
 
 function setTimeSeriesAs(str) {
@@ -256,11 +286,24 @@ function updateheaderinfo(){
 
 function chkisnumber(f){
     
-    var x = document.getElementById(f.name).value;   
+    var x = document.getElementById(f.name).value;
     if(isNaN(parseFloat(x)) || !isFinite(x)){        
         document.getElementById(f.name).value = "0";
         alert("Please enter a numeric value");        
     }    
+}
+
+function chkisEmptyOrNumber(f){
+    
+    var x = document.getElementById(f.name).value;   
+    if (x !== "") {
+        if(isNaN(parseFloat(x)) || !isFinite(x)){        
+            document.getElementById(f.name).value = "0";
+            alert("Please enter a numeric value");
+        } else if (parseInt(x) < 1) {
+            alert("Column number cannot be less than 1.");
+        }
+    }
 }
 
 function chkvalisnum(val){

@@ -121,6 +121,12 @@ try {
                 http.send(null);
             }
             
+            function showDetailedInfo(eid, analysis_name) {
+                //alert(eid);
+                //alert(analysis_name);
+                parent.showDetailedInfo(eid, analysis_name);
+            }
+            
             function processResponse_2 () {
                 //check if the response has been received from the server
                 if(http.readyState == 4){

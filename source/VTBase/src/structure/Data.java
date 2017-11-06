@@ -30,6 +30,8 @@ import utils.UserInputParser;
 import net.sf.javaml.core.kdtree.KDTree;
 import vtbase.DataParsingException;
 
+import data.transforms.Imputer;
+import data.transforms.Normalizer;
 
 /**
  *
@@ -38,15 +40,6 @@ import vtbase.DataParsingException;
 public final class Data implements Serializable {
     
     private static final long serialVersionUID = 1L;
-    
-    public static final int NORMALIZATION_NONE = 0;
-    public static final int NORMALIZATION_ROW = 1;
-    public static final int NORMALIZATION_COL = 2;
-    
-    public static final int HEATMAP_ROW_NORMALIZATION_NONE = 0;
-    public static final int HEATMAP_ROW_NORMALIZATION_SCALED = 1;
-    public static final int HEATMAP_ROW_NORMALIZATION_CENTERED = 2;
-    public static final int HEATMAP_ROW_NORMALIZATION_STANDARDIZE = 3;
     
     public static final int REPLICATE_HANDLING_NONE = 0;
     public static final int REPLICATE_HANDLING_MEAN = 1;
@@ -79,6 +72,7 @@ public final class Data implements Serializable {
     public boolean isDataLogTransformed;
     
     // entrez_id to gene name mapping
+    // entrezGeneMap is shared across all (sub-)analyses
     public HashMap <String, ArrayList <String>> entrezGeneMap;
 
     public float CLIPPING_MIN;
@@ -86,11 +80,13 @@ public final class Data implements Serializable {
     
     public String [] current_sample_names;
     
+    public float RAW_DATA_MIN;
     public double[] DATA_MIN_MAX;
     
-    public Data() {}    // purely for testing purposes, not to be used in production code
+    public Data() {}    // used in cloneDB and for testing
     
     public Data(String filename, 
+                int impute_type,
                 String delimiter, 
                 boolean hasHeader,
                 String sample_series_mapping_filename,
@@ -103,8 +99,8 @@ public final class Data implements Serializable {
                 String species,
                 boolean isTimeSeries,
                 boolean logTransformData,
-                int heatmap_normalization_type,
-                int clustering_normalization_type,
+                int column_normalization_strategy,
+                int row_normalization_strategy,
                 int replicate_handling,
                 int imputeK
     ) throws DataParsingException {
@@ -118,11 +114,12 @@ public final class Data implements Serializable {
         createSampleSeriesMappings(sample_series_mapping_filename, isTimeSeries, colheaders);
         processSampleInfo(colheaders);
         
-        String[][] genesymbol_entrez_ids = loadData(filename, start_row, end_row, data_height_width, delimiter, hasHeader, genesymbolcol, entrezcol, imputeK);
+        String[][] genesymbol_entrez_ids = loadData(filename, start_row, end_row, data_height_width, delimiter, hasHeader, genesymbolcol, entrezcol, impute_type);
         processMetaCols(genesymbol_entrez_ids);
         
         processNonMetaCols(logTransformData);
-        transformData(heatmap_normalization_type, clustering_normalization_type);
+        //transformData(heatmap_normalization_type, clustering_normalization_type);
+        transformData(column_normalization_strategy, row_normalization_strategy);
         
         this.DATA_MIN_MAX = computeDataRange();
         
@@ -133,13 +130,13 @@ public final class Data implements Serializable {
                 ArrayList <String> functional_group_names,
                 HashMap <String, String[]> functional_group_details,
                 boolean[] functional_group_mask,
+                int nonmasked_funcgrp_count,
                 String species,
                 boolean isTimeSeries,
                 boolean logTransformData,
-                int heatmap_normalization_type,
-                int clustering_normalization_type,
-                int replicate_handling,
-                int imputeK
+                int column_normalization_strategy,
+                int row_normalization_strategy,
+                int replicate_handling
     ) throws DataParsingException {
         
         this.species = species;
@@ -168,56 +165,102 @@ public final class Data implements Serializable {
         
         processSampleInfo(colheaders);
         
-        String[][] genesymbol_entrez_ids = new String[functional_group_names.size()][2];
+        String[][] genesymbol_entrez_ids = new String[nonmasked_funcgrp_count][2];
+        int count = 0;
         for (int i=0; i<functional_group_names.size(); i++) {
-            String[] qualified_functional_name = functional_group_details.get(functional_group_names.get(i));
-            genesymbol_entrez_ids[i][0] = qualified_functional_name[0];
-            genesymbol_entrez_ids[i][1] = qualified_functional_name[1];
+            if (functional_group_mask[i]) {
+                String[] qualified_functional_name = functional_group_details.get(functional_group_names.get(i));
+                genesymbol_entrez_ids[count][0] = qualified_functional_name[0];
+                genesymbol_entrez_ids[count][1] = qualified_functional_name[1];
+                count++;
+            }
         }
         
         //processMetaCols(genesymbol_entrez_ids);
-        entrezGeneMap = new HashMap <String, ArrayList <String>> ();
-        features = new ArrayList <Feature> ();
+        entrezGeneMap = new HashMap<String, ArrayList<String>>();
+        features = new ArrayList<Feature>();
         for (int i = 0; i < genesymbol_entrez_ids.length; i++) {
             Feature f = new Feature();
             f.setGeneSymbol(genesymbol_entrez_ids[i][1]);
             f.setEntrezID(genesymbol_entrez_ids[i][0]);
-            f.setAliases(new ArrayList <String> ());
+            f.setAliases(new ArrayList<String>());
             features.add(f);
-            
-            ArrayList <String> value = new ArrayList <String>();
+
+            ArrayList<String> value = new ArrayList<String>();
             value.add(genesymbol_entrez_ids[i][1]);
             entrezGeneMap.put(genesymbol_entrez_ids[i][0], value);
         }
         
-        processNonMetaCols(logTransformData, functional_group_mask);
-        transformData(heatmap_normalization_type, clustering_normalization_type);
+        processNonMetaCols(functional_group_mask, nonmasked_funcgrp_count);
+        //transformData(heatmap_normalization_type, clustering_normalization_type);
+        transformData(column_normalization_strategy, row_normalization_strategy);
         
         this.DATA_MIN_MAX = computeDataRange();
         
     }
     
-    public void reprocessData(
+    public void reprocessData_FeatureLevel(
                 ArrayList <String> selectedSampleNames,
                 boolean logTransformData,
-                int heatmap_normalization_type,
-                int clustering_normalization_type,
+                int column_normalization_strategy,
+                int row_normalization_strategy,
+                int replicate_handling,
+                String groupBy,
+                String clipping_type,
+                float clip_min,
+                float clip_max
+    ) throws DataParsingException {
+        
+        setClippingRange(clipping_type, clip_min, clip_max);
+        processNonMetaCols(selectedSampleNames, logTransformData, replicate_handling, groupBy);
+        transformData(column_normalization_strategy, row_normalization_strategy);
+        
+        this.DATA_MIN_MAX = computeDataRange();
+    }
+    
+    public void reprocessData_GroupLevel(
+                ArrayList <String> selectedSampleNames,
+                int column_normalization_strategy,
+                int row_normalization_strategy,
                 int replicate_handling,
                 String groupBy,
                 String clipping_type,
                 float clip_min,
                 float clip_max,
-                boolean[] feature_mask
-    ){
-        setClippingRange(clipping_type, clip_min, clip_max);
-        if (feature_mask == null) {
-            // for gene level visualization
-            processNonMetaCols(selectedSampleNames, logTransformData, replicate_handling, groupBy);
-        } else {
-            // with feature filtering for functional level visualization
-            processNonMetaCols(selectedSampleNames, feature_mask, logTransformData, replicate_handling, groupBy);
+                EnrichmentAnalysis ea
+    ) throws DataParsingException {
+        
+        String[][] genesymbol_entrez_ids = new String[ea.testParams.nonmasked_funcgrp_count][2];
+        int count = 0;
+        for (int i=0; i<ea.testParams.funcgrp_names.size(); i++) {
+            if (ea.testParams.funcgrp_mask[i]) {
+                String[] qualified_functional_name = ea.funcgrp_details_map.get(ea.testParams.funcgrp_names.get(i));
+                genesymbol_entrez_ids[count][0] = qualified_functional_name[0];
+                genesymbol_entrez_ids[count][1] = qualified_functional_name[1];
+                count++;
+            }
         }
-        transformData(heatmap_normalization_type, clustering_normalization_type);
+        
+        //processMetaCols(genesymbol_entrez_ids);
+        entrezGeneMap = new HashMap<String, ArrayList<String>>();
+        features = new ArrayList<Feature>();
+        for (int i = 0; i < genesymbol_entrez_ids.length; i++) {
+            Feature f = new Feature();
+            f.setGeneSymbol(genesymbol_entrez_ids[i][1]);
+            f.setEntrezID(genesymbol_entrez_ids[i][0]);
+            f.setAliases(new ArrayList<String>());
+            features.add(f);
+
+            ArrayList<String> value = new ArrayList<String>();
+            value.add(genesymbol_entrez_ids[i][1]);
+            entrezGeneMap.put(genesymbol_entrez_ids[i][0], value);
+        }
+        
+        processNonMetaCols(ea.testParams.funcgrp_mask, ea.testParams.nonmasked_funcgrp_count);
+        //transformData(heatmap_normalization_type, clustering_normalization_type);
+        transformData(column_normalization_strategy, row_normalization_strategy);
+        
+        this.DATA_MIN_MAX = computeDataRange();
     }
     
     public String[][] loadData (String filename, 
@@ -228,7 +271,7 @@ public final class Data implements Serializable {
                         boolean hasHeader, 
                         int genesymbolcol,
                         int entrezcol,
-                        int imputeK
+                        int impute_type
     ) throws DataParsingException {
         
         
@@ -243,8 +286,12 @@ public final class Data implements Serializable {
         
         //ArrayList <ArrayList <Integer>> impute_indicator = new ArrayList <ArrayList <Integer>> ();
         
+        Imputer imputer = new Imputer(raw_data.length, raw_data[0].length);
+        
         BufferedReader br = null;
         String line;
+        
+        RAW_DATA_MIN = Float.POSITIVE_INFINITY;
         
         try {
 
@@ -263,20 +310,31 @@ public final class Data implements Serializable {
                     
                     for(int j = 0; j < columns.size(); j++) {
                         try {
-                            raw_data[i][j] = Float.parseFloat(lineData[columns.get(j)]);
+                            raw_data[i][j] = Float.parseFloat(lineData[columns.get(j)].trim().toLowerCase());
                         } catch (NumberFormatException e) {
-                            //raw_data[i][j] = Float.NEGATIVE_INFINITY;
-                            //impute_cols.add(j);
-                            throw new DataParsingException(
-                                "Error while reading data file. Non-numeric value found at non-metadata column " + (j+1) + ", row" + (i+1)
-                            );
+                            if (impute_type == data.transforms.Imputer.IMPUTE_NONE) {
+                                throw new DataParsingException(
+                                    "Error while reading data file. Non-numeric value found at non-metadata column " + (j+1) + ", row" + (i+1)
+                                );
+                            } else {
+                                raw_data[i][j] = Float.NEGATIVE_INFINITY;
+                                imputer.markCell(i, j);
+                            }
                         }
                     }
                     
                     //impute_indicator.add(impute_cols);
+                    if (genesymbolcol > -1) {
+                        genesymbol_entrez_ids[i][0] = lineData[genesymbolcol];
+                    } else {
+                        genesymbol_entrez_ids[i][0] = "";
+                    }
                     
-                    genesymbol_entrez_ids[i][0] = lineData[genesymbolcol];
-                    genesymbol_entrez_ids[i][1] = lineData[entrezcol];
+                    if (entrezcol > -1) {
+                        genesymbol_entrez_ids[i][1] = lineData[entrezcol];
+                    } else {
+                        genesymbol_entrez_ids[i][1] = "";
+                    }
                     
                     i++;
                 }
@@ -286,6 +344,10 @@ public final class Data implements Serializable {
                 }
                 
                 count++;
+            }
+            
+            if (impute_type != Imputer.IMPUTE_NONE) {
+                raw_data = imputer.impute(raw_data, impute_type);
             }
             
             //knnImpute(impute_indicator, imputeK, 0.5);
@@ -322,79 +384,6 @@ public final class Data implements Serializable {
 
     }
     
-    public void knnImpute(ArrayList<ArrayList<Integer>> impute_indices, int K, double cull_percent){
-        
-        // impute_indices - each arraylist entry is n-D array: [row_index, column_index, column_index, ...]
-        // with one row_index and a list of column_indices that follow
-        
-        // cull_percent: if more than cull_percent data is missing in a row the row will be culled
-        
-        int nCull = (int)Math.ceil(raw_data[0].length*cull_percent);
-        int nRowsToCull = 0;
-        for (int i = 0; i < impute_indices.size(); i++) {
-            if ( impute_indices.get(i).size() < nCull ) {
-                nRowsToCull++;
-            }
-        }
-        
-        float[][] temp_raw_data = new float[nRowsToCull][raw_data[0].length];
-        int count = 0;
-        for (int i = 0; i < impute_indices.size(); i++) {
-            if ( impute_indices.get(i).size() < nCull ) {
-                temp_raw_data[count] = raw_data[i];
-                count++;
-            }
-        }
-        
-        raw_data = temp_raw_data;
-        
-        for (int i=0; i<raw_data.length; i++) {
-            
-            if ( impute_indices.get(i).size() > 0 ) {
-                
-                int nAvailCols = raw_data[0].length - impute_indices.get(i).size();
-                for (int j = 0; j < raw_data[0].length; j++){
-                    if (!impute_indices.get(i).contains(j)) {
-                        
-                    }
-                }
-                
-                // build k-d tree using non-missing columns
-                KDTree kdtree = new KDTree(nAvailCols);
-                for (int j = 0; j < raw_data.length; j++){
-                    double[] temp = new double[nAvailCols];
-                    count = 0;
-                    for (int k = 0; k < raw_data[0].length; k++) {
-                        if (!impute_indices.get(i).contains(k)) {
-                            temp[count++] = raw_data[j][k];
-                        }
-                    }
-                    kdtree.insert(temp, j);
-                }
-                
-                for( int x = 0; x < impute_indices.get(i).size(); x++){
-                    int impute_col_x = impute_indices.get(i).get(x);
-                    double[] temp = new double[nAvailCols];
-                    count = 0;
-                    for (int k = 0; k < raw_data[0].length; k++) {
-                        if (!impute_indices.get(i).contains(k)) {
-                            temp[count++] = raw_data[i][k];
-                        }
-                    }
-                    Object[] nearest_rows = kdtree.nearest(temp, K+1);
-                    float substitute_value = 0;           
-                    for(int nn = 1; nn < nearest_rows.length; nn++){
-                        substitute_value += raw_data[(int)nearest_rows[nn]][impute_col_x];
-                    }
-                    substitute_value /= nearest_rows.length;
-                    raw_data[i][impute_col_x] = substitute_value;
-                }
-                
-            }
-        }
-        
-    }
-    
     public void setClippingRange(String clipping_type, float clip_min, float clip_max) {
         if (clipping_type.equals("none")) {
             this.CLIPPING_MIN = Float.NEGATIVE_INFINITY;
@@ -414,38 +403,42 @@ public final class Data implements Serializable {
         }
     }
     
-    public final void transformData(int heatmap_normalization_type, int clustering_normalization_type){
+    public final void transformData(int column_normalization_strategy, int row_normalization_strategy){
         
-        switch (heatmap_normalization_type) {
-            case Data.HEATMAP_ROW_NORMALIZATION_SCALED:
-                rowNormalizeData("heatmap");
+        Normalizer normalizer = new Normalizer(datacells);
+        
+        switch (column_normalization_strategy) {
+            case Normalizer.COL_NORMALIZATION_STANDARDIZE:
+                normalizer.standardizeColumns();
                 break;
-            case Data.HEATMAP_ROW_NORMALIZATION_CENTERED:
-                meanCenterRows();
+            case Normalizer.COL_NORMALIZATION_AUTOSCALE:
+                normalizer.autoscaleColumns();
                 break;
-            case Data.HEATMAP_ROW_NORMALIZATION_NONE:
-                setDefaultNormalizedVals("heatmap");
+            case Normalizer.COL_NORMALIZATION_PARETO:
+                normalizer.paretoNormalizeColumns();
                 break;
-            case Data.HEATMAP_ROW_NORMALIZATION_STANDARDIZE:
-                standardizeRows();
+            case Normalizer.COL_NORMALIZATION_NONE:
                 break;
             default:
                 break;
         }
         
-        switch (clustering_normalization_type) {
-            case Data.NORMALIZATION_ROW:
-                rowNormalizeData("clustering");
+        switch (row_normalization_strategy) {
+            case Normalizer.ROW_NORMALIZATION_STANDARDIZED:
+                normalizer.standardizeRows();
                 break;
-            case Data.NORMALIZATION_COL:
-                colNormalizeData("clustering");
+            case Normalizer.ROW_NORMALIZATION_AUTOSCALE:
+                normalizer.autoscaleRows();
                 break;
-            case Data.NORMALIZATION_NONE:
-                setDefaultNormalizedVals("clustering");
+            case Normalizer.ROW_NORMALIZATION_MEANCENTERED:
+                normalizer.meanCenterRows();
+                break;
+            case Normalizer.ROW_NORMALIZATION_NONE:
                 break;
             default:
                 break;
         }
+        
     }
     
     public Sample getSample (String samplename) {
@@ -486,20 +479,6 @@ public final class Data implements Serializable {
     public String getAssayType(){
         return exptype;
     }
-    
-    /*public ArrayList <Integer> getMetaCols(){
-        return metacols;
-    }*/
-    
-    /*public int getGeneSymbolCol(){
-        return genesymbolcol;
-    }*/
-    
-    /*public int getEntrezCol(){
-        return entrezcol;
-    }*/
-    
-    
     
     private ArrayList <String> getSamplesGroupedByTimePoint () {
         
@@ -588,7 +567,8 @@ public final class Data implements Serializable {
     
     
     // called in init; overloaded method called without row filtering mask; used in gene level analysis
-    private void processNonMetaCols (boolean logTransformData){
+    private void processNonMetaCols (boolean logTransformData)
+    throws DataParsingException {
         
         // process all columns
         ArrayList <Integer> column_order = new ArrayList <Integer> ();
@@ -612,6 +592,8 @@ public final class Data implements Serializable {
             }
         }
         
+        computeRawDataMin();
+        
         if (logTransformData) {
             log2Transform(datacells);
         }
@@ -619,7 +601,8 @@ public final class Data implements Serializable {
     }
     
     // called in init; overloaded method called with row filtering mask; used in functional level analysis
-    private void processNonMetaCols (boolean logTransformData, boolean[] feature_mask){
+    private void processNonMetaCols (boolean[] feature_mask, int nonmasked_funcgrp_count)
+    throws DataParsingException {
         
         // process all columns
         ArrayList <Integer> column_order = new ArrayList <Integer> ();
@@ -635,24 +618,25 @@ public final class Data implements Serializable {
             }
         }
         
-        datacells = new DataCells(raw_data.length, column_order.size());
+        datacells = new DataCells(nonmasked_funcgrp_count, column_order.size());
         
+        count = 0;
         for(int i = 0; i < raw_data.length; i++){
             if (feature_mask[i]) {
                 for(int j = 0; j < column_order.size(); j++){
-                    datacells.dataval[i][j] = raw_data[i][column_order.get(j)];
+                    datacells.dataval[count][j] = raw_data[i][column_order.get(j)];
                 }
+                count++;
             }
         }
         
-        if (logTransformData) {
-            log2Transform(datacells);
-        }
-        
+        computeRawDataMin();
+
     }
     
     // called in re-init; overloaded method called without row filtering mask; used in gene level analysis
-    private void processNonMetaCols (ArrayList <String> selectedSampleNames, boolean logTransformData, int replicate_handling, String groupBy){
+    private void processNonMetaCols (ArrayList <String> selectedSampleNames, boolean logTransformData, int replicate_handling, String groupBy)
+    throws DataParsingException {
         
         // process selected columns
         ArrayList <String> ordered_sample_names = null;
@@ -709,83 +693,23 @@ public final class Data implements Serializable {
             }
         }
         
+        computeRawDataMin();
+        
         if (logTransformData) {
             log2Transform(datacells);
         }
         
     }
     
-    // called in re-init; overloaded method called with row filtering mask; used in enrichment analysis
-    private void processNonMetaCols (ArrayList <String> selectedSampleNames, boolean[] feature_mask, boolean logTransformData, int replicate_handling, String groupBy){
-        
-        // process selected columns
-        ArrayList <String> ordered_sample_names = null;
-        if (this.isTimeSeries) {
-            if (groupBy.equalsIgnoreCase("sample")) {
-                ordered_sample_names = getGroupedSamples();
-            } else if (groupBy.equalsIgnoreCase("time")) {
-                ordered_sample_names = getSamplesGroupedByTimePoint();
-            } 
-        } else {
-            ordered_sample_names = sampleNames;
-        }
-        
-        
-        int num_samples = 0;
-        for (int i=0; i<ordered_sample_names.size(); i++) {
-            if (replicate_handling == Data.REPLICATE_HANDLING_NONE) {
-                num_samples += getSample(ordered_sample_names.get(i)).num_replicates;
-            } else {
-                num_samples++;
+    private void computeRawDataMin() {
+        RAW_DATA_MIN = Float.POSITIVE_INFINITY;
+        for(int i = 0; i < datacells.height; i++ ){
+            for(int j = 0; j < datacells.width; j++){
+                if (datacells.dataval[i][j] < RAW_DATA_MIN) {
+                    RAW_DATA_MIN = datacells.dataval[i][j];
+                }
             }
         }
-        
-        int num_features = 0;
-        for (int i=0; i<feature_mask.length; i++) {
-            num_features++;
-        }
-        
-        current_sample_names = new String[num_samples];
-        datacells = new DataCells(num_features, num_samples);
-        
-        int sample_replicate_count = 0;
-        for (int i=0; i<ordered_sample_names.size(); i++) {
-            
-            Sample S = getSample(ordered_sample_names.get(i));
-            
-            if (replicate_handling == Data.REPLICATE_HANDLING_NONE) {
-                
-                for (int k = 0; k < S.num_replicates; k++ ) {
-                    int col = S.raw_data_column_numbers.get(k);
-                    for(int j = 0; j < raw_data.length; j++) {
-                        if (feature_mask[j]) {
-                            datacells.dataval[j][sample_replicate_count] = clip(raw_data[j][col]);
-                        }
-                    }
-                    current_sample_names[sample_replicate_count] = S.samplename;
-                    sample_replicate_count++;
-                }
-                
-            } else {
-                
-                float[] replicate_data_ij = new float[S.num_replicates];
-                for(int feature_j = 0; feature_j < raw_data.length; feature_j++) {
-                    if (feature_mask[feature_j]) {
-                        for (int k = 0; k < S.num_replicates; k++ ) {
-                            int col = S.raw_data_column_numbers.get(k);
-                            replicate_data_ij[k] = clip(raw_data[feature_j][col]);
-                        }
-                    }
-                    datacells.dataval[feature_j][i] = getReplicateSummary(replicate_data_ij, replicate_handling);
-                }
-                current_sample_names[i] = S.samplename;
-            }
-        }
-        
-        if (logTransformData) {
-            log2Transform(datacells);
-        }
-        
     }
     
     private float clip(float value) {
@@ -800,11 +724,18 @@ public final class Data implements Serializable {
         return value;
     }
     
-    public void log2Transform(DataCells datacells){
+    public void log2Transform(DataCells datacells) throws DataParsingException {
+        
+        if (RAW_DATA_MIN < 0) {
+            throw new DataParsingException("Data has negative values. Log 2 transform cannot be applied.");
+        }
         
         float log2 = (float)Math.log(2);
         for(int i = 0; i < datacells.height; i++ ){
             for(int j = 0; j < datacells.width; j++){
+                if (RAW_DATA_MIN == 0.0) {
+                    datacells.dataval[i][j] = datacells.dataval[i][j] + Float.MIN_VALUE;
+                }
                 datacells.dataval[i][j] = (float)Math.log(datacells.dataval[i][j])/log2;
             }
         }
@@ -833,6 +764,8 @@ public final class Data implements Serializable {
         }
     }
     
+    // creates entrezGeneMap and features
+    // entrezGeneMap is shared across all (sub-)analyses
     private void processMetaCols(String[][] genesymbol_entrez_id){
         
         int bad_entrez_ids = -1;
@@ -996,87 +929,6 @@ public final class Data implements Serializable {
         
     }
     
-    /*
-    private void processSampleInfo(String[] colheaders, 
-            //int[] datacols, 
-            String exptype, 
-            //String ordcol, 
-            String[][] sample_info){
-        
-        samples = new ArrayList <Sample> ();
-        sampleNameToArrayListPositionMap = new HashMap <String,Integer>();
-        
-        if(exptype.equals("independent")){
-            if(ordcol.equals("yes")){
-                //int index = 0;
-                for(int i = 0; i < sample_info.length;i++){
-                    Sample s = new Sample(sample_info[i][0]);
-                    s.setNumReplicates(Integer.parseInt(sample_info[i][1]));
-                    s.addRawDataColNumber(i);
-                    s.addSampleColHeaders(colheaders[datacols[i]]);
-                    s.setUserDefinedPosition(i);
-                    //index++;
-                    samples.add(s);
-                    this.sampleNameToArrayListPositionMap.put(s.samplename, i);
-                }
-                
-            } else if(ordcol.equals("no")){
-                for(int i = 0; i < sample_info.length;i++){
-                    Sample s = new Sample(sample_info[i][0]);
-                    s.setNumReplicates(Integer.parseInt(sample_info[i][1]));
-                    s.addRawDataColNumber(Integer.parseInt(sample_info[i][2])-1);                       // user input so -1
-                    s.addSampleColHeaders(colheaders[Integer.parseInt(sample_info[i][2])-1]);
-                    s.setUserDefinedPosition(i);
-                    samples.add(s);
-                    this.sampleNameToArrayListPositionMap.put(s.samplename, i);
-                }
-            }  
-        } else if(exptype.equals("replicate")){
-            if(ordcol.equals("yes")){
-                
-                int index = 0;
-                for(int i = 0; i < sample_info.length;i++){
-                    Sample s = new Sample(sample_info[i][0]);
-                    int rep_num = Integer.parseInt(sample_info[i][1]);
-                    s.setNumReplicates(rep_num);
-                    //ArrayList <Integer> col_num_arr = Utils.getColIdFrmString(metacols);
-                    
-                    ArrayList <Integer> col_num_arr = new ArrayList<>();
-                    for(int x = 0; x < rep_num; x++){
-                        col_num_arr.add(index);
-                        index++;
-                    }
-                    s.addRawDataColNumbers(col_num_arr);
-                    ArrayList <String> col_head_arr = new ArrayList<>();
-                    for(int y = 0; y < col_num_arr.size();y++){
-                        col_head_arr.add(colheaders[col_num_arr.get(y)]);
-                    }
-                    s.addSampleColHeaders(col_head_arr);
-                    s.setUserDefinedPosition(i);
-                    samples.add(s);
-                    this.sampleNameToArrayListPositionMap.put(s.samplename, i);
-                }
-                
-            } else if(ordcol.equals("no")){
-                for(int i = 0; i < sample_info.length;i++){
-                    Sample s = new Sample(sample_info[i][0]);
-                    s.setNumReplicates(Integer.parseInt(sample_info[i][1]));
-                    ArrayList <Integer> col_num_arr = Utils.getColIdFrmString(sample_info[i][2]);
-                    s.addRawDataColNumbers(col_num_arr);
-                    ArrayList <String> col_head_arr = new ArrayList<>();
-                    for(int y = 0; y < col_num_arr.size();y++){
-                        col_head_arr.add(colheaders[col_num_arr.get(y)]);
-                    }
-                    s.addSampleColHeaders(col_head_arr);
-                    s.setUserDefinedPosition(i);
-                    samples.add(s);
-                    this.sampleNameToArrayListPositionMap.put(s.samplename, i);
-                }
-            }  
-        } 
-    }
-    */
-    
     private void createSampleSeriesMappings (
             String metafilename, boolean isTimeSeries, String[] colheaders
     ) throws DataParsingException {
@@ -1092,143 +944,6 @@ public final class Data implements Serializable {
         this.timeToSampleNameMap = sm.timeToSampleNameMap;
     }
     
-    private void meanCenterRows() {
-        float rowmean;
-        SummaryStatistics stats = new SummaryStatistics();
-        for(int i = 0; i < datacells.height; i++) {
-            for (int j=0; j<datacells.width; j++) {
-                stats.addValue(datacells.dataval[i][j]);
-            }
-            rowmean = (float)stats.getMean();
-            for (int j=0; j<datacells.width; j++) {
-                datacells.visualization_normval[i][j] = datacells.dataval[i][j] - rowmean;
-            }
-            stats.clear();
-        }
-    }
-    
-    private void standardizeRows() {
-        float rowmean, rowsdev;
-        SummaryStatistics stats = new SummaryStatistics();
-        for(int i = 0; i < datacells.height; i++) {
-            for (int j=0; j<datacells.width; j++) {
-                stats.addValue(datacells.dataval[i][j]);
-            }
-            rowmean = (float)stats.getMean();
-            rowsdev = (float)stats.getStandardDeviation();
-            for (int j=0; j<datacells.width; j++) {
-                datacells.visualization_normval[i][j] = (datacells.dataval[i][j] - rowmean)/rowsdev;
-            }
-            stats.clear();
-        }
-    }
-    
-    private void rowNormalizeData(String type){
-        for(int i = 0; i < datacells.height; i++) {
-            float[] row_normalized_data = normalize(datacells.getRow(i));
-            setNormalizedRow(i, row_normalized_data, type);
-        }
-    }
-    
-    public void setNormalizedRow(int rownum, float[] row_normalized_data, String type) {
-        if (type.equalsIgnoreCase("heatmap")) {
-            for (int i=0; i<datacells.width; i++) {
-                datacells.visualization_normval[rownum][i] = row_normalized_data[i];
-            }
-        } else if (type.equalsIgnoreCase("clustering")) {
-            for (int i=0; i<datacells.width; i++) {
-                datacells.clustering_normval[rownum][i] = row_normalized_data[i];
-            }
-        }
-    }
-    
-    private void colNormalizeData(String type){
-        for (int i = 0; i < datacells.width; i++){
-            float[] col_normalized_data = normalize(datacells.getCol(i));
-            setNormalizedCol(i, col_normalized_data, type);
-        }
-    }
-    
-    public void setNormalizedCol(int colnum, float[] col_normalized_data, String type) {
-        if (type.equalsIgnoreCase("heatmap")) {
-            for (int i=0; i<datacells.height; i++) {
-                datacells.visualization_normval[i][colnum] = col_normalized_data[i];
-            }
-        } else if (type.equalsIgnoreCase("clustering")) {
-            for (int i=0; i<datacells.height; i++) {
-                datacells.clustering_normval[i][colnum] = col_normalized_data[i];
-            }
-        }
-    }
-    
-    public void setDefaultNormalizedVals(String type) {
-        if (type.equalsIgnoreCase("heatmap")) {
-            for (int i=0; i<datacells.height; i++) {
-                for (int j=0; j<datacells.width; j++) {
-                    datacells.visualization_normval[i][j] = datacells.dataval[i][j];
-                }
-            }
-        } else if (type.equalsIgnoreCase("clustering")) {
-            for (int i=0; i<datacells.height; i++) {
-                for (int j=0; j<datacells.width; j++) {
-                    datacells.clustering_normval[i][j] = datacells.dataval[i][j];
-                }
-            }
-        }
-    }
-    
-    /*
-    private void normalizeFullData() {
-        
-        double minval = Double.MAX_VALUE;
-        double maxval = Double.MIN_VALUE;
-        
-        for(int i = 0; i < datacells.length; i++){
-            for(int j = 0; j < datacells[0].length; j++){
-                if(minval > datacells[i][j].dataval) {
-                    minval = datacells[i][j].dataval;
-                }
-                if(maxval < datacells[i][j].dataval) {
-                    maxval = datacells[i][j].dataval;
-                }
-            }
-        }
-        
-        double norm_high = 1;
-        double norm_low = 0;
-        for(int i = 0; i < datacells.length; i++){
-            for(int j = 0; j < datacells[0].length; j++){
-                datacells[i][j].visualization_normval = ((datacells[i][j].dataval - minval)/(maxval - minval)) * (norm_high - norm_low) + norm_low;
-            }
-        }
-    }
-    */
-    
-    private float[] normalize(float[] data_array){
-        
-        float[] normalized_data_array = new float[data_array.length];
-        
-        float minval = data_array[0];
-        float maxval = data_array[0];
-        
-        for(int j = 1; j < data_array.length; j++){
-            if(minval > data_array[j]) {
-                minval = data_array[j];
-            }
-                
-            if(maxval < data_array[j]) {
-                maxval = data_array[j];
-            }
-        }
-        
-        float norm_high = 1;
-        float norm_low = 0;
-        for(int i = 0; i < data_array.length; i++){
-            normalized_data_array[i] = ((data_array[i] - minval)/(maxval - minval)) * (norm_high - norm_low) + norm_low;
-        }
-        
-        return normalized_data_array;
-    }
     
     public double[] computeDataRange() {
         
@@ -1237,11 +952,11 @@ public final class Data implements Serializable {
         
         for(int i = 0; i < datacells.height; i++){
             for(int j = 0; j < datacells.width; j++){
-                if(minval > datacells.visualization_normval[i][j]) {
-                    minval = datacells.visualization_normval[i][j];
+                if(minval > datacells.dataval[i][j]) {
+                    minval = datacells.dataval[i][j];
                 }
-                if(maxval < datacells.visualization_normval[i][j]) {
-                    maxval = datacells.visualization_normval[i][j];
+                if(maxval < datacells.dataval[i][j]) {
+                    maxval = datacells.dataval[i][j];
                 }
             }
         }
@@ -1252,15 +967,7 @@ public final class Data implements Serializable {
         return min_max;
     }
     
-    public void saveDataMatrix (String filename, String delim, String field_type, DataMask mask) {
-        if (field_type.equalsIgnoreCase("raw")) {
-            saveRawData(filename, delim, mask);
-        } else if (field_type.equalsIgnoreCase("normed")) {
-            saveNormedData(filename, delim);
-        }
-    }
-    
-    private void saveRawData (String filename, String delim, DataMask mask) {
+    public void saveDataMatrix (String filename, String delim, DataMask mask) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filename, false));
             for (int i=0; i<datacells.height; i++) {
@@ -1280,26 +987,8 @@ public final class Data implements Serializable {
         }
     }
     
-    private void saveNormedData (String filename, String delim) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filename, false));
-            for (int i = 0; i < datacells.height; i++) {
-
-                for (int j = 0; j < datacells.width - 1; j++) {
-
-                    writer.append(datacells.visualization_normval[i][j] + delim);
-
-                }
-                writer.append(datacells.visualization_normval[i][datacells.width - 1] + "");
-                writer.newLine();
-            }
-            writer.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-    
-    public Data cloneDB (ArrayList <Integer> filtered_row_indices) {
+    public Data cloneDB (ArrayList <Integer> filtered_row_indices) 
+    throws DataParsingException {
         
         Data cloneData = new Data();
         
@@ -1322,7 +1011,7 @@ public final class Data implements Serializable {
         cloneData.isTimeSeries = this.isTimeSeries;
         cloneData.isDataLogTransformed = this.isDataLogTransformed;
         
-        cloneData.current_sample_names = this.current_sample_names;
+        // cloneData.current_sample_names = this.current_sample_names; // now set in processNonMetaCols
         
         cloneData.entrezGeneMap = this.entrezGeneMap;
         
@@ -1337,7 +1026,7 @@ public final class Data implements Serializable {
         */
          
         // the data
-        cloneData.datacells = datacells.getFilteredDataCells(filtered_row_indices);     // replicate handled data
+        // cloneData.datacells = datacells.getFilteredDataCells(filtered_row_indices);     // replicate handled data
         
         float[][] filtered_raw_data = new float[filtered_row_indices.size()][datacells.width];
         // each row or gene is a Feature object
@@ -1349,9 +1038,9 @@ public final class Data implements Serializable {
         cloneData.raw_data = filtered_raw_data;
         cloneData.features = filtered_features;
         
-        //cloneData.CLIPPING_MIN; - not set
-        //cloneData.CLIPPING_MAX; - not set
-    
+        cloneData.processNonMetaCols(false);
+        transformData(Normalizer.COL_NORMALIZATION_NONE, Normalizer.ROW_NORMALIZATION_NONE);
+        cloneData.setClippingRange("none", Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
         cloneData.DATA_MIN_MAX = cloneData.computeDataRange();
         
         return cloneData;
@@ -1366,34 +1055,27 @@ public final class Data implements Serializable {
         float[][] p_values = new float[funcgrp_names.size()][featlist_names.size()];
         for (int i=0; i<funcgrp_names.size(); i++) {
             for (int j=0; j<featlist_names.size(); j++) {
-                List <String> key = HypergeomParameterContainer.makeKey(funcgrp_names.get(i), featlist_names.get(j));
-                if (p_value_map.containsKey(key)) {
+                if (ea.testParams.funcgrp_mask[i]) {
+                    List <String> key = HypergeomParameterContainer.makeKey(funcgrp_names.get(i), featlist_names.get(j));
                     p_values[i][j] = p_value_map.get(key).floatValue();
-                } else {
-                    p_values[i][j] = 0;
                 }
             }
         }
-            
-        boolean[] functional_group_mask = new boolean[funcgrp_names.size()];
-        for (int i=0; i<funcgrp_names.size(); i++) {
-            functional_group_mask[i] = true;
-        }
-        
+
         try {
             return new Data(
                     p_values, 
                     ea.testParams.featlist_names, 
                     ea.testParams.funcgrp_names, 
                     ea.funcgrp_details_map,
-                    functional_group_mask,
+                    ea.testParams.funcgrp_mask,
+                    ea.testParams.nonmasked_funcgrp_count,
                     this.species, 
                     false, 
                     false, 
-                    Data.HEATMAP_ROW_NORMALIZATION_NONE,
-                    Data.NORMALIZATION_NONE, 
-                    Data.REPLICATE_HANDLING_NONE, 
-                    -1);
+                    Normalizer.COL_NORMALIZATION_NONE,
+                    Normalizer.ROW_NORMALIZATION_NONE, 
+                    Data.REPLICATE_HANDLING_NONE);
         } catch (Exception e) {
             return null;
         }

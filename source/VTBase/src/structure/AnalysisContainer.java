@@ -18,6 +18,7 @@ import java.io.Serializable;
 import searcher.Searcher;
 import utils.Logger;
 import utils.SessionManager;
+import vtbase.DataParsingException;
 
 /**
  *
@@ -75,6 +76,7 @@ public class AnalysisContainer implements Serializable {
     
     public void setDatabase (Data database) {
         this.database = database;
+        state_variables.init(database.features.size());
     }
     
     public void setClusteringParams (HashMap <String, String> clustering_params) {
@@ -136,12 +138,14 @@ public class AnalysisContainer implements Serializable {
     }
     
     public boolean equalsClusteringParam (HashMap <String, String> thatParam) {
-        return (this.clustering_params.get("linkage").equals(thatParam.get("linkage")) &&
+        return (this.clustering_params.get("do_clustering").equals(thatParam.get("do_clustering")) &&
+                this.clustering_params.get("linkage").equals(thatParam.get("linkage")) &&
                 this.clustering_params.get("distance_func").equals(thatParam.get("distance_func")));
     }
     
     public AnalysisContainer createSubAnalysis(String sub_analysis_name, 
-            ArrayList <Integer> filtered_entrez_ids, String installPath, String session_id) {
+            ArrayList <Integer> filtered_entrez_ids, String installPath, String session_id) 
+    throws DataParsingException {
         
         AnalysisContainer sub_analysis = new AnalysisContainer();
         sub_analysis.setAnalysisName(sub_analysis_name);

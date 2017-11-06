@@ -74,10 +74,10 @@ try {
       out.write("                var sph = document.getElementById(\"spHandle\");\n");
       out.write("                if (sp.style.display === 'inline') {\n");
       out.write("                    sp.style.display = 'none';\n");
-      out.write("                    sph.innerHTML = 'Show Selection Panel';\n");
+      out.write("                    sph.innerHTML = 'Show Control Panel';\n");
       out.write("                } else {\n");
       out.write("                    sp.style.display = 'inline';\n");
-      out.write("                    sph.innerHTML = 'Hide Selection Panel';\n");
+      out.write("                    sph.innerHTML = 'Hide Control Panel';\n");
       out.write("                }\n");
       out.write("             }\n");
       out.write("        </script>\n");

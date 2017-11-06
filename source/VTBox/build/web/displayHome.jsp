@@ -30,10 +30,10 @@ try {
                 var sph = document.getElementById("spHandle");
                 if (sp.style.display === 'inline') {
                     sp.style.display = 'none';
-                    sph.innerHTML = 'Show Selection Panel';
+                    sph.innerHTML = 'Show Control Panel';
                 } else {
                     sp.style.display = 'inline';
-                    sph.innerHTML = 'Hide Selection Panel';
+                    sph.innerHTML = 'Hide Control Panel';
                 }
              }
         </script>

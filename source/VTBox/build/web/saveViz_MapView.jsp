@@ -3,6 +3,7 @@
     Created on : 23 Apr, 2017, 1:35:27 PM
     Author     : Soumita
 --%>
+<%@page import="utils.Utils"%>
 <%@page import="graphics.HeatmapData"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="java.util.ArrayList"%>
@@ -57,15 +58,28 @@ try {
         search_result_width = 0.0;
     }
     
+    String feature_width = request.getParameter("feature_width").trim();
     double feature_label_width = 200.0;
-    if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
-        feature_label_width = 200.0;
-    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
-        feature_label_width = 350.0;
+    try {
+        feature_label_width = Double.parseDouble(feature_width);
+    } catch (NumberFormatException e) {
+        if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
+            feature_label_width = 200.0;
+        } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+            feature_label_width = 350.0;
+        }
+    }
+    
+    String sample_height = request.getParameter("sample_height").trim();
+    double sample_name_height = 95.0;
+    try {
+        sample_name_height = Double.parseDouble(sample_height);
+    } catch (NumberFormatException e) {
+        sample_name_height = 95.0;
     }
     
     int histHeight = 200;
-    double svg_height = TABLE_HEIGHT + 120.0 + histHeight + 100.0; // 120 is the gap between heatmap and histogram; 100 is for the histogram x-axis labels
+    double svg_height = sample_name_height + TABLE_HEIGHT + 30.0 + histHeight + 100.0; // 30 is the gap between heatmap and histogram; 100 is for the histogram x-axis labels
     double svg_width = TABLE_WIDTH + search_result_width + 10 + feature_label_width;
     
     HashMap <String, ArrayList <Integer>> entrezPosMap = analysis.entrezPosMap;
@@ -103,7 +117,7 @@ try {
         <rect x="0" y="0" width="<%=svg_width%>" height="<%=svg_height%>" style="fill:white;" />
         
         <g id="heatmap_header">
-            <% double hy = 95; %>
+            <% double hy = sample_name_height; %>
             <% for(int i = 0; i < headers.length; i++) { %>
                 <% 
                     double hx_line = (int)((i+1)*CELL_WIDTH);
@@ -124,7 +138,7 @@ try {
                     String td_id = "td_" + i + "_" + j;
 
                     x = i * CELL_WIDTH;
-                    y = j * CELL_HEIGHT + 90;
+                    y = j * CELL_HEIGHT + ((int)sample_name_height - 5);
                 %>
                 <rect x='<%=x%>' y='<%=y%>' id='<%=td_id%>' width = '<%=CELL_WIDTH%>' height = '<%=CELL_HEIGHT%>' style="fill:<%=color_str%>; " stroke="black" stroke-width="<%=BORDER_STROKE_WIDTH%>" /> 
                 <% } %>
@@ -143,7 +157,7 @@ try {
                     String left = (int)left_position + "px";
                 %>
             
-                <rect x="<%=left%>" y="90" height="<%=TABLE_HEIGHT%>px" width="<%=column_width%>px" style="fill: #EEEEEE; z-index: 0" />
+                <rect x="<%=left%>" y="<%=(sample_name_height - 5.0)%>" height="<%=TABLE_HEIGHT%>px" width="<%=column_width%>px" style="fill: #EEEEEE; z-index: 0" />
             
                 <%        
                 ArrayList <CompactSearchResultContainer> search_results_i = search_results.get(i);
@@ -165,7 +179,7 @@ try {
                             
                             if (positions.get(k) >= start && positions.get(k) <= end) {
                                 
-                                double top = 90 + feature_height*(positions.get(k) - start);
+                                double top = (sample_name_height - 5.0) + feature_height*(positions.get(k) - start);
                                 double feature_display_height = feature_height;
                                 if (feature_height < 2.0) {
                                     feature_display_height = 2.0;
@@ -193,10 +207,17 @@ try {
                     String entrez_i = database.features.get(index).entrezId;
                     ArrayList <String> genesymbols = database.entrezGeneMap.get(entrez_i);
                     String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
-                    double mid = (feature_height*(i - start) + feature_height/2.0) + 95;
+                    double mid = (feature_height*(i - start) + feature_height/2.0) + sample_name_height;
+                    
+                    if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+                        analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+                        genes = Utils.checkAndRemoveHtml(genes);
+                    }
             %>
                 
-                    <text id="label_<%=i%>" x="<%=TABLE_WIDTH+search_result_width+10%>" y="<%=mid%>" font-family="Verdana" font-size="12" fill="black" style="display: inline; " onclick="toggleSelection('<%=index%>', '<%=genes%>', 'label_<%=i%>')"><%=genes%></text>
+                    <text id="label_<%=i%>" x="<%=TABLE_WIDTH+search_result_width+10%>" y="<%=mid%>" font-family="Verdana" font-size="12" fill="black" style="display: inline;">
+                        <%=genes%>
+                    </text>
     
             <% } %>
     
@@ -209,7 +230,7 @@ try {
         
             <jsp:include page="/WEB-INF/jspf/histogram_fragment.jspf" flush="true">
                 <jsp:param name="analysis_name" value="<%=analysis_name%>" />
-                <jsp:param name="y_offset" value="<%=(TABLE_HEIGHT + 120.0)%>" />
+                <jsp:param name="y_offset" value="<%=(sample_name_height + TABLE_HEIGHT + 30.0)%>" />
             </jsp:include>
         
         <% } %>

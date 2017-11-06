@@ -95,22 +95,7 @@ try {
       out.write("            \n");
       out.write("            <label class=\"sys_msg\">\n");
       out.write("                ");
- if (!supported_browsers.contains(browser_app.toUpperCase())) { 
-      out.write("\n");
-      out.write("                    We see that you are using ");
-      out.print(browser_app);
-      out.write(". \n");
-      out.write("                    SLIDE currently only supports Internet Explorer. \n");
-      out.write("                    Some of the features may not work as expected in ");
-      out.print(browser_app);
-      out.write(".\n");
-      out.write("                    <br>\n");
-      out.write("                    <br>\n");
-      out.write("                ");
- } 
-      out.write("\n");
-      out.write("                ");
- if (browser_resolution_x < 1920 || browser_resolution_y < 1080) { 
+ if (browser_resolution_x < 1919 || browser_resolution_y < 1079) { 
       out.write("\n");
       out.write("                    SLIDE works best at a resolution of 1920&times;1040 or higher. \n");
       out.write("                    Your current browser resolution is ");

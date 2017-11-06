@@ -104,18 +104,12 @@ try {
         
         <script>
         
-            function callDetailedInfoUpdater(eid) {
-                parent.showDetailedInfo(eid);
+            function callDetailedInfoUpdater(eid, analysis_name) {
+                //alert(eid);
+                //alert(analysis_name);
+                parent.showDetailedInfo(eid, analysis_name);
             }
             
-            function showAltText(i,eid) {
-                parent.showAltText(eid);
-            }
-            
-            function hideAltText(i,eid) {
-                parent.hideAltText();
-            }
-        
             function toggleHighlightGenes(pathid, state) {
                 //alert("3");
                 //alert(state);
@@ -200,7 +194,7 @@ try {
                                     String pathid = search_results_ij.getPathID();
         %>
 
-                                    <rect id='<%=i + "_" + pathid%>' name='<%=i + "_" + pathid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21; z-index: 1" onclick='callDetailedInfoUpdater(<%=eid%>)' onmouseover="showAltText(<%=i%>,<%=eid%>)" onmouseout="hideAltText(<%=i%>,<%=eid%>)" />
+                                    <rect id='<%=i + "_" + pathid%>' name='<%=i + "_" + pathid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21; z-index: 1" onclick='callDetailedInfoUpdater(<%=eid%>, "<%=analysis_name%>")' />
                                     
         <%
                                 } else if (search_results_ij.type == CompactSearchResultContainer.TYPE_GO) {
@@ -209,7 +203,7 @@ try {
                                     String goid = search_results_ij.getGOID();
         %>
 
-                                    <rect id='<%=i + "_" + goid%>' name='<%=i + "_" + goid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21" onclick='callDetailedInfoUpdater(<%=eid%>)' onmouseover="showAltText(<%=i%>,<%=eid%>)" onmouseout="hideAltText(<%=i%>,<%=eid%>)" />
+                                    <rect id='<%=i + "_" + goid%>' name='<%=i + "_" + goid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21" onclick='callDetailedInfoUpdater(<%=eid%>, "<%=analysis_name%>")' />
                                     
         <%
                                 } else if (search_results_ij.type == CompactSearchResultContainer.TYPE_GENE) {
@@ -217,7 +211,7 @@ try {
                                     String eid = search_results_ij.getEntrezID();
         %>
 
-                                    <rect id='<%=i + "_" + eid%>' name='<%=i + "_" + eid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21" onclick='callDetailedInfoUpdater(<%=eid%>)' onmouseover="showAltText(<%=i%>,<%=eid%>)" onmouseout="hideAltText(<%=i%>,<%=eid%>)" />
+                                    <rect id='<%=i + "_" + eid%>' name='<%=i + "_" + eid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21" onclick='callDetailedInfoUpdater(<%=eid%>, "<%=analysis_name%>")' />
                                     
         <%                      }
                             }

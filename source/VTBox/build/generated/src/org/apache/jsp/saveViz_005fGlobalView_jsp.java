@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import utils.Utils;
 import graphics.HeatmapData;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
@@ -51,6 +52,7 @@ public final class saveViz_005fGlobalView_jsp extends org.apache.jasper.runtime.
       _jspx_out = out;
       _jspx_resourceInjector = (org.glassfish.jsp.api.ResourceInjector) application.getAttribute("com.sun.appserv.jsp.resource.injector");
 
+      out.write("\n");
       out.write("\n");
       out.write("\n");
       out.write("\n");
@@ -112,7 +114,7 @@ try {
         root_node_id = btree.root_node_id;
     }
 
-    double dendrogramWidth = 0;
+    double dendrogramWidth = 300;
     HashMap <Integer, TreeNode> treeMap = null;
     if (showDendrogram.equalsIgnoreCase("yes")) { 
         dendrogramWidth = 300;
@@ -400,6 +402,11 @@ try {
                             ArrayList <String> genesymbols = analysis.database.entrezGeneMap.get(entrez_i);
                             String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
                             double mid = search_result_header_height + feature_height*(i - start) + feature_height*0.60;
+                            
+                            if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+                                analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+                                    genes = Utils.checkAndRemoveHtml(genes);
+                            }
                     
       out.write("\n");
       out.write("\n");
@@ -409,9 +416,11 @@ try {
       out.print(left_offset);
       out.write("\" y=\"");
       out.print(mid);
-      out.write("\" font-family=\"Verdana\" font-size=\"12\" fill=\"black\" style=\"display: inline\" >");
+      out.write("\" font-family=\"Verdana\" font-size=\"12\" fill=\"black\" style=\"display: inline\">\n");
+      out.write("                                ");
       out.print(genes);
-      out.write("</text>\n");
+      out.write("\n");
+      out.write("                            </text>\n");
       out.write("\n");
       out.write("                    ");
 

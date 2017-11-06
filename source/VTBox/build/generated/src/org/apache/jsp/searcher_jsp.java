@@ -111,6 +111,12 @@ try {
       out.write("            }\n");
       out.write("\n");
       out.write("        \n");
+      out.write("        function keypressCallSearcher(){\n");
+      out.write("            if(window.event.keyCode == 13){\n");
+      out.write("                callSearcher();\n");
+      out.write("            }                \n");
+      out.write("        }\n");
+      out.write("        \n");
       out.write("        function callSearcher () {\n");
       out.write("            \n");
       out.write("            var search_string = document.getElementById('searchText').value;\n");
@@ -154,7 +160,7 @@ try {
       out.write("    <body style=\"overflow:hidden; margin-top: 2px;\">\n");
       out.write("        \n");
       out.write("        <table height=\"25px\" valign=\"middle\">\n");
-      out.write("             <form name=\"SearchForm\" action=\"\">\n");
+      out.write("             <!--<form name=\"SearchForm\" action=\"\"> -->\n");
       out.write("                <tr style=\"vertical-align: middle\">\n");
       out.write("                             \n");
       out.write("                    <td valign=\"middle\">\n");
@@ -194,7 +200,7 @@ try {
       out.write("                        </select>\n");
       out.write("                    </td>\n");
       out.write("                    <td valign=\"middle\" style=\"font-family:verdana; font-size:6;\">\n");
-      out.write("                        <input type=\"text\" id=\"searchText\" name=\"searchText\" size=\"30\">\n");
+      out.write("                        <input type=\"text\" id=\"searchText\" name=\"searchText\" size=\"30\" onkeypress=\"keypressCallSearcher()\" />\n");
       out.write("                    </td>\n");
       out.write("                    <td valign=\"middle\">\n");
       out.write("                        <!--<input type=\"button\" value=\"Search\" onclick=\"callSearcher()\">-->\n");
@@ -203,7 +209,7 @@ try {
       out.write("                    </td>\n");
       out.write("                \n");
       out.write("                </tr>\n");
-      out.write("            </form>\n");
+      out.write("            <!--</form>-->\n");
       out.write("            \n");
       out.write("        </table>\n");
       out.write("        \n");

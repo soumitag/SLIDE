@@ -133,7 +133,9 @@ try {
       out.write("        var selected_object_id = \"\";\n");
       out.write("                \n");
       out.write("        function callHighlightPathwayGenes(search_no, pathid){\n");
-      out.write("                        \n");
+      out.write("            \n");
+      out.write("            //alert(search_no);\n");
+      out.write("            //alert(pathid);\n");
       out.write("            if (pathid != selected_object_id) {\n");
       out.write("                // deHighlight selected_object_id\n");
       out.write("                if (selected_object_id != \"\") {\n");
@@ -419,22 +421,32 @@ try {
 
                 } else if (search_results_i.get(0).type == CompactSearchResultContainer.TYPE_GENE) {
 
-                    for (int j = 0; j < search_results_i.size(); j++) {
+                    HashMap <String, String> gene_entrez_map = new HashMap <String, String> ();
 
+                    for (int j = 0; j < search_results_i.size(); j++) {
                         CompactSearchResultContainer search_results_ij = search_results_i.get(j);
+                        gene_entrez_map.put(search_results_ij.getEntrezID(), search_results_ij.getGeneSymbol());
+                    }
+
+                    Iterator iter = gene_entrez_map.entrySet().iterator();
+                    while(iter.hasNext()){
+                        
+                        Map.Entry pair = (Map.Entry)iter.next();
                         if (search_strings.get(i).startsWith("entrez")) {
             
       out.write("\n");
       out.write("                            <div class='e' id='");
-      out.print(i + "_" + search_results_ij.entrez_id);
+      out.print(i + "_" + pair.getKey());
       out.write("' style='font-weight:normal' onclick='callFrmSearchKeyE(\"");
-      out.print(search_results_ij.entrez_id);
+      out.print(pair.getKey());
       out.write("\", \"");
       out.print(analysis_name);
-      out.write("\"); callHighlightPathwayGenes(\"");
-      out.print(i + "_" + search_results_ij.entrez_id);
+      out.write("\"); callHighlightPathwayGenes(");
+      out.print(i);
+      out.write(", \"");
+      out.print(i + "_" + pair.getKey());
       out.write("\")' > ");
-      out.print(search_results_ij.entrez_id);
+      out.print(pair.getKey());
       out.write(" </div>\n");
       out.write("            ");
                     
@@ -442,15 +454,17 @@ try {
             
       out.write("\n");
       out.write("                            <div class='e' id='");
-      out.print(i + "_" + search_results_ij.entrez_id);
+      out.print(i + "_" + pair.getKey());
       out.write("' style='font-weight:normal' onclick='callFrmSearchKeyE(\"");
-      out.print(search_results_ij.entrez_id);
+      out.print(pair.getKey());
       out.write("\", \"");
       out.print(analysis_name);
-      out.write("\"); callHighlightPathwayGenes(\"");
-      out.print(i + "_" + search_results_ij.entrez_id);
+      out.write("\"); callHighlightPathwayGenes(");
+      out.print(i);
+      out.write(", \"");
+      out.print(i + "_" + pair.getKey());
       out.write("\")' > ");
-      out.print(search_results_ij.getGeneSymbol());
+      out.print(pair.getValue() );
       out.write(" </div>\n");
       out.write("            ");
 

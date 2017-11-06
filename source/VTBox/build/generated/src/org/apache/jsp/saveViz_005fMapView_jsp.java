@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import utils.Utils;
 import graphics.HeatmapData;
 import vtbox.SessionUtils;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public final class saveViz_005fMapView_jsp extends org.apache.jasper.runtime.Htt
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
 
 
 try {
@@ -105,15 +107,28 @@ try {
         search_result_width = 0.0;
     }
     
+    String feature_width = request.getParameter("feature_width").trim();
     double feature_label_width = 200.0;
-    if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
-        feature_label_width = 200.0;
-    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
-        feature_label_width = 350.0;
+    try {
+        feature_label_width = Double.parseDouble(feature_width);
+    } catch (NumberFormatException e) {
+        if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
+            feature_label_width = 200.0;
+        } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+            feature_label_width = 350.0;
+        }
+    }
+    
+    String sample_height = request.getParameter("sample_height").trim();
+    double sample_name_height = 95.0;
+    try {
+        sample_name_height = Double.parseDouble(sample_height);
+    } catch (NumberFormatException e) {
+        sample_name_height = 95.0;
     }
     
     int histHeight = 200;
-    double svg_height = TABLE_HEIGHT + 120.0 + histHeight + 100.0; // 120 is the gap between heatmap and histogram; 100 is for the histogram x-axis labels
+    double svg_height = sample_name_height + TABLE_HEIGHT + 30.0 + histHeight + 100.0; // 30 is the gap between heatmap and histogram; 100 is for the histogram x-axis labels
     double svg_width = TABLE_WIDTH + search_result_width + 10 + feature_label_width;
     
     HashMap <String, ArrayList <Integer>> entrezPosMap = analysis.entrezPosMap;
@@ -161,7 +176,7 @@ try {
       out.write("        \n");
       out.write("        <g id=\"heatmap_header\">\n");
       out.write("            ");
- double hy = 95; 
+ double hy = sample_name_height; 
       out.write("\n");
       out.write("            ");
  for(int i = 0; i < headers.length; i++) { 
@@ -222,7 +237,7 @@ try {
                     String td_id = "td_" + i + "_" + j;
 
                     x = i * CELL_WIDTH;
-                    y = j * CELL_HEIGHT + 90;
+                    y = j * CELL_HEIGHT + ((int)sample_name_height - 5);
                 
       out.write("\n");
       out.write("                <rect x='");
@@ -270,7 +285,9 @@ try {
       out.write("            \n");
       out.write("                <rect x=\"");
       out.print(left);
-      out.write("\" y=\"90\" height=\"");
+      out.write("\" y=\"");
+      out.print((sample_name_height - 5.0));
+      out.write("\" height=\"");
       out.print(TABLE_HEIGHT);
       out.write("px\" width=\"");
       out.print(column_width);
@@ -297,7 +314,7 @@ try {
                             
                             if (positions.get(k) >= start && positions.get(k) <= end) {
                                 
-                                double top = 90 + feature_height*(positions.get(k) - start);
+                                double top = (sample_name_height - 5.0) + feature_height*(positions.get(k) - start);
                                 double feature_display_height = feature_height;
                                 if (feature_height < 2.0) {
                                     feature_display_height = 2.0;
@@ -341,7 +358,12 @@ try {
                     String entrez_i = database.features.get(index).entrezId;
                     ArrayList <String> genesymbols = database.entrezGeneMap.get(entrez_i);
                     String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
-                    double mid = (feature_height*(i - start) + feature_height/2.0) + 95;
+                    double mid = (feature_height*(i - start) + feature_height/2.0) + sample_name_height;
+                    
+                    if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+                        analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+                        genes = Utils.checkAndRemoveHtml(genes);
+                    }
             
       out.write("\n");
       out.write("                \n");
@@ -351,15 +373,11 @@ try {
       out.print(TABLE_WIDTH+search_result_width+10);
       out.write("\" y=\"");
       out.print(mid);
-      out.write("\" font-family=\"Verdana\" font-size=\"12\" fill=\"black\" style=\"display: inline; \" onclick=\"toggleSelection('");
-      out.print(index);
-      out.write("', '");
+      out.write("\" font-family=\"Verdana\" font-size=\"12\" fill=\"black\" style=\"display: inline;\">\n");
+      out.write("                        ");
       out.print(genes);
-      out.write("', 'label_");
-      out.print(i);
-      out.write("')\">");
-      out.print(genes);
-      out.write("</text>\n");
+      out.write("\n");
+      out.write("                    </text>\n");
       out.write("    \n");
       out.write("            ");
  } 
@@ -375,7 +393,7 @@ try {
       out.write("\n");
       out.write("        \n");
       out.write("            ");
-      org.apache.jasper.runtime.JspRuntimeLibrary.include(request, response, "/WEB-INF/jspf/histogram_fragment.jspf" + "?" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode("analysis_name", request.getCharacterEncoding())+ "=" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf(analysis_name), request.getCharacterEncoding()) + "&" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode("y_offset", request.getCharacterEncoding())+ "=" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf((TABLE_HEIGHT + 120.0)), request.getCharacterEncoding()), out, true);
+      org.apache.jasper.runtime.JspRuntimeLibrary.include(request, response, "/WEB-INF/jspf/histogram_fragment.jspf" + "?" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode("analysis_name", request.getCharacterEncoding())+ "=" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf(analysis_name), request.getCharacterEncoding()) + "&" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode("y_offset", request.getCharacterEncoding())+ "=" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf((sample_name_height + TABLE_HEIGHT + 30.0)), request.getCharacterEncoding()), out, true);
       out.write("\n");
       out.write("        \n");
       out.write("        ");

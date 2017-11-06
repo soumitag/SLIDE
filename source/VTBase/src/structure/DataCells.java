@@ -17,8 +17,8 @@ public class DataCells implements Serializable {
     private static final long serialVersionUID = 1L;
     
     public float[][] dataval;
-    public float[][] visualization_normval;
-    public float[][] clustering_normval;
+    //public float[][] visualization_normval;
+    //public float[][] clustering_normval;
     public byte bin[][];
     
     public int height;
@@ -28,14 +28,15 @@ public class DataCells implements Serializable {
     
     public DataCells (int nRows, int nCols) {
         dataval = new float[nRows][nCols];
-        visualization_normval = new float[nRows][nCols];
-        clustering_normval = new float[nRows][nCols];
+        //visualization_normval = new float[nRows][nCols];
+        //clustering_normval = new float[nRows][nCols];
         bin = new byte[nRows][nCols];
         
         this.height = nRows;
         this.width = nCols;
     }
     
+    /*
     public void setNormalizedVal(float normval, String type, int i, int j) {
         if (type.equalsIgnoreCase("heatmap")) {
             this.visualization_normval[i][j] = normval;
@@ -43,6 +44,7 @@ public class DataCells implements Serializable {
             this.clustering_normval[i][j] = normval;
         }
     }
+    */
     
     public float[] getRow(int rownum) {
         return dataval[rownum];
@@ -50,7 +52,7 @@ public class DataCells implements Serializable {
     
     public float[] getCol(int colnum) {
         
-        float[] cellcoldata = new float[dataval[colnum].length];
+        float[] cellcoldata = new float[dataval.length];
         for(int i = 0; i < dataval.length; i++) {
             cellcoldata[i] = dataval[i][colnum];             
         }
@@ -78,8 +80,8 @@ public class DataCells implements Serializable {
         int count = 0;
         for (int i=0; i<filtered_row_indices.size(); i++) {
             cloneDC.dataval[count] = this.dataval[filtered_row_indices.get(i)];
-            cloneDC.visualization_normval[count] = this.visualization_normval[filtered_row_indices.get(i)];
-            cloneDC.clustering_normval[count] = this.clustering_normval[filtered_row_indices.get(i)];
+            //cloneDC.visualization_normval[count] = this.visualization_normval[filtered_row_indices.get(i)];
+            //cloneDC.clustering_normval[count] = this.clustering_normval[filtered_row_indices.get(i)];
             cloneDC.bin[count] = this.bin[filtered_row_indices.get(i)];
             count++;
         }

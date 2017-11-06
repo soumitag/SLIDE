@@ -5,6 +5,7 @@
  */
 package vtbox.servlets;
 
+import data.transforms.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.IOException;
@@ -82,6 +83,8 @@ public class AnalysisInitializer extends HttpServlet {
             } else {
                 hasHeader = true;
             }
+            
+            int impute_type = Integer.parseInt(request.getParameter("imputeval"));
             String delimval = request.getParameter("delimval");
 
             String delimiter = null;
@@ -102,8 +105,31 @@ public class AnalysisInitializer extends HttpServlet {
             String metacols = request.getParameter("txtNumMetaCols");
             ArrayList <Integer> metaColIds = Utils.getColIdFrmString(metacols);
 
-            int genesymbolcol = Integer.parseInt(request.getParameter("txtGeneSymbolCol")) - 1;
-            int entrezcol = Integer.parseInt(request.getParameter("txtEntrezCol")) - 1;
+            int genesymbolcol = -1;
+            String txtGeneSymbolCol = request.getParameter("txtGeneSymbolCol");
+            if (txtGeneSymbolCol != null && !txtGeneSymbolCol.equals("")) {
+                try {
+                    genesymbolcol = Integer.parseInt(txtGeneSymbolCol) - 1;
+                    if (genesymbolcol < 0) {
+                        genesymbolcol = -1;
+                    }
+                } catch (Exception e) {
+                    genesymbolcol = -1;
+                }
+            }
+            
+            int entrezcol = -1;
+            String txtEntrezCol = request.getParameter("txtEntrezCol");
+            if (txtEntrezCol != null && !txtEntrezCol.equals("")) {
+                try {
+                    entrezcol = Integer.parseInt(txtEntrezCol) - 1;
+                    if (entrezcol < 0) {
+                        entrezcol = -1;
+                    }
+                } catch (Exception e) {
+                    entrezcol = -1;
+                }
+            }
             
             // the height in data_height_width includes header rows if any
             int[] data_height_width = Utils.getFileDimensions(filename, delimiter);
@@ -143,13 +169,14 @@ public class AnalysisInitializer extends HttpServlet {
                 end_row = end_row - 1;
             }
 
-            int heatmap_normalization = Data.HEATMAP_ROW_NORMALIZATION_NONE;
-            int clustering_normalization = Data.NORMALIZATION_NONE;
+            int column_normalization = Normalizer.COL_NORMALIZATION_NONE;
+            int row_normalization = Normalizer.ROW_NORMALIZATION_NONE;
             int replicate_handling = Data.REPLICATE_HANDLING_NONE;
 
             Data database = null;
             try {
                 database = new Data (filename, 
+                                    impute_type,
                                     delimiter, 
                                     hasHeader, 
                                     sample_series_mapping_filename,
@@ -162,8 +189,8 @@ public class AnalysisInitializer extends HttpServlet {
                                     species,
                                     isTimeSeries,
                                     logTransformData,
-                                    heatmap_normalization,
-                                    clustering_normalization,
+                                    column_normalization,
+                                    row_normalization,
                                     replicate_handling,
                                     5
                 );

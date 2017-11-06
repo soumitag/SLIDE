@@ -14,6 +14,7 @@ import utils.MongoDBConnect;
 import algorithms.clustering.BinaryTree;
 import algorithms.clustering.TreeNode;
 import algorithms.enrichment.EnrichmentAnalysis;
+import data.transforms.Imputer;
 import graphics.Heatmap;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -48,17 +49,20 @@ public class VTBase {
         //System.out.println("P: " + Math.log10(p_value));
         //float p = (float) -Math.log10(p_value);
         
-        /*
         Data data = new Data();
-        float[][] raw_data = loadData("C:\\20_May_2017\\Visualization_toolbox\\Visualization_Toolbox_0.0.3\\FlatFilesProcessing_0.0.3\\data\\final_lethal_infection_part_3.txt", 
-                1, 11, new int[]{11,13}, "\t", true, 0, 2, 5);
-        data.raw_data = raw_data;
-        data.knnImpute(impute_indicator, 5, 0.5);
-        */
+        try {
+            float[][] raw_data = loadData("E:/23_Oct_2017/data/GSE42638_Impute_Test.txt", 1, 50, new int[]{51,136}, "\t", true, 0, 1, 4);
+        } catch (DataParsingException e) {
+            System.out.println(e);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        boolean done = true;
         
+        
+        /*
         HashMap <String, ArrayList <Integer>> selected_filter_list_maps = new HashMap <String, ArrayList <Integer>> ();
         
-        /*
         for (int i=0; i<5; i++) {
             ArrayList <Integer> list_i = new ArrayList <Integer> ();
             for (int j=i*100; j<(i*100)+100; j++) {
@@ -68,6 +72,7 @@ public class VTBase {
         }
         */
         
+        /*
         ArrayList <Integer> row_numbers_a8 = new ArrayList <Integer> ();
         BufferedReader br = null;
         String line = null;
@@ -114,6 +119,7 @@ public class VTBase {
         ea.run();
         
         System.out.println("Done.");
+        */
         
         /*
         String[] geneNames = {"ABCA5","ADAMTS9","APOL6","BCL2L14","BLZF1","BST2","CXCL10"};
@@ -212,7 +218,7 @@ public class VTBase {
         
     }
     
-    public static float[][] loadData(String filename, 
+    public static float[][] loadData (String filename, 
                         int start_row,
                         int end_row,
                         int[] data_height_width,    // the height in data_height_width includes header rows if any
@@ -220,17 +226,25 @@ public class VTBase {
                         boolean hasHeader, 
                         int genesymbolcol,
                         int entrezcol,
-                        int imputeK) {
+                        int impute_type
+    ) throws DataParsingException {
         
+        /*
         ArrayList <Integer> columns = new ArrayList <Integer> ();
-        for (int i=3; i<13; i++) {
-            columns.add(i);
+        for (int i=0; i<samples.size(); i++) {
+            columns.addAll(samples.get(i).file_column_numbers);
         }
+        */
+        
+        int nCols = data_height_width[1] - 3;
         
         int row_count = end_row - start_row + 1;
-        float[][] raw_data = new float[row_count][columns.size()];
+        float[][] raw_data = new float[row_count][nCols];
+        String[][] genesymbol_entrez_ids = new String[row_count][2];
         
-        impute_indicator = new ArrayList <ArrayList <Integer>> ();
+        //ArrayList <ArrayList <Integer>> impute_indicator = new ArrayList <ArrayList <Integer>> ();
+        
+        Imputer imputer = new Imputer(raw_data.length, raw_data[0].length);
         
         BufferedReader br = null;
         String line;
@@ -248,18 +262,35 @@ public class VTBase {
                 if (count >= start_row) {
                     lineData = line.split(delimiter);
                     
-                    ArrayList <Integer> impute_cols = new ArrayList <Integer> (0);
+                    //ArrayList <Integer> impute_cols = new ArrayList <Integer> (0);
                     
-                    for(int j = 0; j < columns.size(); j++) {
+                    for(int j = 0; j < nCols; j++) {
                         try {
-                            raw_data[i][j] = Float.parseFloat(lineData[columns.get(j)]);
+                            raw_data[i][j] = Float.parseFloat(lineData[j+3].trim().toLowerCase());
                         } catch (NumberFormatException e) {
-                            raw_data[i][j] = Float.NEGATIVE_INFINITY;
-                            impute_cols.add(j);
+                            if (impute_type == data.transforms.Imputer.IMPUTE_NONE) {
+                                throw new DataParsingException(
+                                    "Error while reading data file. Non-numeric value found at non-metadata column " + (j+1) + ", row" + (i+1)
+                                );
+                            } else {
+                                raw_data[i][j] = Float.NEGATIVE_INFINITY;
+                                imputer.markCell(i, j);
+                            }
                         }
                     }
                     
-                    impute_indicator.add(impute_cols);
+                    //impute_indicator.add(impute_cols);
+                    if (genesymbolcol > -1) {
+                        genesymbol_entrez_ids[i][0] = lineData[genesymbolcol];
+                    } else {
+                        genesymbol_entrez_ids[i][0] = "";
+                    }
+                    
+                    if (entrezcol > -1) {
+                        genesymbol_entrez_ids[i][1] = lineData[entrezcol];
+                    } else {
+                        genesymbol_entrez_ids[i][1] = "";
+                    }
                     
                     i++;
                 }
@@ -271,12 +302,25 @@ public class VTBase {
                 count++;
             }
             
+            if (impute_type != Imputer.IMPUTE_NONE) {
+                raw_data = imputer.impute(raw_data, impute_type);
+            }
+            
+            //knnImpute(impute_indicator, imputeK, 0.5);
+            
             return raw_data;
             
+        } catch (DataParsingException e) {
+            
+            throw e;
+            
         } catch (Exception e) {
+            
             System.out.println("Error reading input data:");
             System.out.println(e);
-            return null;
+            throw new DataParsingException("Error while reading data file.");
+            
         }
+        
     }
 }

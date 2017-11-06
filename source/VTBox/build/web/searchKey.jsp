@@ -84,7 +84,9 @@ try {
         var selected_object_id = "";
                 
         function callHighlightPathwayGenes(search_no, pathid){
-                        
+            
+            //alert(search_no);
+            //alert(pathid);
             if (pathid != selected_object_id) {
                 // deHighlight selected_object_id
                 if (selected_object_id != "") {
@@ -287,16 +289,24 @@ try {
 
                 } else if (search_results_i.get(0).type == CompactSearchResultContainer.TYPE_GENE) {
 
-                    for (int j = 0; j < search_results_i.size(); j++) {
+                    HashMap <String, String> gene_entrez_map = new HashMap <String, String> ();
 
+                    for (int j = 0; j < search_results_i.size(); j++) {
                         CompactSearchResultContainer search_results_ij = search_results_i.get(j);
+                        gene_entrez_map.put(search_results_ij.getEntrezID(), search_results_ij.getGeneSymbol());
+                    }
+
+                    Iterator iter = gene_entrez_map.entrySet().iterator();
+                    while(iter.hasNext()){
+                        
+                        Map.Entry pair = (Map.Entry)iter.next();
                         if (search_strings.get(i).startsWith("entrez")) {
             %>
-                            <div class='e' id='<%=i + "_" + search_results_ij.entrez_id%>' style='font-weight:normal' onclick='callFrmSearchKeyE("<%=search_results_ij.entrez_id%>", "<%=analysis_name%>"); callHighlightPathwayGenes("<%=i + "_" + search_results_ij.entrez_id%>")' > <%=search_results_ij.entrez_id%> </div>
+                            <div class='e' id='<%=i + "_" + pair.getKey()%>' style='font-weight:normal' onclick='callFrmSearchKeyE("<%=pair.getKey()%>", "<%=analysis_name%>"); callHighlightPathwayGenes(<%=i%>, "<%=i + "_" + pair.getKey()%>")' > <%=pair.getKey()%> </div>
             <%                    
                         } else if (search_strings.get(i).startsWith("genesymbol")) {
             %>
-                            <div class='e' id='<%=i + "_" + search_results_ij.entrez_id%>' style='font-weight:normal' onclick='callFrmSearchKeyE("<%=search_results_ij.entrez_id%>", "<%=analysis_name%>"); callHighlightPathwayGenes("<%=i + "_" + search_results_ij.entrez_id%>")' > <%=search_results_ij.getGeneSymbol()%> </div>
+                            <div class='e' id='<%=i + "_" + pair.getKey()%>' style='font-weight:normal' onclick='callFrmSearchKeyE("<%=pair.getKey()%>", "<%=analysis_name%>"); callHighlightPathwayGenes(<%=i%>, "<%=i + "_" + pair.getKey()%>")' > <%=pair.getValue() %> </div>
             <%
                         }
                     }

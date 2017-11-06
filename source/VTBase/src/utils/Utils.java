@@ -20,6 +20,9 @@ import java.io.PrintWriter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.util.regex.Matcher;
+
+import java.util.regex.Pattern;
 
 public class Utils { 
 
@@ -679,7 +682,7 @@ public class Utils {
     
     public static String[][] loadDelimData (String inFile, String delim, boolean hasHeader) {
              
-        BufferedReader br = null;
+        BufferedReader br1, br2 = null;
         String line;
         
         String[][] data;
@@ -687,12 +690,13 @@ public class Utils {
         try {
 
             int count = 1;
-            br = new BufferedReader(new FileReader(inFile));
-            line = br.readLine();
+            br1 = new BufferedReader(new FileReader(inFile));
+            line = br1.readLine();
             String[] lineData = line.split(delim);
-            while ((line = br.readLine()) != null) {
+            while ((line = br1.readLine()) != null) {
                 count++;
             }
+            br1.close();
             
             if (hasHeader) {
                 data = new String[count-1][lineData.length];
@@ -701,9 +705,9 @@ public class Utils {
             }
             
             count = 0;
-            br = new BufferedReader(new FileReader(inFile));
+            br2 = new BufferedReader(new FileReader(inFile));
             boolean isFirst = true;
-            while ((line = br.readLine()) != null) {
+            while ((line = br2.readLine()) != null) {
 
                 if (isFirst & hasHeader) {
                     isFirst = false;
@@ -712,7 +716,7 @@ public class Utils {
                     data[count++] = lineData;
                 }
             }
-            br.close();
+            br2.close();
             
             return data;
             
@@ -974,6 +978,56 @@ public class Utils {
             return metaColId;
 
         }
+    
+	// adapted from post by Phil Haack and modified to match better
+	/*public final static String tagStart=
+		"\\<\\w+((\\s+\\w+(\\s*\\=\\s*(?:\".*?\"|'.*?'|[^'\"\\>\\s]+))?)+\\s*|\\s*)\\>";
+	public final static String tagEnd=
+		"\\</\\w+\\>";
+	public final static String tagSelfClosing=
+		"\\<\\w+((\\s+\\w+(\\s*\\=\\s*(?:\".*?\"|'.*?'|[^'\"\\>\\s]+))?)+\\s*|\\s*)/\\>";
+	public final static String htmlEntity=
+		"&[a-zA-Z][a-zA-Z0-9]+;";
+    
+        */
+    
+        public final static String tagHTML = "\\<.*?\\>";
+        public final static String endtagHTML = "\\</\\w+\\>";
+        public final static String starttagHTML = "\\<";
+        
+	/**
+	 * Will return true if s contains HTML markup tags or entities.
+	 *
+	 * @param s String to test
+	 * @return true if string contains HTML
+	 */
+	public static String checkAndRemoveHtml(String s) {
+            
+            //Pattern p = Pattern.compile("("+tagStart+".*"+tagEnd+")|("+tagSelfClosing+")|("+htmlEntity+")", Pattern.DOTALL);
+            
+            
+            
+            //String output = s.replaceAll("\\<.*?\\>", "");
+            Pattern p = Pattern.compile("(<([a-zA-Z]+)\\b[^>]*>)|(</([a-zA-Z]+) *>)");
+            String output = p.matcher(s).replaceAll("");
+                      
+            
+            /*Matcher m = p.matcher(s);
+            
+            StringBuffer sb = new StringBuffer();
+            while (m.find()) {
+                m.appendReplacement(sb, "");
+            }
+            m.appendTail(sb);
+            
+            return sb.toString(); */
+            return output;
+            
+	}
+        
+        
+
+
 }
 
 

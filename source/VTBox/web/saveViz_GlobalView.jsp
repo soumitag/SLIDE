@@ -3,6 +3,7 @@
     Created on : Aug 30, 2017, 9:50:30 AM
     Author     : abhik
 --%>
+<%@page import="utils.Utils"%>
 <%@page import="graphics.HeatmapData"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.AnalysisContainer"%>
@@ -63,7 +64,7 @@ try {
         root_node_id = btree.root_node_id;
     }
 
-    double dendrogramWidth = 0;
+    double dendrogramWidth = 300;
     HashMap <Integer, TreeNode> treeMap = null;
     if (showDendrogram.equalsIgnoreCase("yes")) { 
         dendrogramWidth = 300;
@@ -223,9 +224,16 @@ try {
                             ArrayList <String> genesymbols = analysis.database.entrezGeneMap.get(entrez_i);
                             String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
                             double mid = search_result_header_height + feature_height*(i - start) + feature_height*0.60;
+                            
+                            if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+                                analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+                                    genes = Utils.checkAndRemoveHtml(genes);
+                            }
                     %>
 
-                            <text id="label_<%=i%>" x="<%=left_offset%>" y="<%=mid%>" font-family="Verdana" font-size="12" fill="black" style="display: inline" ><%=genes%></text>
+                            <text id="label_<%=i%>" x="<%=left_offset%>" y="<%=mid%>" font-family="Verdana" font-size="12" fill="black" style="display: inline">
+                                <%=genes%>
+                            </text>
 
                     <%
                         }

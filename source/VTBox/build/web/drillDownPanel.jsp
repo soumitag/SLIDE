@@ -157,16 +157,6 @@ try {
                 parent.showDetailedInfo(eid, analysis_name);
             }
             
-            function showAltText(eid) {
-                var td = document.getElementById('entrez_td');
-                td.innerHTML = eid;
-            }
-            
-            function hideAltText() {
-                var td = document.getElementById('entrez_td');
-                td.innerHTML = '';
-            }
-            
             function showColHeader(colname) {
                 var td = document.getElementById('column_header_td');
                 td.innerHTML = colname;
@@ -259,10 +249,14 @@ try {
                 }
             }
             
+            function askParentToShowMe() {
+                parent.showGlobal();
+            }
+            
         </script>
         
     </head>
-    <body>
+    <body onload="askParentToShowMe()">
         <div class="loader"></div>
         <table border="0">
             
@@ -351,7 +345,7 @@ try {
                     <iframe id="detailHeatMapPanel" src="detailedHeatMap.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=global_map" width="280" height="760" frameBorder="0"></iframe>
                 </td>
                 <td colspan="2">
-                    <iframe id="detailSearchPanel" src="detailedSearchResultDisplayer.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>" width="<%=detailedSearchPanel_width%>" height="760" frameBorder="0"></iframe>
+                    <iframe id="detailSearchPanel" src="detailedSearchResultDisplayer.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=global_map" width="<%=detailedSearchPanel_width%>" height="760" frameBorder="0"></iframe>
                 </td>
             </tr>
             

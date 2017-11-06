@@ -12,6 +12,12 @@
 
 <%
 try {
+    
+    String analysis_name = request.getParameter("analysis_name");
+    AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
+    Data database = analysis.database;
+    String data_min = String.format("%.3f", database.DATA_MIN_MAX[0]);
+    String data_max = String.format("%.3f", database.DATA_MIN_MAX[1]);
 %>
 
 <html>
@@ -45,15 +51,23 @@ try {
                 document.getElementById("txtRangeStart").disabled = true;
                 document.getElementById("txtRangeEnd").disabled = true;
             }
+            
+            function checkDataMin() {
+                var curr = document.getElementById("log2flag").checked;
+                if (curr) {
+                    var data_min = <%=database.RAW_DATA_MIN%>;
+                    if (data_min < 0.0) {
+                        alert("Data has negative values. Log base 2 transformation cannot be applied.");
+                        document.getElementById("log2flag").checked = false;
+                    } else if (data_min === 0.0) {
+                        alert("Data has zero values. A small positive offset (2 raised to the power -149) will be added to all cells. If you do not wish to do this, uncheck the log base 2 transformation option.");
+                    }
+                }
+            }
+            
         </script>
     </head>
-    <%
-        String analysis_name = request.getParameter("analysis_name");
-        AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
-        Data database = analysis.database;
-        String data_min = String.format("%.3f", database.DATA_MIN_MAX[0]);
-        String data_max = String.format("%.3f", database.DATA_MIN_MAX[1]);
-    %>
+    
     <body>
         <form name="SelectionForm" method="get" action="AnalysisReInitializer" target="visualizationPanel"> 
             <input type="hidden" name="analysis_name" value="<%=analysis_name%>" />
@@ -98,11 +112,27 @@ try {
             
             <tr>
                 <td colspan="4" style="padding: 10px;">
-                    <% if (database.isDataLogTransformed) { %>
-                        <input type="checkbox" id="log2flag" name="log2flag" checked="checked"> Perform log base 2 transformation</input>
-                    <% } else { %>
-                        <input type="checkbox" id="log2flag" name="log2flag"> Perform log base 2 transformation</input>
-                    <% } %>
+                    <input type="checkbox" id="log2flag" name="log2flag" onclick="checkDataMin()"> Perform log base 2 transformation</input>
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="4" style="padding: 10px;"> 
+                    <b><label>Column Scaling: </label></b><br>
+                    <input type="radio" name="normRule_Col" value="0" checked="checked"> None <br>
+                    <input type="radio" name="normRule_Col" value="1"> Scale Columns to 0-1 <br>
+                    <input type="radio" name="normRule_Col" value="2"> Make Columns Standard Normal <br>
+                    <input type="radio" name="normRule_Col" value="3"> Pareto Scaling  <br>
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="4" style="padding: 10px;"> 
+                    <b><label>Row Scaling: </label></b><br>
+                    <input type="radio" name="normRule_Row" value="0" checked="checked"> None <br>
+                    <input type="radio" name="normRule_Row" value="1"> Scale Rows to 0-1 <br>
+                    <input type="radio" name="normRule_Row" value="2"> Mean Center Rows <br>
+                    <input type="radio" name="normRule_Row" value="3"> Make Rows Standard Normal <br>
                 </td>
             </tr>
             
@@ -154,29 +184,16 @@ try {
                 </td>
             </tr>
             
-            <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
-            
-            <tr>
-                <td colspan="4" style="padding: 10px;"> 
-                    <b><label>Data Scaling for Clustering: </label></b><br>
-                    <input type="radio" name="normRules_Clustering" value="0" checked="checked"> None <br>
-                    <input type="radio" name="normRules_Clustering" value="1"> Normalize Rows <br>
-                    <input type="radio" name="normRules_Clustering" value="2"> Normalize Columns <br>
-                </td>
-            </tr>
-            
-            <%  }   %>
-            
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label>Linkage Function: </label></b><br>
-                    <input type="radio" name="linkFunc" value="single" checked="checked"> Single<br>
+                    <!--<input type="radio" name="linkFunc" value="single" checked="checked"> Single<br>-->
+                    <input type="radio" name="linkFunc" value="average" checked="checked"> Average<br>
                     <input type="radio" name="linkFunc" value="complete"> Complete<br>
-                    <input type="radio" name="linkFunc" value="average"> Average<br>
                     <input type="radio" name="linkFunc" value="median"> Median<br>
                     <input type="radio" name="linkFunc" value="centroid"> Centroid<br>
                     <input type="radio" name="linkFunc" value="ward"> Ward<br>
-                    <input type="radio" name="linkFunc" value="weighted"> Weighted<br>                
+                    <input type="radio" name="linkFunc" value="weighted"> Weighted<br>
                 </td>
             </tr>
             
@@ -193,17 +210,19 @@ try {
             
             <tr> <td colspan='4' align=center height="20"> <b>Visualization Controls</b> </td></tr>
             
-            <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
+            <% // if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
+            <!--
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label>Data Scaling for Visualization: </label></b><br>
                     <input type="radio" name="normRules_Heatmap" value="0" checked="checked"> None <br>
-                    <input type="radio" name="normRules_Heatmap" value="1"> Scale Rows to 0-1 Range <br>
                     <input type="radio" name="normRules_Heatmap" value="2"> Mean Center Rows <br>
-                    <input type="radio" name="normRules_Heatmap" value="3"> Standardize Rows (Standard Normal) <br>
+                    <input type="radio" name="normRules_Heatmap" value="3"> Make Rows Standard Normal <br>
+                    <input type="radio" name="normRules_Heatmap" value="1"> Scale Rows to 0-1 Range <br>
                 </td>
             </tr>
-            <%  }   %>
+            -->
+            <% // }   %>
             
             <tr>
                 <td colspan="4" style="padding: 10px;"> 

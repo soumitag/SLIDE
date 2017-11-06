@@ -135,7 +135,7 @@ try {
 
             
             
-    <form name="fileInputForm" method ="get" action="">
+            <form name="fileInputForm" method ="get" action="">
             
             <input type="hidden" name="fileinputname" id="fileinputname" />
             <input type="hidden" name="newexperimentname" id="newexperimentname" value="<%=analysis_name%>" />
@@ -162,6 +162,7 @@ try {
                 </td>
             </tr>
             -->
+            <!--
             <tr>
                 <td>
             	&nbsp;
@@ -171,7 +172,7 @@ try {
                     <input type="checkbox" id="log2flag" name="log2flag"> Perform log base 2 transformation of the data</input>
                 </td>
             </tr>
-            
+            -->
             <tr>
                 <td>
                     <b><label>How Many Rows Should be Read from the File?</label></b>
@@ -184,6 +185,21 @@ try {
                     &nbsp; To &nbsp; <input type="text" id="txtToRow" name="txtToRow" size="5" />
                     &nbsp; (count 2nd Row as 1 if data has header)
                 </td>
+            </tr>
+             <tr>
+                <td> 
+                    <b><label>Data Imputation</label></b>                    
+                </td>
+                <td colspan="1">
+                    <select id="imputeD" name="imputeD" onchange="getimputevalue();">
+                        <option id="imputeHyphen" value="-1" selected>-</option>
+                        <option id="imputeNone" value="0">None</option>
+                        <option id="imputeRowMean" value="1" >Impute with row mean</option>
+                        <option id="imputeColMean" value="2" >Impute with column mean</option>
+                        <option id="imputeRowMedian" value="3" >Impute with row median</option>
+                        <option id="imputeColMedian" value="4">Impute with column median</option>
+                    </select>                  
+                <input type="hidden" name="imputeval" id="imputeval" />
             </tr>
             
             <tr>
@@ -226,10 +242,10 @@ try {
             
             <tr>
             	<td>
-                    <b><label>Enter the Meta-data Column Numbers</label></b>
+                    <b><label>Enter the Non-numeric Features Column Numbers</label></b>
             	</td>
                 <td colspan="1">
-                    <input type="text" name="txtNumMetaCols" id="txtNumMetaCols" value="0" onchange="chknumrange(this);" />
+                    <input type="text" name="txtNumMetaCols" id="txtNumMetaCols" value="" onchange="chknumrange(this);" />
                     &nbsp; &nbsp; 
                     (Specify range as 1-4 or specific columns as 1,3,4)
                 </td>
@@ -240,7 +256,7 @@ try {
                     <b><label>Enter the Gene Symbol Column Numbers (if any)</label></b>
             	</td>
                 <td colspan="1">
-                    <input type="text" name="txtGeneSymbolCol" id="txtGeneSymbolCol" value="0" onchange="chkisnumber(this);" />
+                    <input type="text" name="txtGeneSymbolCol" id="txtGeneSymbolCol" value="" onchange="chkisEmptyOrNumber(this);" />
                     &nbsp; &nbsp; 
                     (The gene symbol column should be one of the meta-data columns specified above)
                 </td>
@@ -252,7 +268,7 @@ try {
                     <b><label>Enter the Entrez ID Column Numbers (if any)</label></b>
             	</td>
                 <td colspan="1">
-                    <input type="text" name="txtEntrezCol" id="txtEntrezCol" value="0" onchange="chkisnumber(this);" />
+                    <input type="text" name="txtEntrezCol" id="txtEntrezCol" value="" onchange="chkisEmptyOrNumber(this);" />
                     &nbsp; &nbsp; 
                     (The entrez id column should be one of the meta-data columns specified above)
                 </td>
@@ -279,7 +295,7 @@ try {
                 
             <tr>
                 <td colspan="2" style="text-align: center">
-                    <button class="dropbtn" id="EnterNewExperiment" title="Enter New Experiment" onclick="submitform(this.form);">Create</button>                    
+                    <button type="button" class="dropbtn" id="EnterNewExperiment" title="Enter New Experiment" onclick="createNewExp()">Create</button>                    
                 </td>
             </tr>
             

@@ -280,10 +280,10 @@ try {
       out.write("<body>\n");
       out.write("    \n");
       out.write("    <form name=\"createEnrichmentForm\" id=\"createEnrichmentForm\" method=\"get\" action=\"createEnrichmentAnalysis.jsp\">\n");
-      out.write("    <table cellpadding=\"5\" style=\"width: 100%;\" border=\"0\">\n");
+      out.write("    <table cellpadding=\"5\" style=\"width: 100%;height:500px\" border=\"0\">\n");
       out.write("\n");
       out.write("        <tr>\n");
-      out.write("            <td height=\"75\" align=\"center\" colspan=\"2\">\n");
+      out.write("            <td height=\"70\" align=\"center\" colspan=\"2\">\n");
       out.write("                <b><label>Create Enrichment Analysis</label></b>\n");
       out.write("            </td>\n");
       out.write("        </tr>\n");
@@ -373,7 +373,8 @@ try {
       out.write("\n");
       out.write("                </select>\n");
       out.write("                &nbsp;\n");
-      out.write("                <input type=\"button\" value=\"Add\" onclick=\"add_feature_list()\">\n");
+      out.write("                <button type=\"button\" class=\"dropbtn\" title=\"Add\" onclick=\"add_feature_list()\">Add</button>\n");
+      out.write("                <!--<input type=\"button\" value=\"Add\" onclick=\"add_feature_list()\">-->\n");
       out.write("            </td>\n");
       out.write("        </tr>\n");
       out.write("\n");
@@ -426,8 +427,8 @@ try {
       out.write("        \n");
       out.write("        <tr>\n");
       out.write("            <td height=\"5px\" colspan=\"2\" align=\"center\">\n");
-      out.write("                <input type=\"button\" value=\"Create\" onclick=\"createEnrichmentAnalysis()\">\n");
-      out.write("                &nbsp;\n");
+      out.write("                <button type=\"button\" class=\"dropbtn\" title=\"Create\" onclick=\"createEnrichmentAnalysis()\">Create</button>\n");
+      out.write("                <!--<input type=\"button\" value=\"Create\" onclick=\"createEnrichmentAnalysis()\">-->\n");
       out.write("                <input type=\"hidden\" id=\"feature_list_names\" name=\"feature_list_names\" value=\"\">\n");
       out.write("            </td>\n");
       out.write("        </tr>\n");

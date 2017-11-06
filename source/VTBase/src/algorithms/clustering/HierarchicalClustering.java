@@ -95,7 +95,7 @@ public class HierarchicalClustering {
     public BinaryTree doClustering() {
         
         int id = 0;
-        data.saveDataMatrix(DATA_FILES_PATH + File.separator + "InData.txt", "\t", "normed", mask);
+        data.saveDataMatrix(DATA_FILES_PATH + File.separator + "InData.txt", "\t", mask);
         String linkage_tree_fname = DATA_FILES_PATH + File.separator + "ClusteringOutput_" + id + ".txt";
         
         try {
@@ -168,11 +168,17 @@ public class HierarchicalClustering {
                     Utils.loadDoubleDelimData(leaf_ordering_fname, " ", false)
         );
         */
+        
         if (isClusteringSuccessful) {
-            return new BinaryTree(
-                Utils.loadDoubleDelimData(linkage_tree_fname, " ", false),
-                this.LEAF_ORDERING
-            );
+            double[][] linkage_tree = Utils.loadDoubleDelimData(linkage_tree_fname, " ", false);
+            /*
+            try {
+                Files.deleteIfExists(link_file.toPath());
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            */
+            return new BinaryTree(linkage_tree, this.LEAF_ORDERING);
         } else {
             return null;
         }

@@ -5,6 +5,7 @@
  */
 package vtbox.servlets;
 
+import data.transforms.Normalizer;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -51,8 +52,8 @@ public class AnalysisReInitializer extends HttpServlet {
             String distance_func = request.getParameter("distFunc");
             int replicate_handling = 0;
             String heatmap_color_scheme = request.getParameter("colorScheme");
-            int heatmap_normalization = 0;
-            int clustering_normalization = 0;
+            int column_normalization = Normalizer.COL_NORMALIZATION_NONE;
+            int row_normalization = Normalizer.ROW_NORMALIZATION_NONE;
             String leaf_ordering_strategy = request.getParameter("leafOrder");
             String nBins = request.getParameter("txtNBins");
             String log2chk = null;
@@ -65,24 +66,22 @@ public class AnalysisReInitializer extends HttpServlet {
             int small_k = 0;
 
             HashMap <String, Double> enrichment_params;
-            boolean[] feature_mask = null;  // used for filtering features in functional level visualizations, not used in gene level visualization (send null in this case)
 
             if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {
 
                 replicate_handling = Integer.parseInt(request.getParameter("repHandle"));
-                heatmap_normalization = Integer.parseInt(request.getParameter("normRules_Heatmap"));
-                clustering_normalization = Integer.parseInt(request.getParameter("normRules_Clustering"));
+                column_normalization = Integer.parseInt(request.getParameter("normRule_Col"));
+                row_normalization = Integer.parseInt(request.getParameter("normRule_Row"));
                 log2chk = request.getParameter("log2flag");
                 clippingType = request.getParameter("clippingType");
                 binRangeType = request.getParameter("binningRange");
-                feature_mask = null;
 
             } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
                     analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION)  {
 
-                replicate_handling = 0;             // use seperately
-                heatmap_normalization = 0;          // None
-                clustering_normalization = 0;       // None
+                replicate_handling = 0;                                     // use seperately
+                column_normalization = Normalizer.COL_NORMALIZATION_NONE;   // None
+                row_normalization = Normalizer.ROW_NORMALIZATION_NONE;      // None
                 log2chk = null;
                 clippingType = "none";
                 binRangeType = "symmetric_bins";
@@ -97,8 +96,6 @@ public class AnalysisReInitializer extends HttpServlet {
                 enrichment_params.put("big_K", (double)small_k);
 
                 analysis.ea.testParams.filterFunctionalGroupList(big_K, small_k, significance_level);
-                feature_mask = analysis.ea.testParams.funcgrp_mask;
-
                 analysis.setEnrichmentParams(enrichment_params);
             }
 
@@ -156,23 +153,41 @@ public class AnalysisReInitializer extends HttpServlet {
                 groupBy = "sample";
             }
             
-            database.reprocessData (
-                    selectedExps_clustering, 
-                    logTransformData, 
-                    heatmap_normalization, 
-                    clustering_normalization, 
-                    replicate_handling, 
-                    groupBy,
-                    clippingType, 
-                    clip_min, 
-                    clip_max,
-                    feature_mask
-            );
+            if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {
+                
+                database.reprocessData_FeatureLevel (
+                        selectedExps_clustering, 
+                        logTransformData, 
+                        column_normalization, 
+                        row_normalization, 
+                        replicate_handling, 
+                        groupBy,
+                        clippingType, 
+                        clip_min, 
+                        clip_max
+                );
+                
+            } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION)  {
+                
+                database.reprocessData_GroupLevel (
+                        selectedExps_clustering,
+                        column_normalization, 
+                        row_normalization, 
+                        replicate_handling, 
+                        groupBy,
+                        clippingType, 
+                        clip_min, 
+                        clip_max,
+                        analysis.ea
+                );
+                
+            }
             
             HashMap <String, String> clustering_params = new HashMap <String, String> ();
+            clustering_params.put("do_clustering", Boolean.toString(doCluster));
             clustering_params.put("linkage", linkage);
             clustering_params.put("distance_func", distance_func);
-            clustering_params.put("do_clustering", doCluster + "");
             if (analysis.equalsClusteringParam(clustering_params)) {
                 clustering_params.put("use_cached", "true");
             } else {
@@ -196,7 +211,7 @@ public class AnalysisReInitializer extends HttpServlet {
             analysis.setStateVariables(state_variables);
             */
             analysis.state_variables.setDetailedViewStart(0);
-            analysis.state_variables.setDetailedViewEnd(37);
+            analysis.state_variables.setDetailedViewEnd(Math.min(37, analysis.database.features.size()-1));
             
             getServletContext().getRequestDispatcher("/visualizationHome.jsp?analysis_name=" + analysis_name).forward(request, response);
             

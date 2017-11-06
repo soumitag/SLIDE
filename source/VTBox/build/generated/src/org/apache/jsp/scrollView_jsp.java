@@ -175,6 +175,12 @@ try {
       out.write("                http.send(null);\n");
       out.write("            }\n");
       out.write("            \n");
+      out.write("            function showDetailedInfo(eid, analysis_name) {\n");
+      out.write("                //alert(eid);\n");
+      out.write("                //alert(analysis_name);\n");
+      out.write("                parent.showDetailedInfo(eid, analysis_name);\n");
+      out.write("            }\n");
+      out.write("            \n");
       out.write("            function processResponse_2 () {\n");
       out.write("                //check if the response has been received from the server\n");
       out.write("                if(http.readyState == 4){\n");

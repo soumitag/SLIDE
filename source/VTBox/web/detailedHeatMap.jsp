@@ -276,7 +276,7 @@ try {
                
                 <%      } else if (TYPE.equals("dendrogram_map"))   {   %>
                 
-                <svg  width="250" height="750" id="heatmap_svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" style="position: absolute; top: 0px; left: 0px">
+                <svg  width="250" height="770" id="heatmap_svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" style="position: absolute; top: 0px; left: 0px">
                 <g id="heatmap_g">
                     <image class="containerI" id='heatImg' xlink:href="<%=base_url%>HeatmapImageServer?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" x="0" y="20" height="750px" width="250px" />
                     <rect x="0" y="20" height="750px" width="250px" style="fill: none; stroke: black; stroke-width: 1" /> 

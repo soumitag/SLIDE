@@ -320,6 +320,8 @@ try {
                         
                         x = i*CELL_WIDTH;
                         y = j*CELL_HEIGHT;
+                        
+                        int original_row_id = analysis.linkage_tree.leaf_ordering.get(j);
                     
       out.write("\n");
       out.write("                        <rect x='");
@@ -336,7 +338,11 @@ try {
       out.print(color_str);
       out.write("; \" stroke=\"black\" stroke-width=\"");
       out.print(BORDER_STROKE_WIDTH);
-      out.write("\" /> \n");
+      out.write("\">\n");
+      out.write("                            <title>");
+      out.print( analysis.database.datacells.dataval[original_row_id][i] );
+      out.write("</title>\n");
+      out.write("                        </rect>\n");
       out.write("                    ");
  } 
       out.write("\n");

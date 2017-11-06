@@ -191,7 +191,7 @@ try {
       out.write("\n");
       out.write("            \n");
       out.write("            \n");
-      out.write("    <form name=\"fileInputForm\" method =\"get\" action=\"\">\n");
+      out.write("            <form name=\"fileInputForm\" method =\"get\" action=\"\">\n");
       out.write("            \n");
       out.write("            <input type=\"hidden\" name=\"fileinputname\" id=\"fileinputname\" />\n");
       out.write("            <input type=\"hidden\" name=\"newexperimentname\" id=\"newexperimentname\" value=\"");
@@ -220,6 +220,7 @@ try {
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            -->\n");
+      out.write("            <!--\n");
       out.write("            <tr>\n");
       out.write("                <td>\n");
       out.write("            \t&nbsp;\n");
@@ -229,7 +230,7 @@ try {
       out.write("                    <input type=\"checkbox\" id=\"log2flag\" name=\"log2flag\"> Perform log base 2 transformation of the data</input>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
-      out.write("            \n");
+      out.write("            -->\n");
       out.write("            <tr>\n");
       out.write("                <td>\n");
       out.write("                    <b><label>How Many Rows Should be Read from the File?</label></b>\n");
@@ -242,6 +243,21 @@ try {
       out.write("                    &nbsp; To &nbsp; <input type=\"text\" id=\"txtToRow\" name=\"txtToRow\" size=\"5\" />\n");
       out.write("                    &nbsp; (count 2nd Row as 1 if data has header)\n");
       out.write("                </td>\n");
+      out.write("            </tr>\n");
+      out.write("             <tr>\n");
+      out.write("                <td> \n");
+      out.write("                    <b><label>Data Imputation</label></b>                    \n");
+      out.write("                </td>\n");
+      out.write("                <td colspan=\"1\">\n");
+      out.write("                    <select id=\"imputeD\" name=\"imputeD\" onchange=\"getimputevalue();\">\n");
+      out.write("                        <option id=\"imputeHyphen\" value=\"-1\" selected>-</option>\n");
+      out.write("                        <option id=\"imputeNone\" value=\"0\">None</option>\n");
+      out.write("                        <option id=\"imputeRowMean\" value=\"1\" >Impute with row mean</option>\n");
+      out.write("                        <option id=\"imputeColMean\" value=\"2\" >Impute with column mean</option>\n");
+      out.write("                        <option id=\"imputeRowMedian\" value=\"3\" >Impute with row median</option>\n");
+      out.write("                        <option id=\"imputeColMedian\" value=\"4\">Impute with column median</option>\n");
+      out.write("                    </select>                  \n");
+      out.write("                <input type=\"hidden\" name=\"imputeval\" id=\"imputeval\" />\n");
       out.write("            </tr>\n");
       out.write("            \n");
       out.write("            <tr>\n");
@@ -286,10 +302,10 @@ try {
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("            \t<td>\n");
-      out.write("                    <b><label>Enter the Meta-data Column Numbers</label></b>\n");
+      out.write("                    <b><label>Enter the Non-numeric Features Column Numbers</label></b>\n");
       out.write("            \t</td>\n");
       out.write("                <td colspan=\"1\">\n");
-      out.write("                    <input type=\"text\" name=\"txtNumMetaCols\" id=\"txtNumMetaCols\" value=\"0\" onchange=\"chknumrange(this);\" />\n");
+      out.write("                    <input type=\"text\" name=\"txtNumMetaCols\" id=\"txtNumMetaCols\" value=\"\" onchange=\"chknumrange(this);\" />\n");
       out.write("                    &nbsp; &nbsp; \n");
       out.write("                    (Specify range as 1-4 or specific columns as 1,3,4)\n");
       out.write("                </td>\n");
@@ -300,7 +316,7 @@ try {
       out.write("                    <b><label>Enter the Gene Symbol Column Numbers (if any)</label></b>\n");
       out.write("            \t</td>\n");
       out.write("                <td colspan=\"1\">\n");
-      out.write("                    <input type=\"text\" name=\"txtGeneSymbolCol\" id=\"txtGeneSymbolCol\" value=\"0\" onchange=\"chkisnumber(this);\" />\n");
+      out.write("                    <input type=\"text\" name=\"txtGeneSymbolCol\" id=\"txtGeneSymbolCol\" value=\"\" onchange=\"chkisEmptyOrNumber(this);\" />\n");
       out.write("                    &nbsp; &nbsp; \n");
       out.write("                    (The gene symbol column should be one of the meta-data columns specified above)\n");
       out.write("                </td>\n");
@@ -312,7 +328,7 @@ try {
       out.write("                    <b><label>Enter the Entrez ID Column Numbers (if any)</label></b>\n");
       out.write("            \t</td>\n");
       out.write("                <td colspan=\"1\">\n");
-      out.write("                    <input type=\"text\" name=\"txtEntrezCol\" id=\"txtEntrezCol\" value=\"0\" onchange=\"chkisnumber(this);\" />\n");
+      out.write("                    <input type=\"text\" name=\"txtEntrezCol\" id=\"txtEntrezCol\" value=\"\" onchange=\"chkisEmptyOrNumber(this);\" />\n");
       out.write("                    &nbsp; &nbsp; \n");
       out.write("                    (The entrez id column should be one of the meta-data columns specified above)\n");
       out.write("                </td>\n");
@@ -339,7 +355,7 @@ try {
       out.write("                \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"2\" style=\"text-align: center\">\n");
-      out.write("                    <button class=\"dropbtn\" id=\"EnterNewExperiment\" title=\"Enter New Experiment\" onclick=\"submitform(this.form);\">Create</button>                    \n");
+      out.write("                    <button type=\"button\" class=\"dropbtn\" id=\"EnterNewExperiment\" title=\"Enter New Experiment\" onclick=\"createNewExp()\">Create</button>                    \n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");

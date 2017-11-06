@@ -50,14 +50,7 @@ try {
             <td colspan="2">       
             
             <label class="sys_msg">
-                <% if (!supported_browsers.contains(browser_app.toUpperCase())) { %>
-                    We see that you are using <%=browser_app%>. 
-                    SLIDE currently only supports Internet Explorer. 
-                    Some of the features may not work as expected in <%=browser_app%>.
-                    <br>
-                    <br>
-                <% } %>
-                <% if (browser_resolution_x < 1920 || browser_resolution_y < 1080) { %>
+                <% if (browser_resolution_x < 1919 || browser_resolution_y < 1079) { %>
                     SLIDE works best at a resolution of 1920&times;1040 or higher. 
                     Your current browser resolution is <%=browser_resolution_x%>&times;<%=browser_resolution_y%>. 
                     To get the best performance try changing your browser's zoom.

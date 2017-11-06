@@ -165,14 +165,6 @@ try {
       out.write("                parent.showDetailedInfo(eid, analysis_name);\n");
       out.write("            }\n");
       out.write("            \n");
-      out.write("            function showAltText(i,eid) {\n");
-      out.write("                parent.showAltText(eid);\n");
-      out.write("            }\n");
-      out.write("            \n");
-      out.write("            function hideAltText(i,eid) {\n");
-      out.write("                parent.hideAltText();\n");
-      out.write("            }\n");
-      out.write("            \n");
       out.write("            function toggleHighlightGenes(pathid, state) {\n");
       out.write("                //alert(\"3\");\n");
       out.write("                //alert(state);\n");
@@ -305,15 +297,7 @@ try {
       out.print(eid);
       out.write(", \"");
       out.print(analysis_name);
-      out.write("\")' onmouseover=\"showAltText(");
-      out.print(i);
-      out.write(',');
-      out.print(eid);
-      out.write(")\" onmouseout=\"hideAltText(");
-      out.print(i);
-      out.write(',');
-      out.print(eid);
-      out.write(")\" />\n");
+      out.write("\")' />\n");
       out.write("                                    \n");
       out.write("        ");
 
@@ -340,15 +324,7 @@ try {
       out.print(eid);
       out.write(", \"");
       out.print(analysis_name);
-      out.write("\")' onmouseover=\"showAltText(");
-      out.print(i);
-      out.write(',');
-      out.print(eid);
-      out.write(")\" onmouseout=\"hideAltText(");
-      out.print(i);
-      out.write(',');
-      out.print(eid);
-      out.write(")\" />\n");
+      out.write("\")' />\n");
       out.write("                                    \n");
       out.write("        ");
 
@@ -374,15 +350,7 @@ try {
       out.print(eid);
       out.write(", \"");
       out.print(analysis_name);
-      out.write("\")' onmouseover=\"showAltText(");
-      out.print(i);
-      out.write(',');
-      out.print(eid);
-      out.write(")\" onmouseout=\"hideAltText(");
-      out.print(i);
-      out.write(',');
-      out.print(eid);
-      out.write(")\" />\n");
+      out.write("\")' />\n");
       out.write("                                    \n");
       out.write("        ");
                       }

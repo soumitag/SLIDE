@@ -144,7 +144,7 @@ public class HypergeomParameterContainer implements Serializable {
         return funcgrp_featlist_pvalue_map;
     }
     
-    public HashMap <List <String>, Double> filterFunctionalGroupList (
+    public void filterFunctionalGroupList (
             int MIN_BIG_K, int MIN_SMALL_k, double SIGNIFICANCE_LEVEL) {
         
         // generate row mask
@@ -175,19 +175,6 @@ public class HypergeomParameterContainer implements Serializable {
             }
         }
         
-        HashMap <List <String>, Double> filtered_funcgrp_featlist_pvalue_map = new HashMap <List <String>, Double> ();
-        
-        for (int i=0; i<funcgrp_names.size(); i++) {
-            if (funcgrp_mask[i]) {
-                for (int j=0; j<featlist_names.size(); j++) {
-                    List <String> key = makeKey(funcgrp_names.get(i), featlist_names.get(j));
-                    double p_value = funcgrp_featlist_pvalue_map.get(key);
-                    filtered_funcgrp_featlist_pvalue_map.put(key, p_value);
-                }
-            }
-        }
-        
-        return filtered_funcgrp_featlist_pvalue_map;
     }
     
     public static List <String> makeKey (String functional_group_name, String feature_list_name) {

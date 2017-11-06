@@ -4,6 +4,7 @@
     Author     : soumita
 --%>
 
+<%@page import="utils.Utils"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.AnalysisContainer"%>
 <%@page import="algorithms.clustering.BinaryTree"%>
@@ -54,7 +55,8 @@ try {
     double image_width = 200.0;
     if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
         image_width = 200.0;
-    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION  ||
+               analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
         image_width = 350.0;
     }
     
@@ -85,6 +87,10 @@ try {
                 genes += genesymbols.get(genesymbols.size()-1) + " (" + entrez_i + ")";
                 */
                 double mid = feature_height*(i - start) + feature_height*0.60;
+                if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+                    genes = Utils.checkAndRemoveHtml(genes);
+                }
     %>
     
                 <text id="label_<%=i%>" x="0" y="<%=mid%>" font-family="Verdana" font-size="12" fill="black" style="display: inline" ><%=genes%></text>

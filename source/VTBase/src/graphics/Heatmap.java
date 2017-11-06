@@ -87,7 +87,7 @@ public class Heatmap implements Serializable {
     public void assignBinsToRows() {
         for(int i = 0; i < data.datacells.height; i++) {
             for(int j = 0; j < data.datacells.width; j++) {
-                int binno = hist.getBinNum_Int(data.datacells.visualization_normval[i][j]);
+                int binno = hist.getBinNum_Int(data.datacells.dataval[i][j]);
                 data.datacells.setBinNo(binno, i, j);
                 hist.addToBin_Int(binno);
             }

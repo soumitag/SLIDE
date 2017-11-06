@@ -209,8 +209,12 @@ try {
                         
                         x = i*CELL_WIDTH;
                         y = j*CELL_HEIGHT;
+                        
+                        int original_row_id = analysis.linkage_tree.leaf_ordering.get(j);
                     %>
-                        <rect x='<%=x%>' y='<%=y%>' id='<%=td_id%>' width = '<%=CELL_WIDTH%>' height = '<%=CELL_HEIGHT%>' style="fill:<%=color_str%>; " stroke="black" stroke-width="<%=BORDER_STROKE_WIDTH%>" /> 
+                        <rect x='<%=x%>' y='<%=y%>' id='<%=td_id%>' width = '<%=CELL_WIDTH%>' height = '<%=CELL_HEIGHT%>' style="fill:<%=color_str%>; " stroke="black" stroke-width="<%=BORDER_STROKE_WIDTH%>">
+                            <title><%= analysis.database.datacells.dataval[original_row_id][i] %></title>
+                        </rect>
                     <% } %>
                     </g>
                 <% } %>

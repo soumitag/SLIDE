@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import utils.Utils;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
 import algorithms.clustering.BinaryTree;
@@ -58,6 +59,7 @@ public final class featurelabels_jsp extends org.apache.jasper.runtime.HttpJspBa
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
     
@@ -100,7 +102,8 @@ try {
     double image_width = 200.0;
     if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
         image_width = 200.0;
-    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION  ||
+               analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
         image_width = 350.0;
     }
     
@@ -137,6 +140,10 @@ try {
                 genes += genesymbols.get(genesymbols.size()-1) + " (" + entrez_i + ")";
                 */
                 double mid = feature_height*(i - start) + feature_height*0.60;
+                if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+                    genes = Utils.checkAndRemoveHtml(genes);
+                }
     
       out.write("\n");
       out.write("    \n");

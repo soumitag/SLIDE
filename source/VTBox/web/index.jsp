@@ -61,7 +61,7 @@
             }
             
             function stopAnalysis(analysis_to_stop){
-                alert("Stop it");
+                //alert("Stop it");
                 window.location.href("<%=base_url%>/index.jsp?analysis_to_stop=" + analysis_to_stop);
                
             }

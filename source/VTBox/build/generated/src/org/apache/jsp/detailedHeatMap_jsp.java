@@ -355,7 +355,7 @@ try {
       } else if (TYPE.equals("dendrogram_map"))   {   
       out.write("\n");
       out.write("                \n");
-      out.write("                <svg  width=\"250\" height=\"750\" id=\"heatmap_svg\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\" style=\"position: absolute; top: 0px; left: 0px\">\n");
+      out.write("                <svg  width=\"250\" height=\"770\" id=\"heatmap_svg\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\" style=\"position: absolute; top: 0px; left: 0px\">\n");
       out.write("                <g id=\"heatmap_g\">\n");
       out.write("                    <image class=\"containerI\" id='heatImg' xlink:href=\"");
       out.print(base_url);

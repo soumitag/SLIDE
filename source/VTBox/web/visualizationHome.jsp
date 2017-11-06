@@ -59,10 +59,10 @@ try {
             var sph = document.getElementById("spHandle");
             if (sp.style.display === 'inline') {
                 sp.style.display = 'none';
-                sph.innerHTML = 'Show Selection Panel';
+                sph.innerHTML = 'Show Control Panel';
             } else {
                 sp.style.display = 'inline';
-                sph.innerHTML = 'Hide Selection Panel';
+                sph.innerHTML = 'Hide Control Panel';
             }
         }
          
@@ -115,6 +115,16 @@ try {
         function closeRibbon() {
             document.getElementById("msg_ribbon_div").style.display = "none";
         }
+        
+        function showGlobal() {
+            var msg_iframe = document.getElementById("hdiFrameLoadingMsg");
+            var global_iframe = document.getElementById("hdiFrame");
+            msg_iframe.height = "0px";
+            msg_iframe.width = "0px";
+            msg_iframe.style.visibility = "hidden";
+            global_iframe.style.visibility = "visible";
+        }
+        
     </script>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -207,9 +217,9 @@ try {
                             
                             <td>
                                 &nbsp;
-                                <button name="spHandle" class="dropbtn" id="spHandle" onclick="toggleSelectionPanel()"> Hide Selection Panel </button> &nbsp;
+                                <button name="spHandle" class="dropbtn" id="spHandle" onclick="toggleSelectionPanel()"> Hide Control Panel </button> &nbsp;
                                 <button name="saveAnalysis" class="dropbtn" id="saveAnalysis" onclick="saveAnalysis()"> Save Analysis </button> &nbsp;
-                                <button name="saveViz" class="dropbtn" id="saveViz" onclick="showModalWindow('saveSVGs.jsp?analysis_name=<%=analysis_name%>', '60%', '350px')">Save Visualizations</button> &nbsp;
+                                <button name="saveViz" class="dropbtn" id="saveViz" onclick="showModalWindow('saveSVGs.jsp?analysis_name=<%=analysis_name%>', '60%', '450px')">Save Visualizations</button> &nbsp;
                                 <div class="dropdown">
                                     <button name="featureList" class="dropbtn" id="createList"> Feature List </button> &nbsp;
                                     <div class="dropdown-content">
@@ -226,7 +236,7 @@ try {
                                     </div>
                                 </div>
                                 <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
-                                <button name="createFuncEnrichment" class="dropbtn" id="createFuncEnrichment" onclick="showModalWindow('createEnrichmentAnalysis.jsp?mode=input&analysis_name=<%=analysis_name%>', '60%', '500px')"> Functional Enrichment </button> &nbsp;
+                                <button name="createFuncEnrichment" class="dropbtn" id="createFuncEnrichment" onclick="showModalWindow('createEnrichmentAnalysis.jsp?mode=input&analysis_name=<%=analysis_name%>', '60%', '550px')"> Functional Enrichment </button> &nbsp;
                                 <%  }   %>
                                 <button name="histHandle" class="dropbtn" id="histHandle" onclick="toggleHistogramPanel()"> Hide Histogram </button>
                             </td>
@@ -240,7 +250,12 @@ try {
             <tr>
                 
                 <td rowspan="2" align="top" valign="top" width="300">
-                    <iframe name="hdiFrame" id="hdiFrame" src="HeatmapDendrogramGenerator?analysis_name=<%=analysis_name%>" marginwidth="0" height="100%" width="<%=hdiFrame_width%>" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
+                    <% if (do_clustering) { %>
+                        <iframe name="hdiFrameLoadingMsg" id="hdiFrameLoadingMsg" src="hierarchicalClusteringFeedback.jsp?is_clustering=true" marginwidth="0" height="100%" width="<%=hdiFrame_width%>" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
+                    <% } else { %>
+                        <iframe name="hdiFrameLoadingMsg" id="hdiFrameLoadingMsg" src="hierarchicalClusteringFeedback.jsp?is_clustering=false" marginwidth="0" height="100%" width="<%=hdiFrame_width%>" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
+                    <% } %>
+                    <iframe name="hdiFrame" id="hdiFrame" src="HeatmapDendrogramGenerator?analysis_name=<%=analysis_name%>" marginwidth="0" height="100%" width="<%=hdiFrame_width%>" frameBorder="0" style="position: relative; top: 0px; left: 0px; visibility: hidden"></iframe>
                     <iframe name="invisible_Download_Frame" id="invisible_Download_Frame" src="" marginwidth="0" height="0" width="0" frameBorder="0"></iframe>
                 </td>
                 
@@ -266,9 +281,9 @@ try {
                 
                 <%  }   %>
                 
-                <td  rowspan="2" width="520">     
-                    <iframe id="histPanel" src="" width="520" height="34%" frameBorder="0" style="display: inline"></iframe>
-                    <iframe name="geneInfoFrame" id="geneInfoFrame" src="gene.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" width="520" height="66%" frameBorder="0"></iframe>
+                <td  rowspan="2" width="550">     
+                    <iframe id="histPanel" src="" width="550" height="34%" frameBorder="0" style="display: inline"></iframe>
+                    <iframe name="geneInfoFrame" id="geneInfoFrame" src="gene.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" width="550" height="66%" frameBorder="0"></iframe>
                 </td>
                 
             </tr>

@@ -103,7 +103,7 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            }\n");
       out.write("            \n");
       out.write("            function stopAnalysis(analysis_to_stop){\n");
-      out.write("                alert(\"Stop it\");\n");
+      out.write("                //alert(\"Stop it\");\n");
       out.write("                window.location.href(\"");
       out.print(base_url);
       out.write("/index.jsp?analysis_to_stop=\" + analysis_to_stop);\n");

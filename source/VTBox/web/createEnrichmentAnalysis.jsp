@@ -224,10 +224,10 @@ try {
 <body>
     
     <form name="createEnrichmentForm" id="createEnrichmentForm" method="get" action="createEnrichmentAnalysis.jsp">
-    <table cellpadding="5" style="width: 100%;" border="0">
+    <table cellpadding="5" style="width: 100%;height:500px" border="0">
 
         <tr>
-            <td height="75" align="center" colspan="2">
+            <td height="70" align="center" colspan="2">
                 <b><label>Create Enrichment Analysis</label></b>
             </td>
         </tr>
@@ -291,7 +291,8 @@ try {
                     <% }    %>
                 </select>
                 &nbsp;
-                <input type="button" value="Add" onclick="add_feature_list()">
+                <button type="button" class="dropbtn" title="Add" onclick="add_feature_list()">Add</button>
+                <!--<input type="button" value="Add" onclick="add_feature_list()">-->
             </td>
         </tr>
 
@@ -344,8 +345,8 @@ try {
         
         <tr>
             <td height="5px" colspan="2" align="center">
-                <input type="button" value="Create" onclick="createEnrichmentAnalysis()">
-                &nbsp;
+                <button type="button" class="dropbtn" title="Create" onclick="createEnrichmentAnalysis()">Create</button>
+                <!--<input type="button" value="Create" onclick="createEnrichmentAnalysis()">-->
                 <input type="hidden" id="feature_list_names" name="feature_list_names" value="">
             </td>
         </tr>

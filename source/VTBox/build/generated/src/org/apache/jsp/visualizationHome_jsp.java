@@ -104,10 +104,10 @@ try {
       out.write("            var sph = document.getElementById(\"spHandle\");\n");
       out.write("            if (sp.style.display === 'inline') {\n");
       out.write("                sp.style.display = 'none';\n");
-      out.write("                sph.innerHTML = 'Show Selection Panel';\n");
+      out.write("                sph.innerHTML = 'Show Control Panel';\n");
       out.write("            } else {\n");
       out.write("                sp.style.display = 'inline';\n");
-      out.write("                sph.innerHTML = 'Hide Selection Panel';\n");
+      out.write("                sph.innerHTML = 'Hide Control Panel';\n");
       out.write("            }\n");
       out.write("        }\n");
       out.write("         \n");
@@ -166,6 +166,16 @@ try {
       out.write("        function closeRibbon() {\n");
       out.write("            document.getElementById(\"msg_ribbon_div\").style.display = \"none\";\n");
       out.write("        }\n");
+      out.write("        \n");
+      out.write("        function showGlobal() {\n");
+      out.write("            var msg_iframe = document.getElementById(\"hdiFrameLoadingMsg\");\n");
+      out.write("            var global_iframe = document.getElementById(\"hdiFrame\");\n");
+      out.write("            msg_iframe.height = \"0px\";\n");
+      out.write("            msg_iframe.width = \"0px\";\n");
+      out.write("            msg_iframe.style.visibility = \"hidden\";\n");
+      out.write("            global_iframe.style.visibility = \"visible\";\n");
+      out.write("        }\n");
+      out.write("        \n");
       out.write("    </script>\n");
       out.write("    <head>\n");
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
@@ -260,11 +270,11 @@ try {
       out.write("                            \n");
       out.write("                            <td>\n");
       out.write("                                &nbsp;\n");
-      out.write("                                <button name=\"spHandle\" class=\"dropbtn\" id=\"spHandle\" onclick=\"toggleSelectionPanel()\"> Hide Selection Panel </button> &nbsp;\n");
+      out.write("                                <button name=\"spHandle\" class=\"dropbtn\" id=\"spHandle\" onclick=\"toggleSelectionPanel()\"> Hide Control Panel </button> &nbsp;\n");
       out.write("                                <button name=\"saveAnalysis\" class=\"dropbtn\" id=\"saveAnalysis\" onclick=\"saveAnalysis()\"> Save Analysis </button> &nbsp;\n");
       out.write("                                <button name=\"saveViz\" class=\"dropbtn\" id=\"saveViz\" onclick=\"showModalWindow('saveSVGs.jsp?analysis_name=");
       out.print(analysis_name);
-      out.write("', '60%', '350px')\">Save Visualizations</button> &nbsp;\n");
+      out.write("', '60%', '450px')\">Save Visualizations</button> &nbsp;\n");
       out.write("                                <div class=\"dropdown\">\n");
       out.write("                                    <button name=\"featureList\" class=\"dropbtn\" id=\"createList\"> Feature List </button> &nbsp;\n");
       out.write("                                    <div class=\"dropdown-content\">\n");
@@ -295,7 +305,7 @@ try {
       out.write("\n");
       out.write("                                <button name=\"createFuncEnrichment\" class=\"dropbtn\" id=\"createFuncEnrichment\" onclick=\"showModalWindow('createEnrichmentAnalysis.jsp?mode=input&analysis_name=");
       out.print(analysis_name);
-      out.write("', '60%', '500px')\"> Functional Enrichment </button> &nbsp;\n");
+      out.write("', '60%', '550px')\"> Functional Enrichment </button> &nbsp;\n");
       out.write("                                ");
   }   
       out.write("\n");
@@ -311,11 +321,26 @@ try {
       out.write("            <tr>\n");
       out.write("                \n");
       out.write("                <td rowspan=\"2\" align=\"top\" valign=\"top\" width=\"300\">\n");
+      out.write("                    ");
+ if (do_clustering) { 
+      out.write("\n");
+      out.write("                        <iframe name=\"hdiFrameLoadingMsg\" id=\"hdiFrameLoadingMsg\" src=\"hierarchicalClusteringFeedback.jsp?is_clustering=true\" marginwidth=\"0\" height=\"100%\" width=\"");
+      out.print(hdiFrame_width);
+      out.write("\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px\"></iframe>\n");
+      out.write("                    ");
+ } else { 
+      out.write("\n");
+      out.write("                        <iframe name=\"hdiFrameLoadingMsg\" id=\"hdiFrameLoadingMsg\" src=\"hierarchicalClusteringFeedback.jsp?is_clustering=false\" marginwidth=\"0\" height=\"100%\" width=\"");
+      out.print(hdiFrame_width);
+      out.write("\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px\"></iframe>\n");
+      out.write("                    ");
+ } 
+      out.write("\n");
       out.write("                    <iframe name=\"hdiFrame\" id=\"hdiFrame\" src=\"HeatmapDendrogramGenerator?analysis_name=");
       out.print(analysis_name);
       out.write("\" marginwidth=\"0\" height=\"100%\" width=\"");
       out.print(hdiFrame_width);
-      out.write("\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px\"></iframe>\n");
+      out.write("\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px; visibility: hidden\"></iframe>\n");
       out.write("                    <iframe name=\"invisible_Download_Frame\" id=\"invisible_Download_Frame\" src=\"\" marginwidth=\"0\" height=\"0\" width=\"0\" frameBorder=\"0\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                \n");
@@ -355,11 +380,11 @@ try {
   }   
       out.write("\n");
       out.write("                \n");
-      out.write("                <td  rowspan=\"2\" width=\"520\">     \n");
-      out.write("                    <iframe id=\"histPanel\" src=\"\" width=\"520\" height=\"34%\" frameBorder=\"0\" style=\"display: inline\"></iframe>\n");
+      out.write("                <td  rowspan=\"2\" width=\"550\">     \n");
+      out.write("                    <iframe id=\"histPanel\" src=\"\" width=\"550\" height=\"34%\" frameBorder=\"0\" style=\"display: inline\"></iframe>\n");
       out.write("                    <iframe name=\"geneInfoFrame\" id=\"geneInfoFrame\" src=\"gene.jsp?analysis_name=");
       out.print(analysis_name);
-      out.write("\" marginwidth=\"0\" width=\"520\" height=\"66%\" frameBorder=\"0\"></iframe>\n");
+      out.write("\" marginwidth=\"0\" width=\"550\" height=\"66%\" frameBorder=\"0\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                \n");
       out.write("            </tr>\n");

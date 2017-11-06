@@ -102,7 +102,9 @@ function display_search_result (analysis_name) {
 }
 
 function showDetailedInfo (eid, analysis_name) {
+    alert(eid);
     var url_text = "gene.jsp?entrez_id=" + eid + "&analysis_name=" + analysis_name;
+    alert(url_text);
     document.getElementById('geneInfoFrame').contentWindow.location.replace(url_text);
 }
 

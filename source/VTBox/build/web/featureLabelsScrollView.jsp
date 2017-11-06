@@ -4,6 +4,7 @@
     Author     : soumita
 --%>
 
+<%@page import="utils.Utils"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.AnalysisContainer"%>
 <%@page import="algorithms.clustering.BinaryTree"%>
@@ -48,7 +49,8 @@ try {
     double image_width = 200.0;
     if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
         image_width = 200.0;
-    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+               analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
         image_width = 350.0;
     }
     
@@ -97,14 +99,29 @@ try {
                 int index = linkage_tree.leaf_ordering.get(i);
                 String entrez_i = db.features.get(index).entrezId;
                 ArrayList <String> genesymbols = db.entrezGeneMap.get(entrez_i);
+                
                 String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
+                if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+                        genes = Utils.checkAndRemoveHtml(genes);
+                }
+                
+                /*
+                if(genes.contains("<I>")){
+                    genes = genes.replace("<I>", "");
+                } 
+                
+                if (genes.contains("</I>")){
+                    genes = genes.replace("</I>", "");
+                }
+                */
                 /*
                 for (int j = 0; j < genesymbols.size()-1; j++) {
                     genes += genesymbols.get(j) + ",";
                 }
                 genes += genesymbols.get(genesymbols.size()-1) + " (" + entrez_i + ")";
                 */
-                double mid = feature_height*(i - start) + feature_height/2.0;
+                double mid = feature_height*(i - start) + feature_height/2.0 + 3;
     %>
                 
                 <text id="label_<%=i%>" x="0" y="<%=mid%>" font-family="Verdana" font-size="12" fill="black" style="display: inline; " onclick="toggleSelection('<%=index%>', '<%=genes%>', 'label_<%=i%>')"><%=genes%></text>

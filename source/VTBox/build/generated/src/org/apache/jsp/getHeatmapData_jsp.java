@@ -3,6 +3,9 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import java.util.HashMap;
+import java.util.ArrayList;
+import structure.DataCells;
 import graphics.HeatmapData;
 import vtbox.SessionUtils;
 import graphics.Heatmap;
@@ -54,6 +57,9 @@ public final class getHeatmapData_jsp extends org.apache.jasper.runtime.HttpJspB
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
+      out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("\n");
 
@@ -93,6 +99,8 @@ try {
     analysis.state_variables.setDetailedViewEnd(end);
     
     response.setHeader("Cache-Control", "max-age=0,no-cache,no-store,post-check=0,pre-check=0");
+    
+    DataCells cells = analysis.database.datacells;
 
       out.write("\n");
       out.write("\n");
@@ -120,7 +128,7 @@ try {
       out.write("    ");
  for (int i = 0; i < rgb.length; i++) {
       out.write("\n");
-      out.write("        <g id=\"row_rect_");
+      out.write("        <g id=\"col_rect_");
       out.print(i);
       out.write("\">\n");
       out.write("            ");
@@ -133,6 +141,8 @@ try {
 
                 x = i * CELL_WIDTH;
                 y = j * CELL_HEIGHT;
+                
+                int original_row_id = analysis.linkage_tree.leaf_ordering.get(start+j);
             
       out.write("\n");
       out.write("                <rect x='");
@@ -149,7 +159,11 @@ try {
       out.print(color_str);
       out.write("; \" stroke=\"black\" stroke-width=\"");
       out.print(BORDER_STROKE_WIDTH);
-      out.write("\" /> \n");
+      out.write("\">\n");
+      out.write("                    <title>");
+      out.print( cells.dataval[original_row_id][i] );
+      out.write("</title>\n");
+      out.write("                </rect>\n");
       out.write("            ");
  } 
       out.write("\n");

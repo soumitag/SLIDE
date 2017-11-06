@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import utils.Utils;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
 import algorithms.clustering.BinaryTree;
@@ -58,6 +59,7 @@ public final class featureLabelsScrollView_jsp extends org.apache.jasper.runtime
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
     
@@ -94,7 +96,8 @@ try {
     double image_width = 200.0;
     if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
         image_width = 200.0;
-    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+               analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
         image_width = 350.0;
     }
     
@@ -149,14 +152,29 @@ try {
                 int index = linkage_tree.leaf_ordering.get(i);
                 String entrez_i = db.features.get(index).entrezId;
                 ArrayList <String> genesymbols = db.entrezGeneMap.get(entrez_i);
+                
                 String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
+                if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+                        genes = Utils.checkAndRemoveHtml(genes);
+                }
+                
+                /*
+                if(genes.contains("<I>")){
+                    genes = genes.replace("<I>", "");
+                } 
+                
+                if (genes.contains("</I>")){
+                    genes = genes.replace("</I>", "");
+                }
+                */
                 /*
                 for (int j = 0; j < genesymbols.size()-1; j++) {
                     genes += genesymbols.get(j) + ",";
                 }
                 genes += genesymbols.get(genesymbols.size()-1) + " (" + entrez_i + ")";
                 */
-                double mid = feature_height*(i - start) + feature_height/2.0;
+                double mid = feature_height*(i - start) + feature_height/2.0 + 3;
     
       out.write("\n");
       out.write("                \n");

@@ -4,6 +4,9 @@
     Author     : Soumita
 --%>
 
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="structure.DataCells"%>
 <%@page import="graphics.HeatmapData"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="graphics.Heatmap"%>
@@ -49,6 +52,8 @@ try {
     analysis.state_variables.setDetailedViewEnd(end);
     
     response.setHeader("Cache-Control", "max-age=0,no-cache,no-store,post-check=0,pre-check=0");
+    
+    DataCells cells = analysis.database.datacells;
 %>
 
 <svg width='<%=TABLE_WIDTH%>' height='<%=TABLE_HEIGHT%>' id='svg_heat_map' 
@@ -61,7 +66,7 @@ try {
     <g id="heatmap_table" width='<%=TABLE_WIDTH%>' height='<%=TABLE_HEIGHT%>'>
 
     <% for (int i = 0; i < rgb.length; i++) {%>
-        <g id="row_rect_<%=i%>">
+        <g id="col_rect_<%=i%>">
             <% for (int j = 0; j < rgb[0].length; j++) { %>
             <%
                 String color_str = "rgb(" + (int) rgb[i][j][0] + "," + (int) rgb[i][j][1] + "," + (int) rgb[i][j][2] + ")";
@@ -69,8 +74,12 @@ try {
 
                 x = i * CELL_WIDTH;
                 y = j * CELL_HEIGHT;
+                
+                int original_row_id = analysis.linkage_tree.leaf_ordering.get(start+j);
             %>
-                <rect x='<%=x%>' y='<%=y%>' id='<%=td_id%>' width = '<%=CELL_WIDTH%>' height = '<%=CELL_HEIGHT%>' style="fill:<%=color_str%>; " stroke="black" stroke-width="<%=BORDER_STROKE_WIDTH%>" /> 
+                <rect x='<%=x%>' y='<%=y%>' id='<%=td_id%>' width = '<%=CELL_WIDTH%>' height = '<%=CELL_HEIGHT%>' style="fill:<%=color_str%>; " stroke="black" stroke-width="<%=BORDER_STROKE_WIDTH%>">
+                    <title><%= cells.dataval[original_row_id][i] %></title>
+                </rect>
             <% } %>
         </g>
     <% }%>

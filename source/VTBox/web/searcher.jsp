@@ -67,6 +67,12 @@ try {
             }
 
         
+        function keypressCallSearcher(){
+            if(window.event.keyCode == 13){
+                callSearcher();
+            }                
+        }
+        
         function callSearcher () {
             
             var search_string = document.getElementById('searchText').value;
@@ -106,7 +112,7 @@ try {
     <body style="overflow:hidden; margin-top: 2px;">
         
         <table height="25px" valign="middle">
-             <form name="SearchForm" action="">
+             <!--<form name="SearchForm" action=""> -->
                 <tr style="vertical-align: middle">
                              
                     <td valign="middle">
@@ -138,7 +144,7 @@ try {
                         </select>
                     </td>
                     <td valign="middle" style="font-family:verdana; font-size:6;">
-                        <input type="text" id="searchText" name="searchText" size="30">
+                        <input type="text" id="searchText" name="searchText" size="30" onkeypress="keypressCallSearcher()" />
                     </td>
                     <td valign="middle">
                         <!--<input type="button" value="Search" onclick="callSearcher()">-->
@@ -147,7 +153,7 @@ try {
                     </td>
                 
                 </tr>
-            </form>
+            <!--</form>-->
             
         </table>
         
