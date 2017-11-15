@@ -5,7 +5,7 @@ SLIDE is a tool for customized visualization and interactive exploration of high
 
 #### **Availability**
 
-SLIDE is available both online both as an online version as well as a stand-alone version (for installation on user's computer).  
+SLIDE is available both as an online version as well as a stand-alone version (for installation on user's computer).  
 To access the online version click [here](http://137.132.97.109/VTBox/)  
 
 #### **Installation Instructions**
