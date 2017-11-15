@@ -3,6 +3,11 @@
 
 SLIDE is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. It can be used for intuitive and fast visualization as well as real-time exploration of the data with direct user input.
 
+#### **Availability**
+
+SLIDE is available both online both as an online version as well as a stand-alone version (for installation on user's computer).  
+To access the online version click [here](http://137.132.97.109/VTBox/)  
+
 #### **Installation Instructions**
 Click [here](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip) to download an installable version of SLIDE.  
 Windows installation guide is available [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf).  
