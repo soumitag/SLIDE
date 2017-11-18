@@ -6,10 +6,10 @@ SLIDE is a tool for customized visualization and interactive exploration of high
 #### **Availability**
 
 SLIDE is available both as an online version as well as a stand-alone version (for installation on user's computer).  
-To access the online version click [here](http://137.132.97.109/VTBox/) :+1:  
+To access the online version click [here](http://137.132.97.109/VTBox/) :point_left:    
 
 #### **Installation Instructions**
-Click [here](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip) to download a stand-alone version of SLIDE.  
+Click [here](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip) to download a stand-alone version of SLIDE.  :point_left:  
 Windows installation guide is available [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf).  
 macOS installation guide is available [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_macOS_Installation_Guide.pdf).  
 
