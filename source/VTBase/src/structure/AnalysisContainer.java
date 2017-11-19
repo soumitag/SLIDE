@@ -6,8 +6,10 @@
 package structure;
 
 import algorithms.clustering.BinaryTree;
+import algorithms.clustering.HierarchicalClusterer;
 import algorithms.enrichment.EnrichmentAnalysis;
 import graphics.Heatmap;
+import java.io.File;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -15,6 +17,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.io.Serializable;
+import params.ClusteringParams;
+import params.EnrichmentParams;
+import params.TransformationParams;
+import params.VisualizationParams;
 import searcher.Searcher;
 import utils.Logger;
 import utils.SessionManager;
@@ -41,6 +47,7 @@ public class AnalysisContainer implements Serializable {
     public Data database;
     public Heatmap heatmap;
     public BinaryTree linkage_tree;
+    public HierarchicalClusterer hac;
     
     public EnrichmentAnalysis ea;
             
@@ -51,13 +58,21 @@ public class AnalysisContainer implements Serializable {
     
     public HashMap <String, ArrayList <Integer>> filterListMap;
     
+    /*
+    public HashMap <String, String> data_transformation_params;
     public HashMap <String, String> clustering_params;
     public HashMap <String, String> visualization_params;
     public HashMap <String, Double> enrichment_params;
+    */
+    
+    public TransformationParams data_transformation_params;
+    public ClusteringParams clustering_params;
+    public VisualizationParams visualization_params;
+    public EnrichmentParams enrichment_params;
     
     public StateVariables state_variables;
     
-    public Searcher searcher;
+    public Object searcher;
     public Logger logger;
     
     public AnalysisContainer () { 
@@ -79,16 +94,20 @@ public class AnalysisContainer implements Serializable {
         state_variables.init(database.features.size());
     }
     
-    public void setClusteringParams (HashMap <String, String> clustering_params) {
+    public void setClusteringParams (ClusteringParams clustering_params) {
         this.clustering_params = clustering_params;
     }
     
-    public void setVisualizationParams (HashMap <String, String> visualization_params) {
+    public void setVisualizationParams (VisualizationParams visualization_params) {
         this.visualization_params = visualization_params;
     }
     
-    public void setEnrichmentParams (HashMap <String, Double> enrichment_params) {
+    public void setEnrichmentParams (EnrichmentParams enrichment_params) {
         this.enrichment_params = enrichment_params;
+    }
+    
+    public void setDataTransformationParams (TransformationParams data_transformation_params) {
+        this.data_transformation_params = data_transformation_params;
     }
     
     /*
@@ -107,6 +126,10 @@ public class AnalysisContainer implements Serializable {
     
     public void setHeatmap (Heatmap heatmap) {
         this.heatmap = heatmap;
+    }
+    
+    public void setHierarchicalClusterer (HierarchicalClusterer hac) {
+        this.hac = hac;
     }
     
     public void setLinkageTree (BinaryTree linkage_tree, boolean isTreeAvailable) {
@@ -137,11 +160,15 @@ public class AnalysisContainer implements Serializable {
         this.filterListMap.put(list_name, list);
     }
     
-    public boolean equalsClusteringParam (HashMap <String, String> thatParam) {
-        return (this.clustering_params.get("do_clustering").equals(thatParam.get("do_clustering")) &&
-                this.clustering_params.get("linkage").equals(thatParam.get("linkage")) &&
-                this.clustering_params.get("distance_func").equals(thatParam.get("distance_func")));
+    /*
+    public boolean equalsClusteringParam (ClusteringParams thatParam) {
+        return this.clustering_params.equals(thatParam);
     }
+    
+    public boolean equalsDataTransformationParam (TransformationParams thatParam) {
+        return this.data_transformation_params.equals(thatParam);
+    }
+    */
     
     public AnalysisContainer createSubAnalysis(String sub_analysis_name, 
             ArrayList <Integer> filtered_entrez_ids, String installPath, String session_id) 
@@ -164,21 +191,19 @@ public class AnalysisContainer implements Serializable {
         sub_analysis.setDatabase(database.cloneDB(filtered_entrez_ids));
         
         // initialize following variables as in init.jsp
-        HashMap <String, String> clustering_params = new HashMap<String, String>();
-        clustering_params.put("linkage", "");
-        clustering_params.put("distance_func", "");
-        clustering_params.put("do_clustering", "false");
-        clustering_params.put("use_cached", "false");
-        sub_analysis.setClusteringParams(clustering_params);
-
-        HashMap <String, String> visualization_params = new HashMap<String, String>();
-        visualization_params.put("leaf_ordering_strategy", "0");   // largest cluster first
-        visualization_params.put("heatmap_color_scheme", "blue_red");
-        visualization_params.put("nBins", "11");
-        visualization_params.put("bin_range_type", "data_bins");
-        visualization_params.put("bin_range_start", "-1");
-        visualization_params.put("bin_range_end", "-1");
-        sub_analysis.setVisualizationParams(visualization_params);
+        TransformationParams tp = new TransformationParams();
+        tp.setReplicateHandling(this.data_transformation_params.replicate_handling);
+        tp.setGroupBy(this.data_transformation_params.group_by);
+        sub_analysis.setDataTransformationParams(tp);
+        
+        sub_analysis.setClusteringParams(new ClusteringParams());
+        
+        VisualizationParams vp = new VisualizationParams();
+        vp.setNBins(this.visualization_params.nBins);
+        vp.setBinRangeType(this.visualization_params.bin_range_type);
+        vp.setBinRangeStart(this.visualization_params.bin_range_start);
+        vp.setBinRangeEnd(this.visualization_params.bin_range_end);
+        sub_analysis.setVisualizationParams(vp);
         
         /*
         state_variables = new HashMap <String, Double> ();
@@ -199,6 +224,12 @@ public class AnalysisContainer implements Serializable {
         //ArrayList <Integer> blanks = new ArrayList <Integer>();
         //filterListMap.put("Detailed View", blanks);
         sub_analysis.setFilterListMap(filterListMap);
+        
+        // add HierarchicalClusterer to analysis
+        HierarchicalClusterer sub_analysis_hac = new HierarchicalClusterer (
+                            sub_analysis.base_path + File.separator + "data",
+                            this.hac.PYTHON_MODULE_PATH, this.hac.PYTHON_HOME);
+        sub_analysis.setHierarchicalClusterer(sub_analysis_hac);
         
         return sub_analysis;
     }
@@ -226,18 +257,22 @@ public class AnalysisContainer implements Serializable {
             sub_analysis.visualizationType = AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION;
         } else if (ea.enrichmentType == EnrichmentAnalysis.TYPE_PATHWAY) {
             sub_analysis.visualizationType = AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION;
-        }
-        sub_analysis.visualizationType = AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION;
+        } 
+        //sub_analysis.visualizationType = AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION;
         sub_analysis.setDatabase(database.cloneDBForEnrichment(ea));
         
         // initialize following variables as in init.jsp
+        /*
         HashMap <String, String> clustering_params = new HashMap<String, String>();
         clustering_params.put("linkage", "");
         clustering_params.put("distance_func", "");
         clustering_params.put("do_clustering", "false");
         clustering_params.put("use_cached", "false");
         sub_analysis.setClusteringParams(clustering_params);
+        */
+        sub_analysis.setClusteringParams(new ClusteringParams());
 
+        /*
         HashMap <String, String> visualization_params = new HashMap<String, String>();
         visualization_params.put("leaf_ordering_strategy", "0");   // largest cluster first
         visualization_params.put("heatmap_color_scheme", "blue_red");
@@ -249,12 +284,22 @@ public class AnalysisContainer implements Serializable {
         visualization_params.put("bin_range_start", (-sub_analysis.database.DATA_MIN_MAX[1])+"");
         visualization_params.put("bin_range_end", sub_analysis.database.DATA_MIN_MAX[1]+"");
         sub_analysis.setVisualizationParams(visualization_params);
+        */
         
+        VisualizationParams visualization_params = new VisualizationParams();
+        visualization_params.setBinRangeType("symmetric_bins");
+        visualization_params.setBinRangeStart(-(float)sub_analysis.database.DATA_MIN_MAX[1]);
+        visualization_params.setBinRangeEnd((float)sub_analysis.database.DATA_MIN_MAX[1]);
+        visualization_params.setNBins(51);
+        sub_analysis.setVisualizationParams(visualization_params);
+        
+        /*
         HashMap <String, Double> enrichment_params = new HashMap <String, Double> ();
         enrichment_params.put("significance_level", 0.05);
         enrichment_params.put("small_k", 4.0);
         enrichment_params.put("big_K", 5.0);
-        sub_analysis.setEnrichmentParams(enrichment_params);
+        */
+        sub_analysis.setEnrichmentParams(new EnrichmentParams());
         
         ArrayList<ArrayList<CompactSearchResultContainer>> search_results
                                     = new ArrayList<ArrayList<CompactSearchResultContainer>>();
@@ -268,6 +313,12 @@ public class AnalysisContainer implements Serializable {
         //ArrayList <Integer> blanks = new ArrayList <Integer>();
         //filterListMap.put("Detailed View", blanks);
         sub_analysis.setFilterListMap(filterListMap);
+        
+        // add HierarchicalClusterer to analysis
+        HierarchicalClusterer sub_analysis_hac = new HierarchicalClusterer (
+                            sub_analysis.base_path + File.separator + "data",
+                            this.hac.PYTHON_MODULE_PATH, this.hac.PYTHON_HOME);
+        sub_analysis.setHierarchicalClusterer(sub_analysis_hac);
         
         return sub_analysis;
         

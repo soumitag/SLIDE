@@ -6,7 +6,7 @@
 package vtbox.servlets;
 
 import algorithms.clustering.BinaryTree;
-import algorithms.clustering.HierarchicalClustering;
+import algorithms.clustering.HierarchicalClusterer;
 import graphics.Heatmap;
 import java.io.File;
 import java.io.IOException;
@@ -50,29 +50,21 @@ public class HeatmapDendrogramGenerator extends HttpServlet {
             AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
 
             Data database = analysis.database;
-            HashMap <String, String> visualization_params = analysis.visualization_params;
-
+            
             BinaryTree linkage_tree;
 
-            boolean do_clustering = Boolean.parseBoolean(analysis.clustering_params.get("do_clustering"));
+            boolean do_clustering = analysis.clustering_params.do_clustering;
 
             if (do_clustering) {
 
-                HashMap <String, String> clustering_params = analysis.clustering_params;
-                String linkage = clustering_params.get("linkage");
-                String distance_func = clustering_params.get("distance_func");    
-                int leaf_ordering_strategy = Integer.parseInt(visualization_params.get("leaf_ordering_strategy"));
-                boolean use_cached = Boolean.parseBoolean(clustering_params.get("use_cached"));
+                String linkage = analysis.clustering_params.linkage;
+                String distance_func = analysis.clustering_params.distance_func;    
+                int leaf_ordering_strategy = Integer.parseInt(analysis.visualization_params.leaf_ordering_strategy);
 
-                String py_module_path = ((HashMap <String, String>)session.getAttribute("slide_config")).get("py-module-path");
-                String py_home = ((HashMap <String, String>)session.getAttribute("slide_config")).get("python-dir");
-
-                HierarchicalClustering hac = new HierarchicalClustering (
-                        database, linkage, distance_func, leaf_ordering_strategy, 
-                        analysis.base_path + File.separator + "data",
-                        py_module_path, py_home);
-
-                linkage_tree = hac.doClustering(use_cached);
+                linkage_tree = analysis.hac.doClustering(
+                        analysis, linkage, distance_func, leaf_ordering_strategy
+                );
+                
                 analysis.setLinkageTree(linkage_tree, true);
 
             } else {
@@ -98,12 +90,12 @@ public class HeatmapDendrogramGenerator extends HttpServlet {
             }
             analysis.setEntrezPosMap(entrezPosMap);
 
-            int nBins = Integer.parseInt(visualization_params.get("nBins"));
-            String bin_range_type = visualization_params.get("bin_range_type");
+            int nBins = analysis.visualization_params.nBins;
+            String bin_range_type = analysis.visualization_params.bin_range_type;
             Heatmap heatmap = null;
             if (bin_range_type.equals("start_end_bins")) {
-                double range_start = Double.parseDouble(visualization_params.get("bin_range_start"));
-                double range_end = Double.parseDouble(visualization_params.get("bin_range_end"));
+                double range_start = analysis.visualization_params.bin_range_start;
+                double range_end = analysis.visualization_params.bin_range_end;
                 heatmap = new Heatmap(database, nBins, bin_range_type, range_start, range_end, linkage_tree.leaf_ordering);
             } else {
                 heatmap = new Heatmap(database, nBins, bin_range_type, linkage_tree.leaf_ordering);
@@ -120,8 +112,8 @@ public class HeatmapDendrogramGenerator extends HttpServlet {
             
             HttpSession session = request.getSession(false);
             SessionUtils.logException(session, request, e);
-            getServletContext().getRequestDispatcher("/Exception.jsp").forward(request, response);
-    
+            getServletContext().getRequestDispatcher("/Exception.jsp?type=clustering_error").forward(request, response);
+            
         }
     }
 

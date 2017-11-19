@@ -20,16 +20,14 @@ import vtbase.DataParsingException;
  */
 public class UserInputParser {
  
-    public SampleMappings sampleMappings;
-    
-    public String parseSampleMappingsFile (
+    public static SampleMappings parseSampleMappingsFile (
             String metafilename, boolean isTimeSeries, String[] datacol_headers
     ) throws DataParsingException {
         
         BufferedReader br = null;
         String line;
         
-        sampleMappings = new SampleMappings();
+        SampleMappings sampleMappings = new SampleMappings();
         
         try {
 
@@ -162,6 +160,8 @@ public class UserInputParser {
                 
             }
             
+            return sampleMappings;
+            
         } catch (DataParsingException e) {
             
             throw e;
@@ -174,12 +174,6 @@ public class UserInputParser {
             throw new DataParsingException(msg);
         }
         
-        return "done";
-        
-    }
-    
-    public SampleMappings getMappings() {
-        return this.sampleMappings;
     }
     
 }

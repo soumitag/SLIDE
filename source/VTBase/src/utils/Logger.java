@@ -6,9 +6,6 @@
 package utils;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
@@ -19,7 +16,10 @@ import java.util.Arrays;
  *
  * @author soumitag
  */
-public class Logger implements Serializable {
+
+// This class cannot be serialized due to BufferedWriter
+// and must be recreated in LoadAnalysis
+public class Logger  implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
@@ -31,9 +31,6 @@ public class Logger implements Serializable {
     
     private final String logfilepath;
     //private String logfilepath;
-    private FileWriter writer; 
-    private BufferedWriter bw;
-    private PrintWriter out; 
     
     private Date date;
     private String currentdate;
@@ -53,41 +50,15 @@ public class Logger implements Serializable {
         // Severity can be message, warning, fatal
         // Error code
         // Current date and time
-        
-        try {
-        
-            File f = new File(logfilepath);
-            writer = new FileWriter(f, true);
-            bw = new BufferedWriter(writer);
-            out = new PrintWriter(bw);
-
+        try {        
             date = new Date();
             currentdate = DATEFORMAT.format(date);
-            out.println(currentdate + "\t" + severity + "\t" + error_code + "\t" + source + "\t" +inString);  
-
-            closeLog();
-        
+            Utils.appendLineToFile(logfilepath, currentdate + "\t" + severity + "\t" + error_code + "\t" + source + "\t" +inString);  
         } catch (Exception e) {
-            
             System.out.println("An exception occured in Logger.writeLog() while logging...");
             System.out.println(e);
             System.out.println(Arrays.toString(e.getStackTrace()));
-            
         }
     }
-    
-    public void writeLog(String inString) throws IOException{
-               
-        out.println(inString);      
-        
-    }
-    
-    public void closeLog() throws IOException {
-        out.close();
-        bw.close();
-        writer.close();
-    }
-    
-    
     
 }

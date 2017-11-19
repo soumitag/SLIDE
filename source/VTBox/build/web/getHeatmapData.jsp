@@ -78,7 +78,14 @@ try {
                 int original_row_id = analysis.linkage_tree.leaf_ordering.get(start+j);
             %>
                 <rect x='<%=x%>' y='<%=y%>' id='<%=td_id%>' width = '<%=CELL_WIDTH%>' height = '<%=CELL_HEIGHT%>' style="fill:<%=color_str%>; " stroke="black" stroke-width="<%=BORDER_STROKE_WIDTH%>">
-                    <title><%= cells.dataval[original_row_id][i] %></title>
+                    <title>
+                        <% if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) { %>
+                        Raw Value: <%= analysis.database.raw_data[original_row_id][i] %>,
+                        Transformed Value: <%= cells.dataval[original_row_id][i] %>
+                        <% } else { %>
+                        Value: <%= cells.dataval[original_row_id][i] %>
+                        <% } %>
+                    </title>
                 </rect>
             <% } %>
         </g>

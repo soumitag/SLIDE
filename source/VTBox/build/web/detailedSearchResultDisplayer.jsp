@@ -60,6 +60,14 @@ try {
     double image_width = left_buffer + search_results.size()*column_width + (search_results.size()-1)*gap;
     double left_position = 0;
 
+    String updaterFuncName = "";
+    if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
+        updaterFuncName = "callDetailedInfoUpdater";
+    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+        updaterFuncName = "callDetailedPathInfoUpdater";
+    } else if (analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+        updaterFuncName = "callDetailedGOInfoUpdater";
+    }
 %>
 
     <html>
@@ -117,6 +125,15 @@ try {
             function callDetailedInfoUpdater(eid, analysis_name) {
                 parent.showDetailedInfo(eid, analysis_name);
             }
+            
+            function callDetailedPathInfoUpdater(pid, analysis_name) {
+                parent.showDetailedPathInfo(pid, analysis_name);
+            }
+            
+            function callDetailedGOInfoUpdater(gid, analysis_name) {
+                parent.showDetailedGOInfo(gid, analysis_name);
+            }
+            
             
             function toggleHighlightGenes(pathid, state) {
                 //alert("3");
@@ -206,7 +223,7 @@ try {
                                     String pathid = search_results_ij.getPathID();
         %>
 
-                                    <rect id='<%=i + "_" + pathid%>' name='<%=i + "_" + pathid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21; z-index: 1" onclick='callDetailedInfoUpdater(<%=eid%>, "<%=analysis_name%>")' />
+                                    <rect id='<%=i + "_" + pathid%>' name='<%=i + "_" + pathid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21; z-index: 1" onclick='<%=updaterFuncName%>(<%=eid%>, "<%=analysis_name%>")' />
                                     
         <%
                                 } else if (search_results_ij.type == CompactSearchResultContainer.TYPE_GO) {
@@ -215,7 +232,7 @@ try {
                                     String goid = search_results_ij.getGOID();
         %>
 
-                                    <rect id='<%=i + "_" + goid%>' name='<%=i + "_" + goid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21" onclick='callDetailedInfoUpdater(<%=eid%>, "<%=analysis_name%>")' />
+                                    <rect id='<%=i + "_" + goid%>' name='<%=i + "_" + goid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21" onclick='<%=updaterFuncName%>(<%=eid%>, "<%=analysis_name%>")' />
                                     
         <%
                                 } else if (search_results_ij.type == CompactSearchResultContainer.TYPE_GENE) {
@@ -223,7 +240,7 @@ try {
                                     String eid = search_results_ij.getEntrezID();
         %>
 
-                                    <rect id='<%=i + "_" + eid%>' name='<%=i + "_" + eid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21" onclick='callDetailedInfoUpdater(<%=eid%>, "<%=analysis_name%>")' />
+                                    <rect id='<%=i + "_" + eid%>' name='<%=i + "_" + eid%>' x="<%=left%>" y="<%=top%>" height="<%=feature_display_height%>px" width="<%=column_width%>px" style="fill: #73AD21" onclick='<%=updaterFuncName%>(<%=eid%>, "<%=analysis_name%>")' />
                                     
         <%                      }
                             }

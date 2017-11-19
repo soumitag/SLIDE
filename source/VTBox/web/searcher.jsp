@@ -130,7 +130,7 @@ try {
                             <option value="pathid">Path ID</option>
                             <option value="pathname">Pathway</option>
                         </select>
-                        <%  } else if(analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION)  {       %>
+                        <%  } else if(analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION)  {       %>
                         <select name="queryType" id="queryType" form="SearchForm">
                             <option value="goid">GO ID</option>
                             <option value="goterm">GO Term</option>

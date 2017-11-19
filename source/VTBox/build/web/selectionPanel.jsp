@@ -23,6 +23,7 @@ try {
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type = "text/javascript" language = "JavaScript" src="params.js"></script>
         <link rel="stylesheet" href="vtbox-main.css">
         <style>
             td {
@@ -60,8 +61,37 @@ try {
                         alert("Data has negative values. Log base 2 transformation cannot be applied.");
                         document.getElementById("log2flag").checked = false;
                     } else if (data_min === 0.0) {
-                        alert("Data has zero values. A small positive offset (2 raised to the power -149) will be added to all cells. If you do not wish to do this, uncheck the log base 2 transformation option.");
+                        alert("Data has zero values. The minimum non-zero value in the dataset, will be added to all cells. If you do not wish to do this, uncheck the log base 2 transformation option.");
                     }
+                }
+            }
+            
+            function validateParamsAndSubmit() {
+                var readyToSubmit = true;
+                var clip = document.getElementById("clippingType").selectedIndex;
+                if (clip !== 0) {
+                    var clip_min = parseInt(document.getElementById("txtClipMin").value);
+                    var clip_max = parseInt(document.getElementById("txtClipMax").value);
+                    //alert(clip_min);
+                    //alert(clip_max);
+                    if (clip_max <= clip_min) {
+                        alert("Maximum clipping value cannot be less than or equal to minimum clipping value.");
+                        readyToSubmit = false;
+                    }
+                    if (clip === 2) {
+                        if(clip_min < 1 || clip_min > 99) {
+                            alert("Minimum clipping percentile cannot be less than 1 or greater than 99.");
+                            readyToSubmit = false;
+                        }
+                        if(clip_max < 1 || clip_max > 99) {
+                            alert("Maximum clipping percentile cannot be less than 1 or greater than 99.");
+                            readyToSubmit = false;
+                        }
+                    }
+                }
+                
+                if (readyToSubmit) {
+                    document.getElementById('SelectionForm').submit();
                 }
             }
             
@@ -69,7 +99,7 @@ try {
     </head>
     
     <body>
-        <form name="SelectionForm" method="get" action="AnalysisReInitializer" target="visualizationPanel"> 
+        <form name="SelectionForm" id="SelectionForm" method="get" action="AnalysisReInitializer" target="visualizationPanel"> 
             <input type="hidden" name="analysis_name" value="<%=analysis_name%>" />
             <input type="hidden" name="do_clustering" value="false" />
             <table id="dataselectionTable" width="100%" border=0 align=center cellpadding="2px" cellspacing="2px"  style="padding-left: 5px; padding-right: 5px;">
@@ -122,7 +152,7 @@ try {
                     <input type="radio" name="normRule_Col" value="0" checked="checked"> None <br>
                     <input type="radio" name="normRule_Col" value="1"> Scale Columns to 0-1 <br>
                     <input type="radio" name="normRule_Col" value="2"> Make Columns Standard Normal <br>
-                    <input type="radio" name="normRule_Col" value="3"> Pareto Scaling  <br>
+                    <input type="radio" name="normRule_Col" value="3"> Modified Pareto Scaling  <br>
                 </td>
             </tr>
             
@@ -156,21 +186,21 @@ try {
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label style="line-height: 20px">Significance Level: </label></b>
-                    <input type="text" name="txtSignificanceLevel" value="0.05" maxlength="4" size="4" >
+                    <input type="text" id="txtSignificanceLevel" name="txtSignificanceLevel" value="0.05" maxlength="5" size="5" >
                 </td>
             </tr>
             
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label style="line-height: 25px"> Minimum Functional Group Feature List Intersection: </label></b>
-                    <input type="text" name="txtSmall_k" value="0" maxlength="4" size="4" >
+                    <input type="text" id="txtSmall_k" name="txtSmall_k" value="0" maxlength="4" size="4" >
                 </td>
             </tr>
             
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label style="line-height: 25px; padding-bottom: 10px">Minimum Functional Group Size: </label></b>
-                    <input type="text" name="txtBig_K" value="0" maxlength="4" size="4" >
+                    <input type="text" id="txtBig_K" name="txtBig_K" value="0" maxlength="4" size="4" >
                 </td>
             </tr>
 
@@ -210,28 +240,20 @@ try {
             
             <tr> <td colspan='4' align=center height="20"> <b>Visualization Controls</b> </td></tr>
             
-            <% // if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
-            <!--
-            <tr>
-                <td colspan="4" style="padding: 10px;"> 
-                    <b><label>Data Scaling for Visualization: </label></b><br>
-                    <input type="radio" name="normRules_Heatmap" value="0" checked="checked"> None <br>
-                    <input type="radio" name="normRules_Heatmap" value="2"> Mean Center Rows <br>
-                    <input type="radio" name="normRules_Heatmap" value="3"> Make Rows Standard Normal <br>
-                    <input type="radio" name="normRules_Heatmap" value="1"> Scale Rows to 0-1 Range <br>
-                </td>
-            </tr>
-            -->
-            <% // }   %>
             
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label>Number of Color Bins: </label></b>
-                    <input type="text" name="txtNBins" value="21" maxlength="4" size="4" >
+                    <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
+                    <input type="text" id="txtNBins" name="txtNBins" value="21" maxlength="4" size="4" >
+                    <% } else { %>
+                    <input type="text" id="txtNBins" name="txtNBins" value="51" maxlength="4" size="4" >
+                    <% } %>
                 </td>
             </tr>
             
             
+            <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label>Binning Range: </label></b><br>
@@ -248,7 +270,14 @@ try {
                     </p>
                 </td>
             </tr>
-            
+            <% } else { %>
+            <tr>
+                <td colspan="4" style="padding: 10px;"> 
+                    <b><label>Binning Range: </label></b><br>
+                    <input type="radio" name="binningRange" value="symmetric_bins" checked> Use Symmetric Bins (about 0)<br>
+                </td>
+            </tr>
+            <% } %>
             
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
@@ -278,7 +307,11 @@ try {
             <tr>
                 <td colspan="4" align="center" style="padding: 10px;"> 
                     <input type="hidden" id="vizType" name="vizType" value="Selection">
+                    <% if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  { %>
+                    <button type="button" onclick="validateParamsAndSubmit()">Refresh</button>
+                    <% } else { %>
                     <button type="submit">Refresh</button>
+                    <% } %>
                 </td>
             </tr>
             
@@ -286,6 +319,75 @@ try {
             
         </form>
     </body>
+    
+    
+    <% 
+        String load_type = request.getParameter("load_type");
+        if (load_type != null) {
+            if (load_type.equalsIgnoreCase("reopen") || load_type.equalsIgnoreCase("file")) {
+                if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {
+    %>
+    
+        <script>
+            
+            replicateHandling(<%=analysis.data_transformation_params.replicate_handling%>);
+            checkDataClipMinMax(<%=analysis.data_transformation_params.getClippingType()%>, <%=analysis.data_transformation_params.clip_min%>, <%=analysis.data_transformation_params.clip_max%>);
+            checkLogTransform(<%=analysis.data_transformation_params.log_transform%>);
+            columnScaling(<%=analysis.data_transformation_params.column_normalization%>);
+            rowScaling(<%=analysis.data_transformation_params.row_normalization%>);
+            groupBy(<%=analysis.data_transformation_params.getGroupByIndex()%>);
+            checkHierarchical(<%=analysis.clustering_params.do_clustering%>);
+            linkageFunc(<%=analysis.clustering_params.getLinkageIndex()%>);
+            distFunc(<%=analysis.clustering_params.getDistanceFuncIndex()%>);
+            colorBins(<%=analysis.visualization_params.nBins%>);
+            binRange(<%=analysis.visualization_params.getBinRangeTypeIndex()%>);
+            binRangeStartEnd(<%=analysis.visualization_params.getBinRangeTypeIndex()%>, <%=analysis.visualization_params.bin_range_start%>, <%=analysis.visualization_params.bin_range_end%>);
+            leafOrder(<%=analysis.visualization_params.getLeafOrderingStrategyIndex()%>);
+            
+        </script>
+    
+    <%
+                } else {
+    %>
+        <script>
+            
+            setSignificanceLevel(<%=analysis.enrichment_params.significance_level%>);
+            set_small_k(<%=analysis.enrichment_params.small_k%>);
+            set_Big_K(<%=analysis.enrichment_params.big_K%>);
+            checkHierarchical(<%=analysis.clustering_params.do_clustering%>);
+            linkageFunc(<%=analysis.clustering_params.getLinkageIndex()%>);
+            distFunc(<%=analysis.clustering_params.getDistanceFuncIndex()%>);
+            colorBins(<%=analysis.visualization_params.nBins%>);
+            leafOrder(<%=analysis.visualization_params.getLeafOrderingStrategyIndex()%>);
+            
+        </script>
+    <%
+                }
+            } else if (load_type.equalsIgnoreCase("sub_analysis")) {
+                if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {
+    %>
+        <script>
+            
+            replicateHandling(<%=analysis.data_transformation_params.replicate_handling%>);
+            groupBy(<%=analysis.data_transformation_params.getGroupByIndex()%>);
+            colorBins(<%=analysis.visualization_params.nBins%>);
+            binRange(<%=analysis.visualization_params.getBinRangeTypeIndex()%>);
+            binRangeStartEnd(<%=analysis.visualization_params.getBinRangeTypeIndex()%>, <%=analysis.visualization_params.bin_range_start%>, <%=analysis.visualization_params.bin_range_end%>);
+            
+        </script>
+    <%
+                } else {
+    %>
+        <script>
+            
+            colorBins(<%=analysis.visualization_params.nBins%>);
+
+        </script>
+    <%
+                }
+            }
+        }
+    %>
 </html>
 <%
   

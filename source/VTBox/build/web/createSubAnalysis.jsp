@@ -423,7 +423,7 @@ try {
         <tr>
             <td height="75">
                 Sub-analysis <i><%=list_name%></i> created. <br>
-                Click <a href="<%=base_url%>displayHome.jsp?analysis_name=<%=list_name%>" target="_blank">here</a> to open.
+                Click <a href="<%=base_url%>displayHome.jsp?analysis_name=<%=list_name%>&load_type=sub_analysis" target="_blank">here</a> to open.
             </td>
         </tr>
         <tr>

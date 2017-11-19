@@ -52,6 +52,10 @@ try {
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
 %>
+    <head>
+        <link rel="stylesheet" href="vtbox-main.css">
+        <link rel="stylesheet" href="vtbox-tables.css">
+    </head>
     <body>
         
         <script>

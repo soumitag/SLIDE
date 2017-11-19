@@ -7,6 +7,7 @@ package searcher;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,9 @@ import java.util.List;
  *
  * @author SOUMITA GHOSH
  */
-public class GeneObject {
+public class GeneObject implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     
     public String entrez_id;
     public String genesymbol;

@@ -20,9 +20,13 @@ import java.io.PrintWriter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Date;
 import java.util.regex.Matcher;
 
 import java.util.regex.Pattern;
+import structure.DataCells;
+import structure.DataMask;
 
 public class Utils { 
 
@@ -505,6 +509,37 @@ public class Utils {
     }
     */
     
+    public static void appendLineToFile (String logfilepath, String line) throws IOException {
+        File f = new File(logfilepath);
+        FileWriter writer = new FileWriter(f, true);
+        BufferedWriter bw = new BufferedWriter(writer);
+        PrintWriter out = new PrintWriter(bw);
+        out.println(line);
+        out.close();
+        bw.close();
+        writer.close();
+    }
+    
+    public static void saveDataMatrix (String filename, String delim, DataCells datacells, DataMask mask) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filename, false));
+            for (int i=0; i<datacells.height; i++) {
+                if(mask.row_mask[i]) {
+                    for (int j=0; j<datacells.width - 1; j++) {
+                        if (mask.col_mask[j]) {
+                            writer.append(datacells.dataval[i][j] + delim);
+                        }
+                    }
+                    writer.append(datacells.dataval[i][datacells.width-1] + "");
+                    writer.newLine();
+                }
+            }
+            writer.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
     public static void saveData (Vector data, String filename) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filename, false));
@@ -658,7 +693,8 @@ public class Utils {
         }
     }
     
-    public int[][] loadIntDelimData (String inFile, String delim, boolean hasHeader) {
+    public int[][] loadIntDelimData (String inFile, String delim, boolean hasHeader) 
+    throws IOException {
         String[][] data = loadDelimData (inFile, delim, hasHeader);
         int[][] intData = new int[data.length][data[0].length];
         for (int i=0; i<data.length; i++) {
@@ -669,7 +705,8 @@ public class Utils {
         return intData;
     }
     
-    public static double[][] loadDoubleDelimData (String inFile, String delim, boolean hasHeader) {
+    public static double[][] loadDoubleDelimData (String inFile, String delim, boolean hasHeader) 
+    throws IOException {
         String[][] data = loadDelimData (inFile, delim, hasHeader);
         double[][] doubleData = new double[data.length][data[0].length];
         for (int i=0; i<data.length; i++) {
@@ -680,14 +717,15 @@ public class Utils {
         return doubleData;
     }
     
-    public static String[][] loadDelimData (String inFile, String delim, boolean hasHeader) {
+    public static String[][] loadDelimData (String inFile, String delim, boolean hasHeader) 
+    throws IOException {
              
         BufferedReader br1, br2 = null;
         String line;
         
         String[][] data;
                 
-        try {
+        //try {
 
             int count = 1;
             br1 = new BufferedReader(new FileReader(inFile));
@@ -719,12 +757,14 @@ public class Utils {
             br2.close();
             
             return data;
-            
+          
+        /*
         } catch (Exception e) {
             System.out.println("Error reading input data:");
             System.out.println(e);
             return null;
         }
+        */
     }
     
     public static String[][] loadDelimData (String inFile, String delim, boolean hasHeader, int maxRows) {

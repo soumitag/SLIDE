@@ -96,6 +96,14 @@ try {
     double image_width = left_buffer + search_results.size()*column_width + (search_results.size()-1)*gap;
     double left_position = 0;
 
+    String updaterFuncName = "";
+    if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
+        updaterFuncName = "callDetailedInfoUpdater";
+    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+        updaterFuncName = "callDetailedPathInfoUpdater";
+    } else if (analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+        updaterFuncName = "callDetailedGOInfoUpdater";
+    }
 
       out.write("\n");
       out.write("\n");
@@ -155,6 +163,18 @@ try {
       out.write("                //alert(eid);\n");
       out.write("                //alert(analysis_name);\n");
       out.write("                parent.showDetailedInfo(eid, analysis_name);\n");
+      out.write("            }\n");
+      out.write("            \n");
+      out.write("            function callDetailedPathInfoUpdater(pid, analysis_name) {\n");
+      out.write("                //alert(eid);\n");
+      out.write("                //alert(analysis_name);\n");
+      out.write("                parent.showDetailedPathInfo(pid, analysis_name);\n");
+      out.write("            }\n");
+      out.write("            \n");
+      out.write("            function callDetailedGOInfoUpdater(gid, analysis_name) {\n");
+      out.write("                //alert(eid);\n");
+      out.write("                //alert(analysis_name);\n");
+      out.write("                parent.showDetailedGOInfo(gid, analysis_name);\n");
       out.write("            }\n");
       out.write("            \n");
       out.write("            function toggleHighlightGenes(pathid, state) {\n");
@@ -271,7 +291,9 @@ try {
       out.print(feature_display_height);
       out.write("px\" width=\"");
       out.print(column_width);
-      out.write("px\" style=\"fill: #73AD21; z-index: 1\" onclick='callDetailedInfoUpdater(");
+      out.write("px\" style=\"fill: #73AD21; z-index: 1\" onclick='");
+      out.print(updaterFuncName);
+      out.write('(');
       out.print(eid);
       out.write(", \"");
       out.print(analysis_name);
@@ -298,7 +320,9 @@ try {
       out.print(feature_display_height);
       out.write("px\" width=\"");
       out.print(column_width);
-      out.write("px\" style=\"fill: #73AD21\" onclick='callDetailedInfoUpdater(");
+      out.write("px\" style=\"fill: #73AD21\" onclick='");
+      out.print(updaterFuncName);
+      out.write('(');
       out.print(eid);
       out.write(", \"");
       out.print(analysis_name);
@@ -324,7 +348,9 @@ try {
       out.print(feature_display_height);
       out.write("px\" width=\"");
       out.print(column_width);
-      out.write("px\" style=\"fill: #73AD21\" onclick='callDetailedInfoUpdater(");
+      out.write("px\" style=\"fill: #73AD21\" onclick='");
+      out.print(updaterFuncName);
+      out.write('(');
       out.print(eid);
       out.write(", \"");
       out.print(analysis_name);

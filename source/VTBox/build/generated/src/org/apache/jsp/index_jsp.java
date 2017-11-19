@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import searcher.Searcher;
 import structure.AnalysisContainer;
 import java.util.Enumeration;
 
@@ -48,11 +49,13 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
  
     String analysis_to_stop = request.getParameter("analysis_to_stop");
     if(analysis_to_stop != null){
-        Object ac1 = session.getAttribute(analysis_to_stop);
+        AnalysisContainer ac1 = (AnalysisContainer)session.getAttribute(analysis_to_stop);
+        ((Searcher)ac1.searcher).closeMongoDBConnection();
         if(ac1 != null){
             session.removeAttribute(analysis_to_stop);
         }

@@ -7,10 +7,6 @@ package structure;
 
 import algorithms.enrichment.EnrichmentAnalysis;
 import algorithms.enrichment.HypergeomParameterContainer;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,11 +19,9 @@ import java.util.List;
 import utils.Utils;
 import utils.MongoDBConnect;
 
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import utils.UserInputParser;
 
-import net.sf.javaml.core.kdtree.KDTree;
 import vtbase.DataParsingException;
 
 import data.transforms.Imputer;
@@ -81,6 +75,7 @@ public final class Data implements Serializable {
     public String [] current_sample_names;
     
     public float RAW_DATA_MIN;
+    public float RAW_DATA_NONZERO_MIN;
     public double[] DATA_MIN_MAX;
     
     public Data() {}    // used in cloneDB and for testing
@@ -288,25 +283,21 @@ public final class Data implements Serializable {
         
         Imputer imputer = new Imputer(raw_data.length, raw_data[0].length);
         
-        BufferedReader br = null;
-        String line;
-        
         RAW_DATA_MIN = Float.POSITIVE_INFINITY;
         
         try {
-
-            br = new BufferedReader(new FileReader(filename));
+            
+            String[][] unprocessed_data = Utils.loadDelimData(filename, delimiter, false);
 
             int count = 0;
             String[] lineData = null;
             
             int i = 0;
-            while ((line = br.readLine()) != null) {
+            for (int row=0; row<unprocessed_data.length; row++) {
 
                 if (count >= start_row) {
-                    lineData = line.split(delimiter);
                     
-                    //ArrayList <Integer> impute_cols = new ArrayList <Integer> (0);
+                    lineData = unprocessed_data[row];
                     
                     for(int j = 0; j < columns.size(); j++) {
                         try {
@@ -337,6 +328,7 @@ public final class Data implements Serializable {
                     }
                     
                     i++;
+                    
                 }
                 
                 if (count == end_row) {
@@ -392,14 +384,33 @@ public final class Data implements Serializable {
             this.CLIPPING_MIN = clip_min;
             this.CLIPPING_MAX = clip_max;
         } else if (clipping_type.equals("ptile")) {
-            DescriptiveStatistics stats = new DescriptiveStatistics();
-            for (int i = 0; i < raw_data.length; i++) {
-                for (int j = 0; j < raw_data[0].length; j++) {
-                    stats.addValue(raw_data[i][j]);
+            
+            if (clip_max <= clip_min) {
+                // bad params, do no clipping
+                this.CLIPPING_MIN = Float.NEGATIVE_INFINITY;
+                this.CLIPPING_MAX = Float.POSITIVE_INFINITY;
+                
+            } else {
+            
+                DescriptiveStatistics stats = new DescriptiveStatistics();
+                for (int i = 0; i < raw_data.length; i++) {
+                    for (int j = 0; j < raw_data[0].length; j++) {
+                        stats.addValue(raw_data[i][j]);
+                    }
+                }
+                
+                if (clip_min < 1.0 || clip_min > 99.0) {
+                    this.CLIPPING_MIN = Float.NEGATIVE_INFINITY;
+                } else {
+                    this.CLIPPING_MIN = (float)stats.getPercentile(clip_min);
+                }
+
+                if (clip_max < 1.0 || clip_max > 99.0) {
+                    this.CLIPPING_MAX = Float.POSITIVE_INFINITY;
+                } else {
+                    this.CLIPPING_MAX = (float)stats.getPercentile(clip_max);
                 }
             }
-            this.CLIPPING_MIN = (float)stats.getPercentile(clip_min);
-            this.CLIPPING_MAX = (float)stats.getPercentile(clip_max);
         }
     }
     
@@ -702,11 +713,15 @@ public final class Data implements Serializable {
     }
     
     private void computeRawDataMin() {
+        RAW_DATA_NONZERO_MIN = Float.POSITIVE_INFINITY;
         RAW_DATA_MIN = Float.POSITIVE_INFINITY;
         for(int i = 0; i < datacells.height; i++ ){
             for(int j = 0; j < datacells.width; j++){
                 if (datacells.dataval[i][j] < RAW_DATA_MIN) {
                     RAW_DATA_MIN = datacells.dataval[i][j];
+                }
+                if (datacells.dataval[i][j] > 0.0 && datacells.dataval[i][j] < RAW_DATA_NONZERO_MIN) {
+                    RAW_DATA_NONZERO_MIN = datacells.dataval[i][j];
                 }
             }
         }
@@ -734,7 +749,8 @@ public final class Data implements Serializable {
         for(int i = 0; i < datacells.height; i++ ){
             for(int j = 0; j < datacells.width; j++){
                 if (RAW_DATA_MIN == 0.0) {
-                    datacells.dataval[i][j] = datacells.dataval[i][j] + Float.MIN_VALUE;
+                    //datacells.dataval[i][j] = datacells.dataval[i][j] + Float.MIN_VALUE;
+                    datacells.dataval[i][j] = datacells.dataval[i][j] + RAW_DATA_NONZERO_MIN;
                 }
                 datacells.dataval[i][j] = (float)Math.log(datacells.dataval[i][j])/log2;
             }
@@ -933,9 +949,7 @@ public final class Data implements Serializable {
             String metafilename, boolean isTimeSeries, String[] colheaders
     ) throws DataParsingException {
         
-        UserInputParser uiParser = new UserInputParser();
-        uiParser.parseSampleMappingsFile(metafilename, isTimeSeries, colheaders);
-        SampleMappings sm = uiParser.getMappings();
+        SampleMappings sm = UserInputParser.parseSampleMappingsFile(metafilename, isTimeSeries, colheaders);
         
         this.sampleNames = sm.sampleNames;
         this.timeStamps = sm.timeStamps;
@@ -967,25 +981,7 @@ public final class Data implements Serializable {
         return min_max;
     }
     
-    public void saveDataMatrix (String filename, String delim, DataMask mask) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filename, false));
-            for (int i=0; i<datacells.height; i++) {
-                if(mask.row_mask[i]) {
-                    for (int j=0; j<datacells.width - 1; j++) {
-                        if (mask.col_mask[j]) {
-                            writer.append(datacells.dataval[i][j] + delim);
-                        }
-                    }
-                    writer.append(datacells.dataval[i][datacells.width-1] + "");
-                    writer.newLine();
-                }
-            }
-            writer.close();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-    }
+    
     
     public Data cloneDB (ArrayList <Integer> filtered_row_indices) 
     throws DataParsingException {
@@ -1032,7 +1028,8 @@ public final class Data implements Serializable {
         // each row or gene is a Feature object
         ArrayList <Feature> filtered_features = new ArrayList <Feature> ();
         for (int i=0; i<filtered_row_indices.size(); i++) {
-            filtered_raw_data[i] = raw_data[filtered_row_indices.get(i)];
+            //filtered_raw_data[i] = raw_data[filtered_row_indices.get(i)];
+            filtered_raw_data[i] = datacells.dataval[filtered_row_indices.get(i)];
             filtered_features.add(features.get(filtered_row_indices.get(i)));
         }
         cloneData.raw_data = filtered_raw_data;

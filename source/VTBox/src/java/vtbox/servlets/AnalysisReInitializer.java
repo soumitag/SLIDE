@@ -16,6 +16,10 @@ import javax.servlet.http.HttpSession;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
 import java.util.HashMap;
+import params.ClusteringParams;
+import params.EnrichmentParams;
+import params.TransformationParams;
+import params.VisualizationParams;
 import structure.Data;
 
 /**
@@ -65,7 +69,7 @@ public class AnalysisReInitializer extends HttpServlet {
             int big_K = 0;
             int small_k = 0;
 
-            HashMap <String, Double> enrichment_params;
+            EnrichmentParams enrichment_params;
 
             if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {
 
@@ -90,11 +94,11 @@ public class AnalysisReInitializer extends HttpServlet {
                 big_K = Integer.parseInt(request.getParameter("txtBig_K"));
                 small_k = Integer.parseInt(request.getParameter("txtSmall_k"));
 
-                enrichment_params = new HashMap <String, Double> ();
-                enrichment_params.put("significance_level", significance_level);
-                enrichment_params.put("small_k", (double)big_K);
-                enrichment_params.put("big_K", (double)small_k);
-
+                enrichment_params = new EnrichmentParams ();
+                enrichment_params.setSignificanceLevel((float)significance_level);
+                enrichment_params.setSmallk(small_k);
+                enrichment_params.setBigK(big_K);
+                
                 analysis.ea.testParams.filterFunctionalGroupList(big_K, small_k, significance_level);
                 analysis.setEnrichmentParams(enrichment_params);
             }
@@ -184,17 +188,51 @@ public class AnalysisReInitializer extends HttpServlet {
                 
             }
             
+            /*
+            HashMap <String, String> data_transformation_params = new HashMap <String, String> ();
+            data_transformation_params.put("replicate_handling", Integer.toString(replicate_handling));
+            data_transformation_params.put("clipping_type", clippingType);
+            data_transformation_params.put("clip_min", Float.toString(clip_min));
+            data_transformation_params.put("clip_max", Float.toString(clip_max));
+            data_transformation_params.put("log_transform", Boolean.toString(logTransformData));
+            data_transformation_params.put("column_normalization", Integer.toString(column_normalization));
+            data_transformation_params.put("row_normalization", Integer.toString(row_normalization));
+            data_transformation_params.put("group_by", groupBy);
+            */
+            
+            TransformationParams data_transformation_params = new TransformationParams();
+            data_transformation_params.setReplicateHandling(replicate_handling);
+            data_transformation_params.setClippingType(clippingType);
+            data_transformation_params.setClipMin(clip_min);
+            data_transformation_params.setClipMax(clip_max);
+            data_transformation_params.setLogTransform(logTransformData);
+            data_transformation_params.setColumnNormalization(column_normalization);
+            data_transformation_params.setRowNormalization(row_normalization);
+            data_transformation_params.setGroupBy(groupBy);
+            
+            /*
             HashMap <String, String> clustering_params = new HashMap <String, String> ();
             clustering_params.put("do_clustering", Boolean.toString(doCluster));
             clustering_params.put("linkage", linkage);
             clustering_params.put("distance_func", distance_func);
-            if (analysis.equalsClusteringParam(clustering_params)) {
-                clustering_params.put("use_cached", "true");
-            } else {
-                clustering_params.put("use_cached", "false");
-            }
-            analysis.setClusteringParams(clustering_params);
+            */
             
+            ClusteringParams clustering_params = new ClusteringParams();
+            clustering_params.setDistanceFunc(distance_func);
+            clustering_params.setLinkage(linkage);
+            clustering_params.setDoClustering(doCluster);
+            
+            /*
+            if (analysis.equalsClusteringParam(clustering_params) && analysis.equalsDataTransformationParam(data_transformation_params)) {
+                //clustering_params.put("use_cached", "true");
+                clustering_params.setUseCached(true);
+            } else {
+                //clustering_params.put("use_cached", "false");
+                clustering_params.setUseCached(false);
+            }
+            */
+
+            /*
             HashMap <String, String> visualization_params = new HashMap <String, String> ();
             visualization_params.put("leaf_ordering_strategy", leaf_ordering_strategy);
             visualization_params.put("heatmap_color_scheme", heatmap_color_scheme);
@@ -202,6 +240,18 @@ public class AnalysisReInitializer extends HttpServlet {
             visualization_params.put("bin_range_type", binRangeType);
             visualization_params.put("bin_range_start", rangeStart + "");
             visualization_params.put("bin_range_end", rangeEnd + "");
+            */
+            
+            VisualizationParams visualization_params = new VisualizationParams();
+            visualization_params.setLeafOrderingStrategy(leaf_ordering_strategy);
+            visualization_params.setNBins(Integer.parseInt(nBins));
+            visualization_params.setBinRangeType(binRangeType);
+            visualization_params.setBinRangeStart((float)rangeStart);
+            visualization_params.setBinRangeEnd((float)rangeEnd);
+            visualization_params.setHeatmapColorScheme(heatmap_color_scheme);
+            
+            analysis.setDataTransformationParams(data_transformation_params);
+            analysis.setClusteringParams(clustering_params);
             analysis.setVisualizationParams(visualization_params);
             
             /*

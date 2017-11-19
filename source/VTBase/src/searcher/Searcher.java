@@ -26,14 +26,11 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.ParallelScanOptions;
 import com.mongodb.ServerAddress;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
     
-public class Searcher implements Serializable {
-    
-    private static final long serialVersionUID = 1L;
+public class Searcher {
     
     private MongoClient mongoClient;
     private DB db;

@@ -10,11 +10,12 @@ package algorithms.clustering;
  * @author Soumita
  */
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
-public class TreeNode {
+public class TreeNode implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     public int nodeID;
     public int leftChildID;

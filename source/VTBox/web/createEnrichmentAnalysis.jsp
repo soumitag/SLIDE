@@ -28,6 +28,7 @@ try {
     // mode name_error: shows input form, with the message The name blah blah is already in use. Please specify another name.
     // mode filter_error: shows input form, with the message No enriched functional groups could be found. Please relax the filter conditions and try again. 
     // mode emptylist_error: shows input form, with the message All the selected feature lists are empty. Enrichment analysis requires at least one non-empty feature list.
+    // mode ontology_error: shows input form, with the message No gene ontology selected. GO Enrichment analysis requires at least one gene ontology to be selected.
     
     String mode = request.getParameter("mode");
     String analysis_name = request.getParameter("analysis_name");
@@ -51,6 +52,15 @@ try {
             // create the enrichment analysis
             String enrichment_type = request.getParameter("enrichment_type");
             String[] ontologies = request.getParameterValues("ontologies");
+            
+            if (enrichment_type.equals("go")) {
+                if (ontologies == null || ontologies.length == 0) {
+                    String url = "createEnrichmentAnalysis.jsp?mode=ontology_error&analysis_name=" + analysis_name + "&enrichment_name=" + enrichment_name;
+                    request.getRequestDispatcher(url).forward(request, response);
+                    return;
+                }
+            }
+            
             double significance_level = Double.parseDouble(request.getParameter("txtSignificanceLevel"));
             int big_K = Integer.parseInt(request.getParameter("txtBig_K"));
             int small_k = Integer.parseInt(request.getParameter("txtSmall_k"));
@@ -124,11 +134,11 @@ try {
             */
 
             EnrichmentAnalysis ea = new EnrichmentAnalysis(
-                    analysis.database.features, selected_filter_list_maps,
+                    analysis.database.features, analysis.entrezPosMap, selected_filter_list_maps,
                     analysis.database.species, enrichment_type, big_K, small_k, significance_level, 
                     ontologies);
             ea.run();
-            ea.closeDBconn();
+            //ea.closeDBconn();
             
             if (ea.testParams.nonmasked_funcgrp_count > 0) {
                 String installPath = SessionManager.getInstallPath(application.getResourceAsStream("/WEB-INF/slide-web-config.txt"));
@@ -148,7 +158,7 @@ try {
     
 %>
 
-<% if (mode.equals("input") || mode.equals("name_error") || mode.equals("filter_error") || mode.equals("emptylist_error")) {  %>
+<% if (mode.equals("input") || mode.equals("name_error") || mode.equals("filter_error") || mode.equals("emptylist_error") || mode.equals("ontology_error")) {  %>
 
 <html>
     <head>
@@ -256,6 +266,14 @@ try {
         </tr>
         <% } %>
         
+        <% if (mode.equals("ontology_error")) {  %>
+        <tr>
+            <td class="error_msg" align="center" colspan="2">
+                <b><label>No gene ontology selected. GO Enrichment analysis requires at least one gene ontology to be selected.</label></b>
+            </td>
+        </tr>
+        <% } %>
+        
         <tr>
             <td width="50%">
                 <b><label>Enter a Name for the Enrichment Analysis</label></b>
@@ -337,9 +355,9 @@ try {
                 <b><label>Include Ontologies (Only used for Gene Ontology Enrichment): </label></b><br>
             </td>
             <td colspan="4" style="padding: 10px;">
-                <input type="checkbox" id="ontologies" name="ontologies" value="biological_processes"> Biological Processes</input>
-                <input type="checkbox" id="ontologies" name="ontologies" value="molecular_function"> Molecular Function</input>
-                <input type="checkbox" id="ontologies" name="ontologies" value="cellular_components"> Cellular Components</input>
+                <input type="checkbox" id="ontologies" name="ontologies" value="bp" checked> Biological Processes</input>
+                <input type="checkbox" id="ontologies" name="ontologies" value="mf" checked> Molecular Function</input>
+                <input type="checkbox" id="ontologies" name="ontologies" value="cc" checked> Cellular Components</input>
             </td>
         </tr>
         

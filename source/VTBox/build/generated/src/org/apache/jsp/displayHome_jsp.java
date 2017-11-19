@@ -52,14 +52,11 @@ public final class displayHome_jsp extends org.apache.jasper.runtime.HttpJspBase
 
     
 try {
-    
     String analysis_name = request.getParameter("analysis_name");
     String load_type = request.getParameter("load_type");
     if (load_type != null && (load_type.equalsIgnoreCase("reopen") || load_type.equalsIgnoreCase("file"))) {
         AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
-        if (analysis.isTreeAvailable) {
-            analysis.clustering_params.put("use_cached", "true");
-        }
+        analysis.hac.clearCache();
     }
 
       out.write("\n");
@@ -91,6 +88,8 @@ try {
       out.write("                <td rowspan=\"3\" align=\"top\" valign=\"top\" height=\"100%\" style=\"border-style: solid; border-color: #E1E1E1\">\n");
       out.write("                    <iframe name=\"selectionPanel\" id=\"selectionPanel\" src=\"selectionPanel.jsp?analysis_name=");
       out.print(analysis_name);
+      out.write("&load_type=");
+      out.print(load_type);
       out.write("\" marginwidth=\"0\" height=\"100%\" width=\"300\" frameBorder=\"0\" style=\"display: inline; position: relative; top: 0px; left: 0px\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                <td height=\"100%\" width=\"100%\">\n");

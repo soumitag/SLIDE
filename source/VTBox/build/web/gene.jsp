@@ -22,7 +22,7 @@ try {
     
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
-    ArrayList <GeneObject> genes = analysis.searcher.processEntrezidGeneSymbol(entrez_id);
+    ArrayList <GeneObject> genes = ((Searcher)analysis.searcher).processEntrezidGeneSymbol(entrez_id);
 %>
     
 <html>

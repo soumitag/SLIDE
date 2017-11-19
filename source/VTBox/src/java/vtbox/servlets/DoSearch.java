@@ -49,7 +49,7 @@ public class DoSearch extends HttpServlet {
             String searchType = request.getParameter("searchType");
 
             AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
-            Searcher searcher = analysis.searcher;
+            Searcher searcher = (Searcher)analysis.searcher;
 
             ArrayList <CompactSearchResultContainer> current_search_results = new ArrayList <CompactSearchResultContainer> ();
 

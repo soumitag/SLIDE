@@ -132,20 +132,21 @@ try {
                         gvi_hist = incl_hist[i].value;
                     }
                 }
-                                
-                var incl_dend = document.getElementsByName('global_view_incl_dend');                 
+                
+                var gvi_dend = "no";
+                var incl_dend = document.getElementsByName('global_view_incl_dend');
+                //alert(incl_dend);
                 for(var i = 0; i < incl_dend.length; i++){
                     if (incl_dend[i] != null) {
                         if (incl_dend[i].checked) {
                             gvi_dend = incl_dend[i].value;
                         }
                     } else {
-                            gvi_dend = "no";
+                        gvi_dend = "no";
                     }
                 }
                 
-                
-                //alert("2");
+                //alert(gvi_dend);
                 
                 var mapview_url = "<%=base_url%>saveViz_GlobalView.jsp?analysis_name=<%=analysis_name%>&show_search_tags=" + gvi_search_tags + "&show_hist=" + gvi_hist + "&show_dendrogram=" + gvi_dend;
                 //alert(mapview_url);
@@ -169,6 +170,7 @@ try {
                     }
                 }
                 
+                var gvi_dend = "no";
                 var incl_dend = document.getElementsByName('dend_view_incl_dend');
                 for(var i = 0; i < incl_dend.length; i++){
                     if (incl_dend[i] != null) {
@@ -176,7 +178,7 @@ try {
                             gvi_dend = incl_dend[i].value;
                         }
                     } else {
-                            gvi_dend = "no";
+                        gvi_dend = "no";
                     }
                 }
                                 

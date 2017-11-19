@@ -60,11 +60,11 @@ function submitform_1(){
 // used after deletion
 function update_search_result_post_deletion (analysis_name, num_current_searches) {
         
-    document.getElementById('hdiFrame').contentWindow.refreshSearchPane();    
+    document.getElementById('hdiFrame').contentWindow.refreshSearchPane_PostDeletion();    
     document.getElementById('hdiFrame').width = parseFloat(document.getElementById('hdiFrame').width) - 32;
     
     document.getElementById('scrollPanel').width = parseFloat(document.getElementById('scrollPanel').width) - 32;
-    document.getElementById('scrollPanel').contentWindow.refreshSearchPane();
+    document.getElementById('scrollPanel').contentWindow.refreshSearchPane_PostDeletion();
     
     document.getElementById('searchKeysFrame').contentWindow.location.replace("searchKey.jsp?analysis_name=" + analysis_name);
     
@@ -73,7 +73,7 @@ function update_search_result_post_deletion (analysis_name, num_current_searches
         
     } else {
         document.getElementById('drillDownPanel').width = parseFloat(document.getElementById('drillDownPanel').width) - 32;
-        document.getElementById('drillDownPanel').contentWindow.refreshSearchPane();
+        document.getElementById('drillDownPanel').contentWindow.refreshSearchPane_PostDeletion();
     }
     
     if (num_current_searches == 0) {
@@ -102,9 +102,9 @@ function display_search_result (analysis_name) {
 }
 
 function showDetailedInfo (eid, analysis_name) {
-    alert(eid);
+    //alert(eid);
     var url_text = "gene.jsp?entrez_id=" + eid + "&analysis_name=" + analysis_name;
-    alert(url_text);
+    //alert(url_text);
     document.getElementById('geneInfoFrame').contentWindow.location.replace(url_text);
 }
 
@@ -159,7 +159,7 @@ function loadHistPanel(analysis_name) {
 function updateFeatureLists (list_name, add_remove_ind) {
     document.getElementById('scrollPanel').contentWindow.addRemoveListName(list_name, add_remove_ind);
     //alert(document.getElementById('searchKeysFrame').contentWindow);
-    document.getElementById('searchKeysFrame').contentWindow.addRemoveListName(list_name, add_remove_ind);
+    
     var drillDownPanel = document.getElementById('drillDownPanel');
     if (drillDownPanel === null) {
         
@@ -167,4 +167,5 @@ function updateFeatureLists (list_name, add_remove_ind) {
         document.getElementById('drillDownPanel').contentWindow.addRemoveListName(list_name, add_remove_ind);
     }
     
+    document.getElementById('searchKeysFrame').contentWindow.addRemoveListName(list_name, add_remove_ind);
 }

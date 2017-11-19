@@ -28,6 +28,7 @@ try {
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>View/Delete Feature List</title>
         <link rel="stylesheet" href="vtbox-main.css">
+        <link rel="stylesheet" href="vtbox-tables.css">
         <script>
             function viewFeatureList(list_name){
                 window.location.href = "viewFeatureList.jsp?feature_list_name=" + list_name + "&analysis_name=<%=analysis_name%>";
@@ -43,10 +44,10 @@ try {
         <form name="viewDeleteFilteredListForm" id="viewDeleteFilteredListForm" >
             <table cellpadding="5" style="width: 100%;" border="0">
                 <tr>
-                <td height="75" align="center">
+                <td height="25" align="center">
                     <b><label>Feature List</label></b>
                 </td>
-                 <td height="75" align="center">
+                 <td height="25" align="center">
                     <b><label>View/Delete</label></b>
                 </td>
                 </tr>
@@ -58,11 +59,11 @@ try {
                         String featurelist_name = ((Map.Entry)it.next()).getKey().toString();
                 %>
                 <tr>
-                <td height="75" align="center">
+                <td height="25" align="center">
                     <label><%=featurelist_name%></label>
                     
                 </td>
-                 <td height="75" align="center">
+                 <td height="25" align="center">
                     <button type="button" class="dropbtn" title="View Feature List" id="<%=featurelist_name%>_view_btn" onclick="viewFeatureList('<%=featurelist_name%>')">View</button>
                     &nbsp;
                     <button type="button" class="dropbtn" title="Delete Feature List" id="<%=featurelist_name%>_del_btn" onclick="deleteFeatureList('<%=featurelist_name%>')">Delete</button>

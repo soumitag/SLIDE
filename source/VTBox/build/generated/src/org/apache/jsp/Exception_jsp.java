@@ -48,6 +48,11 @@ public final class Exception_jsp extends org.apache.jasper.runtime.HttpJspBase
     if (msg == null) {
         msg = "Oops! Looks like something went wrong. Please retry the last action with different parameters.";
     }
+    
+    String exception_type = request.getParameter("type");
+    if (exception_type == null) {
+        exception_type = "";
+    }
 
       out.write("\n");
       out.write("\n");
@@ -57,8 +62,24 @@ public final class Exception_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("    <head>\n");
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
       out.write("        <link rel=\"stylesheet\" href=\"vtbox-main.css\">\n");
+      out.write("        <script>\n");
+      out.write("            function reportClusteringError() {\n");
+      out.write("                alert(\"Hierarchical clustering could not be performed for the data. Please select a different set of data transformation / clustering parameters and try again. This issue could be because the selected transformations produced NaNs or Infs. Note that some data transformations (like aggresive data clippping) can result in rows with all zero values / zero standard deviation. Distance functions such as cosine and correlation cannot be computed for such rows.\");\n");
+      out.write("                parent.showGlobal();\n");
+      out.write("            }\n");
+      out.write("        </script>\n");
       out.write("    </head>\n");
+      out.write("    ");
+ if (exception_type.equals("clustering_error")) { 
+      out.write("\n");
+      out.write("    <body onload=\"reportClusteringError()\">\n");
+      out.write("    ");
+ } else { 
+      out.write("\n");
       out.write("    <body>\n");
+      out.write("    ");
+ } 
+      out.write("\n");
       out.write("        <div class=\"exception_msg\">\n");
       out.write("            <label>");
       out.print(msg);

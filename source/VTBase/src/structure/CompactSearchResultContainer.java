@@ -5,11 +5,15 @@
  */
 package structure;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Soumita
  */
-public class CompactSearchResultContainer {
+public class CompactSearchResultContainer implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     public static final byte TYPE_GENE = 1;
     public static final byte TYPE_PATH = 2;

@@ -8,6 +8,7 @@ package searcher;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,9 @@ import java.util.List;
  *
  * @author SOUMITA GHOSH
  */
-public class GoObject {
+public class GoObject implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     public String goIDIndex;
     public String goID;

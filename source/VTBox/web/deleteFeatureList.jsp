@@ -33,6 +33,7 @@ try {
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Delete Feature List</title>
         <link rel="stylesheet" href="vtbox-main.css">
+        <link rel="stylesheet" href="vtbox-tables.css">
         <script>
             function backtoList(){
                 window.location.href = "viewDeleteFeatureList.jsp?analysis_name=<%=analysis_name%>";
@@ -40,10 +41,20 @@ try {
         </script>
     </head>
     <body>
-        <label>
-            <%=feature_list_name%> has been deleted.
-        </label>
-        <button type="button" class="dropbtn" title="Back to Feature List" id="btnBack" onclick="backtoList()">Back</button>
+        <table cellpadding="5" style="width: 100%;" border="0">
+            <tr>
+                <td height="25" align="center">
+                <label>
+                    <%=feature_list_name%> has been deleted.
+                </label>
+                </td>
+            </tr>
+             <tr>
+                <td height="25" align="center">
+                <button type="button" class="dropbtn" title="Back to Feature List" id="btnBack" onclick="backtoList()">Back</button>
+                </td>
+             </tr>
+        </table>
     </body>
 </html>
 

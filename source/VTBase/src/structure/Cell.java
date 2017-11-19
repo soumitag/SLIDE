@@ -5,13 +5,16 @@
  */
 package structure;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author soumitag
  */
-public class Cell {
+public class Cell implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     public double dataval;
     public double visualization_normval;

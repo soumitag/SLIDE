@@ -79,6 +79,7 @@ try {
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
       out.write("        <title>Confirm Feature List Deletion</title>\n");
       out.write("        <link rel=\"stylesheet\" href=\"vtbox-main.css\">\n");
+      out.write("        <link rel=\"stylesheet\" href=\"vtbox-tables.css\">\n");
       out.write("        <script>\n");
       out.write("            function backtoView(){\n");
       out.write("                window.location.href = \"viewDeleteFeatureList.jsp?analysis_name=");
@@ -87,6 +88,7 @@ try {
       out.write("            }\n");
       out.write("            \n");
       out.write("            function confirmFeatureListDeletion(){\n");
+      out.write("                //alert(\"Please\");\n");
       out.write("                window.location.href = \"deleteFeatureList.jsp?analysis_name=");
       out.print(analysis_name);
       out.write("&feature_list_name=");
@@ -97,17 +99,17 @@ try {
       out.write("        </script>\n");
       out.write("    </head>\n");
       out.write("    <body>\n");
-      out.write("        <form name=\"confirmFeatureListDeletion\" id=\"confirmFeatureListDeletion\" >\n");
+      out.write("        <form name=\"confirmFeatureListDeletionForm\" id=\"confirmFeatureListDeletionForm\" >\n");
       out.write("            <table cellpadding=\"5\" style=\"width: 100%;\" border=\"0\">\n");
       out.write("                <tr>\n");
-      out.write("                    <td height=\"75\" align=\"center\">\n");
+      out.write("                    <td height=\"25\" align=\"center\">\n");
       out.write("                        <label>Do you want to delete ");
       out.print(feature_list_name);
       out.write(" ? </label>\n");
       out.write("                    </td>\n");
       out.write("                </tr>\n");
       out.write("                <tr>\n");
-      out.write("                    <td height=\"75\" align=\"center\">\n");
+      out.write("                    <td height=\"25\" align=\"center\">\n");
       out.write("                        <button type=\"button\" class=\"dropbtn\" title=\"Yes delete feature list\" id=\"btnYes\" onclick=\"confirmFeatureListDeletion()\">Yes</button>\n");
       out.write("                        &nbsp;\n");
       out.write("                        <button type=\"button\" class=\"dropbtn\" title=\"Back to Feature List\" id=\"btnNo\" onclick=\"backtoView()\">No</button>\n");

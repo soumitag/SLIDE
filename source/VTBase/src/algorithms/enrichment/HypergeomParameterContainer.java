@@ -76,7 +76,7 @@ public class HypergeomParameterContainer implements Serializable {
     public void addFuncGrpFeatListAssoc (String functional_group_name, String feature_list_name, int size) {
         List <String> key = makeKey(functional_group_name, feature_list_name);
         funcgrp_featlist_smallk_map.put(key, size);
-        System.out.println(functional_group_name + ", " + feature_list_name);
+        //System.out.println(functional_group_name + ", " + feature_list_name);
     }
     
     public boolean containsFuncGrpFeatListAssoc (String functional_group_name, String feature_list_name) {

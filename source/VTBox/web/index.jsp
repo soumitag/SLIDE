@@ -4,6 +4,7 @@
     Author     : soumitag
 --%>
 
+<%@page import="searcher.Searcher"%>
 <%@page import="structure.AnalysisContainer"%>
 <%@page import="java.util.Enumeration"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -11,7 +12,8 @@
 <% 
     String analysis_to_stop = request.getParameter("analysis_to_stop");
     if(analysis_to_stop != null){
-        Object ac1 = session.getAttribute(analysis_to_stop);
+        AnalysisContainer ac1 = (AnalysisContainer)session.getAttribute(analysis_to_stop);
+        ((Searcher)ac1.searcher).closeMongoDBConnection();
         if(ac1 != null){
             session.removeAttribute(analysis_to_stop);
         }

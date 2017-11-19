@@ -348,7 +348,13 @@ try {
                         for (int j = 0; j < search_results_i.size(); j++) {
 
                             CompactSearchResultContainer search_results_ij = search_results_i.get(j);
-                            ArrayList <Integer> positions = entrezPosMap.get(search_results_ij.entrez_id);
+                            ArrayList <Integer> positions = null;
+                            if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
+                                positions = entrezPosMap.get(search_results_ij.entrez_id);
+                            } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+                                       analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION){
+                                positions = entrezPosMap.get(search_results_ij.group_id.toUpperCase());
+                            }
 
                             if (positions != null) {
 

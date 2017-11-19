@@ -513,7 +513,7 @@ try {
       out.print(base_url);
       out.write("displayHome.jsp?analysis_name=");
       out.print(list_name);
-      out.write("\" target=\"_blank\">here</a> to open.\n");
+      out.write("&load_type=sub_analysis\" target=\"_blank\">here</a> to open.\n");
       out.write("            </td>\n");
       out.write("        </tr>\n");
       out.write("        <tr>\n");

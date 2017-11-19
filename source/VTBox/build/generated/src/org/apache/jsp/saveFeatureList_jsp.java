@@ -103,6 +103,10 @@ try {
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
 
       out.write("\n");
+      out.write("    <head>\n");
+      out.write("        <link rel=\"stylesheet\" href=\"vtbox-main.css\">\n");
+      out.write("        <link rel=\"stylesheet\" href=\"vtbox-tables.css\">\n");
+      out.write("    </head>\n");
       out.write("    <body>\n");
       out.write("        \n");
       out.write("        <script>\n");

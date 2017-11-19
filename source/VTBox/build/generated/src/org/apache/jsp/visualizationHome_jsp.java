@@ -64,9 +64,7 @@ try {
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
     
-    String visualization_level = request.getParameter("visualization_level");
-    
-    boolean do_clustering = Boolean.parseBoolean(analysis.clustering_params.get("do_clustering"));
+    boolean do_clustering = analysis.clustering_params.do_clustering;
     
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
 
@@ -176,6 +174,12 @@ try {
       out.write("            global_iframe.style.visibility = \"visible\";\n");
       out.write("        }\n");
       out.write("        \n");
+      out.write("        function openHome() {\n");
+      out.write("             window.open('");
+      out.print(base_url);
+      out.write("', '_blank');\n");
+      out.write("        }\n");
+      out.write("        \n");
       out.write("    </script>\n");
       out.write("    <head>\n");
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
@@ -255,14 +259,14 @@ try {
       out.write("            Testing\n");
       out.write("        </div>\n");
       out.write("        \n");
-      out.write("        <table class=\"maintable\" height=\"99%\" width=\"1910px\" cellspacing=\"0\" cellpadding=\"0\"> \n");
+      out.write("        <table class=\"maintable\" height=\"99%\" width=\"1970px\" cellspacing=\"0\" cellpadding=\"0\"> \n");
       out.write("\n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"5\" name=\"ribbonPanel\" id=\"ribbonPanel\" height=\"5%\">\n");
       out.write("\n");
-      out.write("                    <table>\n");
+      out.write("                    <table width=\"100%\">\n");
       out.write("                        <tr>\n");
-      out.write("                            <td valign=\"top\" style=\"min-height: 40px;\">\n");
+      out.write("                            <td width=\"500\" valign=\"top\" style=\"min-height: 40px;\">\n");
       out.write("                                <iframe name=\"searchFrame\" id=\"searchFrame\" src=\"searcher.jsp?analysis_name=");
       out.print(analysis_name);
       out.write("\" marginwidth=\"0\" height=\"29\" width=\"500\" frameBorder=\"0\" style=\"min-height: 35px;\"></iframe>\n");
@@ -289,6 +293,9 @@ try {
       out.write("', '40%', '550px')\" href=\"#\"> View / Delete </a>\n");
       out.write("                                    </div>\n");
       out.write("                                </div>\n");
+      out.write("                                ");
+  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
+      out.write("\n");
       out.write("                                <div class=\"dropdown\">\n");
       out.write("                                    <button name=\"createSubAnal\" class=\"dropbtn\" id=\"createSubAnal\"> Sub-Analysis </button> &nbsp;\n");
       out.write("                                    <div class=\"dropdown-content\">\n");
@@ -300,15 +307,13 @@ try {
       out.write("', '60%', '500px')\" href=\"#\"> Open </a>\n");
       out.write("                                    </div>\n");
       out.write("                                </div>\n");
-      out.write("                                ");
-  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
-      out.write("\n");
       out.write("                                <button name=\"createFuncEnrichment\" class=\"dropbtn\" id=\"createFuncEnrichment\" onclick=\"showModalWindow('createEnrichmentAnalysis.jsp?mode=input&analysis_name=");
       out.print(analysis_name);
       out.write("', '60%', '550px')\"> Functional Enrichment </button> &nbsp;\n");
       out.write("                                ");
   }   
       out.write("\n");
+      out.write("                                <button name=\"openHome\" class=\"dropbtn\" id=\"openHome\" onclick=\"openHome()\"> Home </button> &nbsp;\n");
       out.write("                                <button name=\"histHandle\" class=\"dropbtn\" id=\"histHandle\" onclick=\"toggleHistogramPanel()\"> Hide Histogram </button>\n");
       out.write("                            </td>\n");
       out.write("                            \n");
@@ -380,8 +385,8 @@ try {
   }   
       out.write("\n");
       out.write("                \n");
-      out.write("                <td  rowspan=\"2\" width=\"550\">     \n");
-      out.write("                    <iframe id=\"histPanel\" src=\"\" width=\"550\" height=\"34%\" frameBorder=\"0\" style=\"display: inline\"></iframe>\n");
+      out.write("                <td  rowspan=\"2\" width=\"570\">     \n");
+      out.write("                    <iframe id=\"histPanel\" src=\"\" width=\"570\" height=\"34%\" frameBorder=\"0\" style=\"display: inline\"></iframe>\n");
       out.write("                    <iframe name=\"geneInfoFrame\" id=\"geneInfoFrame\" src=\"gene.jsp?analysis_name=");
       out.print(analysis_name);
       out.write("\" marginwidth=\"0\" width=\"550\" height=\"66%\" frameBorder=\"0\"></iframe>\n");

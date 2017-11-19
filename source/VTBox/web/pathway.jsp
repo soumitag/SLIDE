@@ -16,7 +16,7 @@ try {
     String analysis_name = request.getParameter("analysis_name");
     String id = (String)request.getParameter("pathway_id");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
-    ArrayList <PathwayObject> paths = analysis.searcher.processPathid(id);
+    ArrayList <PathwayObject> paths = ((Searcher)analysis.searcher).processPathid(id);
 %>
     
 <html>

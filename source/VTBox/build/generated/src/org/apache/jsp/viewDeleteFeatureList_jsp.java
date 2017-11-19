@@ -77,6 +77,7 @@ try {
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
       out.write("        <title>View/Delete Feature List</title>\n");
       out.write("        <link rel=\"stylesheet\" href=\"vtbox-main.css\">\n");
+      out.write("        <link rel=\"stylesheet\" href=\"vtbox-tables.css\">\n");
       out.write("        <script>\n");
       out.write("            function viewFeatureList(list_name){\n");
       out.write("                window.location.href = \"viewFeatureList.jsp?feature_list_name=\" + list_name + \"&analysis_name=");
@@ -96,10 +97,10 @@ try {
       out.write("        <form name=\"viewDeleteFilteredListForm\" id=\"viewDeleteFilteredListForm\" >\n");
       out.write("            <table cellpadding=\"5\" style=\"width: 100%;\" border=\"0\">\n");
       out.write("                <tr>\n");
-      out.write("                <td height=\"75\" align=\"center\">\n");
+      out.write("                <td height=\"25\" align=\"center\">\n");
       out.write("                    <b><label>Feature List</label></b>\n");
       out.write("                </td>\n");
-      out.write("                 <td height=\"75\" align=\"center\">\n");
+      out.write("                 <td height=\"25\" align=\"center\">\n");
       out.write("                    <b><label>View/Delete</label></b>\n");
       out.write("                </td>\n");
       out.write("                </tr>\n");
@@ -113,13 +114,13 @@ try {
                 
       out.write("\n");
       out.write("                <tr>\n");
-      out.write("                <td height=\"75\" align=\"center\">\n");
+      out.write("                <td height=\"25\" align=\"center\">\n");
       out.write("                    <label>");
       out.print(featurelist_name);
       out.write("</label>\n");
       out.write("                    \n");
       out.write("                </td>\n");
-      out.write("                 <td height=\"75\" align=\"center\">\n");
+      out.write("                 <td height=\"25\" align=\"center\">\n");
       out.write("                    <button type=\"button\" class=\"dropbtn\" title=\"View Feature List\" id=\"");
       out.print(featurelist_name);
       out.write("_view_btn\" onclick=\"viewFeatureList('");

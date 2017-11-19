@@ -5,6 +5,7 @@
  */
 package data.transforms;
 
+import java.io.Serializable;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import structure.DataCells;
 
@@ -12,7 +13,9 @@ import structure.DataCells;
  *
  * @author Soumita
  */
-public class Normalizer {
+public class Normalizer implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     public static final int COL_NORMALIZATION_NONE = 0;
     public static final int COL_NORMALIZATION_AUTOSCALE = 1;

@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Set;
+import vtbase.SlideException;
 
 public class BinaryTree implements Serializable {
     
@@ -83,7 +84,7 @@ public class BinaryTree implements Serializable {
         }
     }
     
-    public BinaryTree (double[][] linkage_tree, int leaf_ordering_strategy) {
+    public BinaryTree (double[][] linkage_tree, int leaf_ordering_strategy) throws SlideException {
         
         this.num_leaf_nodes = linkage_tree.length + 1;
         this.num_nodes = 2*num_leaf_nodes - 1;
@@ -100,7 +101,13 @@ public class BinaryTree implements Serializable {
         
         // extrat leaf order using depth-first-search
         this.leaf_ordering = new ArrayList <Integer> ();
-        extractLeafOrdering(root_node_id);
+        try {
+            extractLeafOrdering(root_node_id);
+        } catch (StackOverflowError e) {
+             throw new SlideException("Stack overflow in linkage tree.", 41);
+        } catch (Exception e) {
+             throw new SlideException();
+        }
         
         // compute the start and end indices of each inner node
         // using post order traversal
@@ -126,127 +133,134 @@ public class BinaryTree implements Serializable {
         return labels.get(0);
     }
     
-    public final void reorderChildNodes(int leaf_ordering_strategy) {
+    public final void reorderChildNodes(int leaf_ordering_strategy) throws SlideException {
         
-        int first_child_id, second_child_id;
-        double first_child_size, second_child_size, first_child_height, second_child_height;
+        try {
         
-        int left_child_id = -1;
-        int right_child_id = -1;
-        
-        for (int row = 0; row < linkage_tree.length; row++) {
-            
-            first_child_id = (int)linkage_tree[row][0];
-            second_child_id = (int)linkage_tree[row][1];
-            
-            if (isLeaf(first_child_id) && isLeaf(second_child_id)) {
-                
-                left_child_id = first_child_id;
-                right_child_id = second_child_id;
-                
-            } else if (!isLeaf(first_child_id) && !isLeaf(second_child_id)) {
-                
-                switch (leaf_ordering_strategy) {
-                
-                    case BinaryTree.LARGEST_CHILD_FIRST_LEAF_ORDER:
-                        first_child_size = linkage_tree[getRow(first_child_id)][3];
-                        second_child_size = linkage_tree[getRow(second_child_id)][3];
-                        if (first_child_size >= second_child_size) {
-                            left_child_id = first_child_id;
-                            right_child_id = second_child_id;
-                        } else {
-                            left_child_id = second_child_id;
-                            right_child_id = first_child_id;
-                        }
-                        break;
+            int first_child_id, second_child_id;
+            double first_child_size, second_child_size, first_child_height, second_child_height;
 
-                    case BinaryTree.SMALLEST_CHILD_FIRST_LEAF_ORDER:
-                        first_child_size = linkage_tree[getRow(first_child_id)][3];
-                        second_child_size = linkage_tree[getRow(second_child_id)][3];
-                        if (first_child_size <= second_child_size) {
-                            left_child_id = first_child_id;
-                            right_child_id = second_child_id;
-                        } else {
-                            left_child_id = second_child_id;
-                            right_child_id = first_child_id;
-                        }
-                        break;
+            int left_child_id = -1;
+            int right_child_id = -1;
 
-                    case BinaryTree.MOST_DIVERSE_CHILD_FIRST_LEAF_ORDER:
-                        first_child_height = linkage_tree[getRow(first_child_id)][2];
-                        second_child_height = linkage_tree[getRow(second_child_id)][2];
-                        if (first_child_height >= second_child_height) {
-                            left_child_id = first_child_id;
-                            right_child_id = second_child_id;
-                        } else {
-                            left_child_id = second_child_id;
-                            right_child_id = first_child_id;
-                        }
-                        break;
+            for (int row = 0; row < linkage_tree.length; row++) {
 
-                    case BinaryTree.LEAST_DIVERSE_CHILD_FIRST_LEAF_ORDER:
-                        first_child_height = linkage_tree[getRow(first_child_id)][2];
-                        second_child_height = linkage_tree[getRow(second_child_id)][2];
-                        if (first_child_height <= second_child_height) {
-                            left_child_id = first_child_id;
-                            right_child_id = second_child_id;
-                        } else {
-                            left_child_id = second_child_id;
-                            right_child_id = first_child_id;
-                        }
-                        break;
-                        
-                    default:
-                        break;
-                }
-                
-            } else {
-                
-                // one child is leaf and one is not
-                
-                int leaf_child_id;
-                int non_leaf_child_id;
-                if (isLeaf(first_child_id)) {
-                    leaf_child_id = first_child_id;
-                    non_leaf_child_id = second_child_id;
+                first_child_id = (int)linkage_tree[row][0];
+                second_child_id = (int)linkage_tree[row][1];
+
+                if (isLeaf(first_child_id) && isLeaf(second_child_id)) {
+
+                    left_child_id = first_child_id;
+                    right_child_id = second_child_id;
+
+                } else if (!isLeaf(first_child_id) && !isLeaf(second_child_id)) {
+
+                    switch (leaf_ordering_strategy) {
+
+                        case BinaryTree.LARGEST_CHILD_FIRST_LEAF_ORDER:
+                            first_child_size = linkage_tree[getRow(first_child_id)][3];
+                            second_child_size = linkage_tree[getRow(second_child_id)][3];
+                            if (first_child_size >= second_child_size) {
+                                left_child_id = first_child_id;
+                                right_child_id = second_child_id;
+                            } else {
+                                left_child_id = second_child_id;
+                                right_child_id = first_child_id;
+                            }
+                            break;
+
+                        case BinaryTree.SMALLEST_CHILD_FIRST_LEAF_ORDER:
+                            first_child_size = linkage_tree[getRow(first_child_id)][3];
+                            second_child_size = linkage_tree[getRow(second_child_id)][3];
+                            if (first_child_size <= second_child_size) {
+                                left_child_id = first_child_id;
+                                right_child_id = second_child_id;
+                            } else {
+                                left_child_id = second_child_id;
+                                right_child_id = first_child_id;
+                            }
+                            break;
+
+                        case BinaryTree.MOST_DIVERSE_CHILD_FIRST_LEAF_ORDER:
+                            first_child_height = linkage_tree[getRow(first_child_id)][2];
+                            second_child_height = linkage_tree[getRow(second_child_id)][2];
+                            if (first_child_height >= second_child_height) {
+                                left_child_id = first_child_id;
+                                right_child_id = second_child_id;
+                            } else {
+                                left_child_id = second_child_id;
+                                right_child_id = first_child_id;
+                            }
+                            break;
+
+                        case BinaryTree.LEAST_DIVERSE_CHILD_FIRST_LEAF_ORDER:
+                            first_child_height = linkage_tree[getRow(first_child_id)][2];
+                            second_child_height = linkage_tree[getRow(second_child_id)][2];
+                            if (first_child_height <= second_child_height) {
+                                left_child_id = first_child_id;
+                                right_child_id = second_child_id;
+                            } else {
+                                left_child_id = second_child_id;
+                                right_child_id = first_child_id;
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+
                 } else {
-                    leaf_child_id = second_child_id;
-                    non_leaf_child_id = first_child_id;
-                }
-                
-                switch (leaf_ordering_strategy) {
-                
-                    case BinaryTree.LARGEST_CHILD_FIRST_LEAF_ORDER:
-                        left_child_id = non_leaf_child_id;
-                        right_child_id = leaf_child_id;
-                        break;
 
-                    case BinaryTree.SMALLEST_CHILD_FIRST_LEAF_ORDER:
-                        left_child_id = leaf_child_id;
-                        right_child_id = non_leaf_child_id;
-                        break;
-                            
-                    case BinaryTree.MOST_DIVERSE_CHILD_FIRST_LEAF_ORDER:
-                        left_child_id = non_leaf_child_id;
-                        right_child_id = leaf_child_id;
-                        break;
+                    // one child is leaf and one is not
 
-                    case BinaryTree.LEAST_DIVERSE_CHILD_FIRST_LEAF_ORDER:
-                        left_child_id = leaf_child_id;
-                        right_child_id = non_leaf_child_id;
-                        break;
-                            
-                    default:
-                        break;
-                            
+                    int leaf_child_id;
+                    int non_leaf_child_id;
+                    if (isLeaf(first_child_id)) {
+                        leaf_child_id = first_child_id;
+                        non_leaf_child_id = second_child_id;
+                    } else {
+                        leaf_child_id = second_child_id;
+                        non_leaf_child_id = first_child_id;
+                    }
+
+                    switch (leaf_ordering_strategy) {
+
+                        case BinaryTree.LARGEST_CHILD_FIRST_LEAF_ORDER:
+                            left_child_id = non_leaf_child_id;
+                            right_child_id = leaf_child_id;
+                            break;
+
+                        case BinaryTree.SMALLEST_CHILD_FIRST_LEAF_ORDER:
+                            left_child_id = leaf_child_id;
+                            right_child_id = non_leaf_child_id;
+                            break;
+
+                        case BinaryTree.MOST_DIVERSE_CHILD_FIRST_LEAF_ORDER:
+                            left_child_id = non_leaf_child_id;
+                            right_child_id = leaf_child_id;
+                            break;
+
+                        case BinaryTree.LEAST_DIVERSE_CHILD_FIRST_LEAF_ORDER:
+                            left_child_id = leaf_child_id;
+                            right_child_id = non_leaf_child_id;
+                            break;
+
+                        default:
+                            break;
+
+                    }
                 }
+
+                linkage_tree[row][0] = left_child_id;
+                linkage_tree[row][1] = right_child_id;
+
             }
-            
-            linkage_tree[row][0] = left_child_id;
-            linkage_tree[row][1] = right_child_id;
-            
-        }
         
+        } catch(StackOverflowError e) {
+            throw new SlideException("StackOverflow during hierarchical clustering.", 56);
+        } catch (Exception e) {
+            throw new SlideException();
+        }
     }
     
     public final void extractLeafOrdering (int node_id) {

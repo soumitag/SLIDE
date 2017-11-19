@@ -141,6 +141,17 @@ try {
                 document.getElementById('detailSearchHeaderPanel').contentWindow.location.replace("detailedSearchResultHeader.jsp?analysis_name=<%=analysis_name%>");
             }
             
+            function refreshSearchPane_PostDeletion() {
+                document.getElementById('detailSearchPanel').width = parseFloat(document.getElementById('detailSearchPanel').width) - 32;
+                document.getElementById('detailSearchHeaderPanel').width = parseFloat(document.getElementById('detailSearchHeaderPanel').width) - 32;
+                var s = document.getElementById("start").value;
+                var e = document.getElementById("end").value;
+                var url_text = "detailedSearchResultDisplayer.jsp?start=" + s + "&end=" + e + "&analysis_name=<%=analysis_name%>&type=<%=TYPE%>";
+                
+                document.getElementById('detailSearchPanel').contentWindow.location.replace(url_text);
+                document.getElementById('detailSearchHeaderPanel').contentWindow.location.replace("detailedSearchResultHeader.jsp?analysis_name=<%=analysis_name%>");
+            }
+            
             function saveAsPDF() {
                 var popup = window.open("svg.jsp");
             }
@@ -151,6 +162,14 @@ try {
             
             function hideRect() {
                 document.getElementById('detailHeatMapPanel').contentWindow.hideRect();
+            }
+            
+            function showDetailedPathInfo (pid, analysis_name) {
+                parent.showDetailedPathInfo(pid, analysis_name);
+            }
+            
+            function showDetailedGOInfo (gid, analysis_name) {
+                parent.showDetailedGOInfo(gid, analysis_name);
             }
             
             function showDetailedInfo(eid, analysis_name) {
@@ -224,7 +243,12 @@ try {
             function addToList (list_name) {
                 //alert(list_name);
                 selected_list_name = list_name;
-                search_url = 'AddDataToList?mode=cluster' + '&list_name=' + list_name + '&start=' + <%=start%> + '&end=' + <%=end%> + '&analysis_name=<%=analysis_name%>';
+                var milliseconds = new Date().getTime();
+                search_url = 'AddDataToList?mode=cluster' + '&list_name=' + 
+                              list_name + '&start=' + 
+                              <%=start%> + '&end=' + 
+                              <%=end%> + '&timestamp=' + milliseconds +
+                              '&analysis_name=<%=analysis_name%>';
                 //alert(search_url);
                 makeGetRequest(search_url);
             }
@@ -241,7 +265,6 @@ try {
                         addToList(list_name);
                     };
                     document.getElementById("list_names_container").appendChild(node);
-                    //alert(document.getElementById("list_names_container"));
                 } else if (add_remove_ind === 0) {
                     // remove
                     var node = document.getElementById("flin_" + list_name);

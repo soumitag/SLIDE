@@ -183,7 +183,7 @@ try {
       out.write("                            <option value=\"pathname\">Pathway</option>\n");
       out.write("                        </select>\n");
       out.write("                        ");
-  } else if(analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION)  {       
+  } else if(analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION)  {       
       out.write("\n");
       out.write("                        <select name=\"queryType\" id=\"queryType\" form=\"SearchForm\">\n");
       out.write("                            <option value=\"goid\">GO ID</option>\n");

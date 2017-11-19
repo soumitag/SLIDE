@@ -18,7 +18,7 @@ try {
     String analysis_name = request.getParameter("analysis_name");
     String id = (String)request.getParameter("go_id");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
-    ArrayList <GoObject> go_infos = analysis.searcher.processGOid(id);
+    ArrayList <GoObject> go_infos = ((Searcher)analysis.searcher).processGOid(id);
 %>
 <html>
     <head>

@@ -20,9 +20,7 @@ try {
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
     
-    String visualization_level = request.getParameter("visualization_level");
-    
-    boolean do_clustering = Boolean.parseBoolean(analysis.clustering_params.get("do_clustering"));
+    boolean do_clustering = analysis.clustering_params.do_clustering;
     
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
 
@@ -125,6 +123,10 @@ try {
             global_iframe.style.visibility = "visible";
         }
         
+        function openHome() {
+             window.open('<%=base_url%>', '_blank');
+        }
+        
     </script>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -204,14 +206,14 @@ try {
             Testing
         </div>
         
-        <table class="maintable" height="99%" width="1910px" cellspacing="0" cellpadding="0"> 
+        <table class="maintable" height="99%" width="1970px" cellspacing="0" cellpadding="0"> 
 
             <tr>
                 <td colspan="5" name="ribbonPanel" id="ribbonPanel" height="5%">
 
-                    <table>
+                    <table width="100%">
                         <tr>
-                            <td valign="top" style="min-height: 40px;">
+                            <td width="500" valign="top" style="min-height: 40px;">
                                 <iframe name="searchFrame" id="searchFrame" src="searcher.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" height="29" width="500" frameBorder="0" style="min-height: 35px;"></iframe>
                             </td>
                             
@@ -228,6 +230,7 @@ try {
                                         <a onclick="showModalWindow('viewDeleteFeatureList.jsp?mode=input&analysis_name=<%=analysis_name%>', '40%', '550px')" href="#"> View / Delete </a>
                                     </div>
                                 </div>
+                                <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
                                 <div class="dropdown">
                                     <button name="createSubAnal" class="dropbtn" id="createSubAnal"> Sub-Analysis </button> &nbsp;
                                     <div class="dropdown-content">
@@ -235,9 +238,9 @@ try {
                                         <a onclick="showModalWindow('openSubAnalysis.jsp?mode=input&analysis_name=<%=analysis_name%>', '60%', '500px')" href="#"> Open </a>
                                     </div>
                                 </div>
-                                <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
                                 <button name="createFuncEnrichment" class="dropbtn" id="createFuncEnrichment" onclick="showModalWindow('createEnrichmentAnalysis.jsp?mode=input&analysis_name=<%=analysis_name%>', '60%', '550px')"> Functional Enrichment </button> &nbsp;
                                 <%  }   %>
+                                <button name="openHome" class="dropbtn" id="openHome" onclick="openHome()"> Home </button> &nbsp;
                                 <button name="histHandle" class="dropbtn" id="histHandle" onclick="toggleHistogramPanel()"> Hide Histogram </button>
                             </td>
                             
@@ -281,8 +284,8 @@ try {
                 
                 <%  }   %>
                 
-                <td  rowspan="2" width="550">     
-                    <iframe id="histPanel" src="" width="550" height="34%" frameBorder="0" style="display: inline"></iframe>
+                <td  rowspan="2" width="570">     
+                    <iframe id="histPanel" src="" width="570" height="34%" frameBorder="0" style="display: inline"></iframe>
                     <iframe name="geneInfoFrame" id="geneInfoFrame" src="gene.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" width="550" height="66%" frameBorder="0"></iframe>
                 </td>
                 

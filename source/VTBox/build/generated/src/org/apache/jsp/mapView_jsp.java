@@ -339,9 +339,26 @@ try {
       out.write("; \" stroke=\"black\" stroke-width=\"");
       out.print(BORDER_STROKE_WIDTH);
       out.write("\">\n");
-      out.write("                            <title>");
+      out.write("                            <title>\n");
+      out.write("                                ");
+ if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) { 
+      out.write("\n");
+      out.write("                                Raw Value: ");
+      out.print( analysis.database.raw_data[original_row_id][i] );
+      out.write(",\n");
+      out.write("                                Transformed Value: ");
       out.print( analysis.database.datacells.dataval[original_row_id][i] );
-      out.write("</title>\n");
+      out.write("\n");
+      out.write("                                ");
+ } else { 
+      out.write("\n");
+      out.write("                                Value: ");
+      out.print( analysis.database.datacells.dataval[original_row_id][i] );
+      out.write("\n");
+      out.write("                                ");
+ } 
+      out.write("\n");
+      out.write("                            </title>\n");
       out.write("                        </rect>\n");
       out.write("                    ");
  } 

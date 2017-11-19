@@ -75,7 +75,7 @@ public class LoadAnalysis extends HttpServlet {
         
         // constructs the folder where uploaded file will be stored
         String installPath = SessionManager.getInstallPath(
-                getServletContext().getResourceAsStream("slide-web-config.txt"));
+                getServletContext().getResourceAsStream("/WEB-INF/slide-web-config.txt"));
         String session_dir = SessionManager.createSessionDir(installPath, request.getSession().getId());
         
         String filePath = "";
@@ -131,6 +131,9 @@ public class LoadAnalysis extends HttpServlet {
             
             // create analysis sub-folder if it does not already exist
             SessionManager.createAnalysisDirs(analysis_1);
+            
+            // create a searcher object
+            analysis_1.setSearcher(new Searcher(analysis_1.database.species));
             
             // finally add analysis to session
             session.setAttribute(analysis_1.analysis_name, analysis_1);

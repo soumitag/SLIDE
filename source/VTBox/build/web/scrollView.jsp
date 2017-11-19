@@ -121,6 +121,14 @@ try {
                 http.send(null);
             }
             
+            function showDetailedPathInfo (pid, analysis_name) {
+                parent.showDetailedPathInfo(pid, analysis_name);
+            }
+            
+            function showDetailedGOInfo (gid, analysis_name) {
+                parent.showDetailedGOInfo(gid, analysis_name);
+            }
+            
             function showDetailedInfo(eid, analysis_name) {
                 //alert(eid);
                 //alert(analysis_name);
@@ -163,11 +171,25 @@ try {
                 alert('Entrez: ' + entrez + ', Genesymbol: ' + genesymbol);
             }
             
+            function refreshAllSearchPanes(num_current_searches) {
+                //alert('Here');
+                parent.update_search_result_post_deletion('<%=analysis_name%>', num_current_searches);
+            }
+            
             function refreshSearchPane() {
                 document.getElementById('detailSearchPanel').width = parseFloat(document.getElementById('detailSearchPanel').width) + 32;
                 document.getElementById('detailSearchHeaderPanel').width = parseFloat(document.getElementById('detailSearchHeaderPanel').width) + 32;
                 var url_text = "detailedSearchResultDisplayerScrollView.jsp?start=<%=start%>&analysis_name=<%=analysis_name%>";
-                //alert(url_text);
+                //alert(document.getElementById('detailSearchPanel').width);
+                document.getElementById('detailSearchPanel').contentWindow.location.replace(url_text);
+                document.getElementById('detailSearchHeaderPanel').contentWindow.location.replace("detailedSearchResultHeader.jsp?analysis_name=<%=analysis_name%>");
+            }
+            
+            function refreshSearchPane_PostDeletion() {
+                document.getElementById('detailSearchPanel').width = parseFloat(document.getElementById('detailSearchPanel').width) - 32;
+                document.getElementById('detailSearchHeaderPanel').width = parseFloat(document.getElementById('detailSearchHeaderPanel').width) - 32;
+                var url_text = "detailedSearchResultDisplayerScrollView.jsp?start=<%=start%>&analysis_name=<%=analysis_name%>";
+                //alert(document.getElementById('detailSearchPanel').width);
                 document.getElementById('detailSearchPanel').contentWindow.location.replace(url_text);
                 document.getElementById('detailSearchHeaderPanel').contentWindow.location.replace("detailedSearchResultHeader.jsp?analysis_name=<%=analysis_name%>");
             }

@@ -67,6 +67,7 @@ try {
       out.write("<html>\n");
       out.write("    <head>\n");
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
+      out.write("        <script type = \"text/javascript\" language = \"JavaScript\" src=\"params.js\"></script>\n");
       out.write("        <link rel=\"stylesheet\" href=\"vtbox-main.css\">\n");
       out.write("        <style>\n");
       out.write("            td {\n");
@@ -106,8 +107,37 @@ try {
       out.write("                        alert(\"Data has negative values. Log base 2 transformation cannot be applied.\");\n");
       out.write("                        document.getElementById(\"log2flag\").checked = false;\n");
       out.write("                    } else if (data_min === 0.0) {\n");
-      out.write("                        alert(\"Data has zero values. A small positive offset (2 raised to the power -149) will be added to all cells. If you do not wish to do this, uncheck the log base 2 transformation option.\");\n");
+      out.write("                        alert(\"Data has zero values. The minimum non-zero value in the dataset, will be added to all cells. If you do not wish to do this, uncheck the log base 2 transformation option.\");\n");
       out.write("                    }\n");
+      out.write("                }\n");
+      out.write("            }\n");
+      out.write("            \n");
+      out.write("            function validateParamsAndSubmit() {\n");
+      out.write("                var readyToSubmit = true;\n");
+      out.write("                var clip = document.getElementById(\"clippingType\").selectedIndex;\n");
+      out.write("                if (clip !== 0) {\n");
+      out.write("                    var clip_min = parseInt(document.getElementById(\"txtClipMin\").value);\n");
+      out.write("                    var clip_max = parseInt(document.getElementById(\"txtClipMax\").value);\n");
+      out.write("                    //alert(clip_min);\n");
+      out.write("                    //alert(clip_max);\n");
+      out.write("                    if (clip_max <= clip_min) {\n");
+      out.write("                        alert(\"Maximum clipping value cannot be less than or equal to minimum clipping value.\");\n");
+      out.write("                        readyToSubmit = false;\n");
+      out.write("                    }\n");
+      out.write("                    if (clip === 2) {\n");
+      out.write("                        if(clip_min < 1 || clip_min > 99) {\n");
+      out.write("                            alert(\"Minimum clipping percentile cannot be less than 1 or greater than 99.\");\n");
+      out.write("                            readyToSubmit = false;\n");
+      out.write("                        }\n");
+      out.write("                        if(clip_max < 1 || clip_max > 99) {\n");
+      out.write("                            alert(\"Maximum clipping percentile cannot be less than 1 or greater than 99.\");\n");
+      out.write("                            readyToSubmit = false;\n");
+      out.write("                        }\n");
+      out.write("                    }\n");
+      out.write("                }\n");
+      out.write("                \n");
+      out.write("                if (readyToSubmit) {\n");
+      out.write("                    document.getElementById('SelectionForm').submit();\n");
       out.write("                }\n");
       out.write("            }\n");
       out.write("            \n");
@@ -115,7 +145,7 @@ try {
       out.write("    </head>\n");
       out.write("    \n");
       out.write("    <body>\n");
-      out.write("        <form name=\"SelectionForm\" method=\"get\" action=\"AnalysisReInitializer\" target=\"visualizationPanel\"> \n");
+      out.write("        <form name=\"SelectionForm\" id=\"SelectionForm\" method=\"get\" action=\"AnalysisReInitializer\" target=\"visualizationPanel\"> \n");
       out.write("            <input type=\"hidden\" name=\"analysis_name\" value=\"");
       out.print(analysis_name);
       out.write("\" />\n");
@@ -172,7 +202,7 @@ try {
       out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"0\" checked=\"checked\"> None <br>\n");
       out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"1\"> Scale Columns to 0-1 <br>\n");
       out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"2\"> Make Columns Standard Normal <br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"3\"> Pareto Scaling  <br>\n");
+      out.write("                    <input type=\"radio\" name=\"normRule_Col\" value=\"3\"> Modified Pareto Scaling  <br>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
@@ -214,21 +244,21 @@ try {
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label style=\"line-height: 20px\">Significance Level: </label></b>\n");
-      out.write("                    <input type=\"text\" name=\"txtSignificanceLevel\" value=\"0.05\" maxlength=\"4\" size=\"4\" >\n");
+      out.write("                    <input type=\"text\" id=\"txtSignificanceLevel\" name=\"txtSignificanceLevel\" value=\"0.05\" maxlength=\"5\" size=\"5\" >\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label style=\"line-height: 25px\"> Minimum Functional Group Feature List Intersection: </label></b>\n");
-      out.write("                    <input type=\"text\" name=\"txtSmall_k\" value=\"0\" maxlength=\"4\" size=\"4\" >\n");
+      out.write("                    <input type=\"text\" id=\"txtSmall_k\" name=\"txtSmall_k\" value=\"0\" maxlength=\"4\" size=\"4\" >\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label style=\"line-height: 25px; padding-bottom: 10px\">Minimum Functional Group Size: </label></b>\n");
-      out.write("                    <input type=\"text\" name=\"txtBig_K\" value=\"0\" maxlength=\"4\" size=\"4\" >\n");
+      out.write("                    <input type=\"text\" id=\"txtBig_K\" name=\"txtBig_K\" value=\"0\" maxlength=\"4\" size=\"4\" >\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("\n");
@@ -270,32 +300,28 @@ try {
       out.write("            \n");
       out.write("            <tr> <td colspan='4' align=center height=\"20\"> <b>Visualization Controls</b> </td></tr>\n");
       out.write("            \n");
-      out.write("            ");
- // if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
-      out.write("\n");
-      out.write("            <!--\n");
-      out.write("            <tr>\n");
-      out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
-      out.write("                    <b><label>Data Scaling for Visualization: </label></b><br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"0\" checked=\"checked\"> None <br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"2\"> Mean Center Rows <br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"3\"> Make Rows Standard Normal <br>\n");
-      out.write("                    <input type=\"radio\" name=\"normRules_Heatmap\" value=\"1\"> Scale Rows to 0-1 Range <br>\n");
-      out.write("                </td>\n");
-      out.write("            </tr>\n");
-      out.write("            -->\n");
-      out.write("            ");
- // }   
-      out.write("\n");
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label>Number of Color Bins: </label></b>\n");
-      out.write("                    <input type=\"text\" name=\"txtNBins\" value=\"21\" maxlength=\"4\" size=\"4\" >\n");
+      out.write("                    ");
+  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
+      out.write("\n");
+      out.write("                    <input type=\"text\" id=\"txtNBins\" name=\"txtNBins\" value=\"21\" maxlength=\"4\" size=\"4\" >\n");
+      out.write("                    ");
+ } else { 
+      out.write("\n");
+      out.write("                    <input type=\"text\" id=\"txtNBins\" name=\"txtNBins\" value=\"51\" maxlength=\"4\" size=\"4\" >\n");
+      out.write("                    ");
+ } 
+      out.write("\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
       out.write("            \n");
+      out.write("            ");
+  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
+      out.write("\n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label>Binning Range: </label></b><br>\n");
@@ -316,7 +342,18 @@ try {
       out.write("                    </p>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
-      out.write("            \n");
+      out.write("            ");
+ } else { 
+      out.write("\n");
+      out.write("            <tr>\n");
+      out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
+      out.write("                    <b><label>Binning Range: </label></b><br>\n");
+      out.write("                    <input type=\"radio\" name=\"binningRange\" value=\"symmetric_bins\" checked> Use Symmetric Bins (about 0)<br>\n");
+      out.write("                </td>\n");
+      out.write("            </tr>\n");
+      out.write("            ");
+ } 
+      out.write("\n");
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
@@ -346,7 +383,17 @@ try {
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" align=\"center\" style=\"padding: 10px;\"> \n");
       out.write("                    <input type=\"hidden\" id=\"vizType\" name=\"vizType\" value=\"Selection\">\n");
+      out.write("                    ");
+ if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  { 
+      out.write("\n");
+      out.write("                    <button type=\"button\" onclick=\"validateParamsAndSubmit()\">Refresh</button>\n");
+      out.write("                    ");
+ } else { 
+      out.write("\n");
       out.write("                    <button type=\"submit\">Refresh</button>\n");
+      out.write("                    ");
+ } 
+      out.write("\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
@@ -354,6 +401,157 @@ try {
       out.write("            \n");
       out.write("        </form>\n");
       out.write("    </body>\n");
+      out.write("    \n");
+      out.write("    \n");
+      out.write("    ");
+ 
+        String load_type = request.getParameter("load_type");
+        if (load_type != null) {
+            if (load_type.equalsIgnoreCase("reopen") || load_type.equalsIgnoreCase("file")) {
+                if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {
+    
+      out.write("\n");
+      out.write("    \n");
+      out.write("        <script>\n");
+      out.write("            \n");
+      out.write("            replicateHandling(");
+      out.print(analysis.data_transformation_params.replicate_handling);
+      out.write(");\n");
+      out.write("            checkDataClipMinMax(");
+      out.print(analysis.data_transformation_params.getClippingType());
+      out.write(',');
+      out.write(' ');
+      out.print(analysis.data_transformation_params.clip_min);
+      out.write(',');
+      out.write(' ');
+      out.print(analysis.data_transformation_params.clip_max);
+      out.write(");\n");
+      out.write("            checkLogTransform(");
+      out.print(analysis.data_transformation_params.log_transform);
+      out.write(");\n");
+      out.write("            columnScaling(");
+      out.print(analysis.data_transformation_params.column_normalization);
+      out.write(");\n");
+      out.write("            rowScaling(");
+      out.print(analysis.data_transformation_params.row_normalization);
+      out.write(");\n");
+      out.write("            groupBy(");
+      out.print(analysis.data_transformation_params.getGroupByIndex());
+      out.write(");\n");
+      out.write("            checkHierarchical(");
+      out.print(analysis.clustering_params.do_clustering);
+      out.write(");\n");
+      out.write("            linkageFunc(");
+      out.print(analysis.clustering_params.getLinkageIndex());
+      out.write(");\n");
+      out.write("            distFunc(");
+      out.print(analysis.clustering_params.getDistanceFuncIndex());
+      out.write(");\n");
+      out.write("            colorBins(");
+      out.print(analysis.visualization_params.nBins);
+      out.write(");\n");
+      out.write("            binRange(");
+      out.print(analysis.visualization_params.getBinRangeTypeIndex());
+      out.write(");\n");
+      out.write("            binRangeStartEnd(");
+      out.print(analysis.visualization_params.getBinRangeTypeIndex());
+      out.write(',');
+      out.write(' ');
+      out.print(analysis.visualization_params.bin_range_start);
+      out.write(',');
+      out.write(' ');
+      out.print(analysis.visualization_params.bin_range_end);
+      out.write(");\n");
+      out.write("            leafOrder(");
+      out.print(analysis.visualization_params.getLeafOrderingStrategyIndex());
+      out.write(");\n");
+      out.write("            \n");
+      out.write("        </script>\n");
+      out.write("    \n");
+      out.write("    ");
+
+                } else {
+    
+      out.write("\n");
+      out.write("        <script>\n");
+      out.write("            \n");
+      out.write("            setSignificanceLevel(");
+      out.print(analysis.enrichment_params.significance_level);
+      out.write(");\n");
+      out.write("            set_small_k(");
+      out.print(analysis.enrichment_params.small_k);
+      out.write(");\n");
+      out.write("            set_Big_K(");
+      out.print(analysis.enrichment_params.big_K);
+      out.write(");\n");
+      out.write("            checkHierarchical(");
+      out.print(analysis.clustering_params.do_clustering);
+      out.write(");\n");
+      out.write("            linkageFunc(");
+      out.print(analysis.clustering_params.getLinkageIndex());
+      out.write(");\n");
+      out.write("            distFunc(");
+      out.print(analysis.clustering_params.getDistanceFuncIndex());
+      out.write(");\n");
+      out.write("            colorBins(");
+      out.print(analysis.visualization_params.nBins);
+      out.write(");\n");
+      out.write("            leafOrder(");
+      out.print(analysis.visualization_params.getLeafOrderingStrategyIndex());
+      out.write(");\n");
+      out.write("            \n");
+      out.write("        </script>\n");
+      out.write("    ");
+
+                }
+            } else if (load_type.equalsIgnoreCase("sub_analysis")) {
+                if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {
+    
+      out.write("\n");
+      out.write("        <script>\n");
+      out.write("            \n");
+      out.write("            replicateHandling(");
+      out.print(analysis.data_transformation_params.replicate_handling);
+      out.write(");\n");
+      out.write("            groupBy(");
+      out.print(analysis.data_transformation_params.getGroupByIndex());
+      out.write(");\n");
+      out.write("            colorBins(");
+      out.print(analysis.visualization_params.nBins);
+      out.write(");\n");
+      out.write("            binRange(");
+      out.print(analysis.visualization_params.getBinRangeTypeIndex());
+      out.write(");\n");
+      out.write("            binRangeStartEnd(");
+      out.print(analysis.visualization_params.getBinRangeTypeIndex());
+      out.write(',');
+      out.write(' ');
+      out.print(analysis.visualization_params.bin_range_start);
+      out.write(',');
+      out.write(' ');
+      out.print(analysis.visualization_params.bin_range_end);
+      out.write(");\n");
+      out.write("            \n");
+      out.write("        </script>\n");
+      out.write("    ");
+
+                } else {
+    
+      out.write("\n");
+      out.write("        <script>\n");
+      out.write("            \n");
+      out.write("            colorBins(");
+      out.print(analysis.visualization_params.nBins);
+      out.write(");\n");
+      out.write("\n");
+      out.write("        </script>\n");
+      out.write("    ");
+
+                }
+            }
+        }
+    
+      out.write("\n");
       out.write("</html>\n");
 
   

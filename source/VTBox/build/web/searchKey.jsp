@@ -136,7 +136,8 @@ try {
         function makeGetRequest_2 (selected_search_indices_str) {
             //make a connection to the server ... specifying that you intend to make a GET request 
             //to the server. Specifiy the page name and the URL parameters to send
-            http.open('get', 'AddDataToList?mode=search_result&list_name=' + selected_list_name + '&search_indices=' + selected_search_indices_str + '&analysis_name=<%=analysis_name%>');
+            var milliseconds = new Date().getTime();
+            http.open('get', 'AddDataToList?mode=search_result&list_name=' + selected_list_name + '&search_indices=' + selected_search_indices_str + '&analysis_name=<%=analysis_name%>' + '&timestamp=' + milliseconds);
 
             //assign a handler for the response
             http.onreadystatechange = processResponse_2;
@@ -298,20 +299,20 @@ try {
 
                     Iterator iter = gene_entrez_map.entrySet().iterator();
                     while(iter.hasNext()){
-                        
-                        Map.Entry pair = (Map.Entry)iter.next();
-                        if (search_strings.get(i).startsWith("entrez")) {
-            %>
-                            <div class='e' id='<%=i + "_" + pair.getKey()%>' style='font-weight:normal' onclick='callFrmSearchKeyE("<%=pair.getKey()%>", "<%=analysis_name%>"); callHighlightPathwayGenes(<%=i%>, "<%=i + "_" + pair.getKey()%>")' > <%=pair.getKey()%> </div>
-            <%                    
-                        } else if (search_strings.get(i).startsWith("genesymbol")) {
-            %>
-                            <div class='e' id='<%=i + "_" + pair.getKey()%>' style='font-weight:normal' onclick='callFrmSearchKeyE("<%=pair.getKey()%>", "<%=analysis_name%>"); callHighlightPathwayGenes(<%=i%>, "<%=i + "_" + pair.getKey()%>")' > <%=pair.getValue() %> </div>
-            <%
-                        }
-                    }
 
+                            Map.Entry pair = (Map.Entry)iter.next();
+                            if (search_strings.get(i).startsWith("entrez")) {
+                %>
+                                <div class='e' id='<%=i + "_" + pair.getKey()%>' style='font-weight:normal' onclick='callFrmSearchKeyE("<%=pair.getKey()%>", "<%=analysis_name%>"); callHighlightPathwayGenes(<%=i%>, "<%=i + "_" + pair.getKey()%>")' > <%=pair.getKey()%> </div>
+                <%                    
+                            } else if (search_strings.get(i).startsWith("genesymbol")) {
+                %>
+                                <div class='e' id='<%=i + "_" + pair.getKey()%>' style='font-weight:normal' onclick='callFrmSearchKeyE("<%=pair.getKey()%>", "<%=analysis_name%>"); callHighlightPathwayGenes(<%=i%>, "<%=i + "_" + pair.getKey()%>")' > <%=pair.getValue() %> </div>
+                <%
+                            }
+                    }
                 }
+
             }
     %>
     

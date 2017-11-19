@@ -5,7 +5,9 @@
  */
 package vtbox.servlets;
 
+import algorithms.clustering.HierarchicalClusterer;
 import data.transforms.Normalizer;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.IOException;
@@ -15,6 +17,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import params.ClusteringParams;
+import params.TransformationParams;
+import params.VisualizationParams;
 import structure.Data;
 import structure.AnalysisContainer;
 import structure.CompactSearchResultContainer;
@@ -202,6 +207,18 @@ public class AnalysisInitializer extends HttpServlet {
             }
 
             analysis.setDatabase(database);
+            
+            /*
+            HashMap <String, String> data_transformation_params = new HashMap <String, String> ();
+            data_transformation_params.put("replicate_handling", Integer.toString(0));
+            data_transformation_params.put("clipping_type", "none");
+            data_transformation_params.put("clip_min", Float.toString(Float.NEGATIVE_INFINITY));
+            data_transformation_params.put("clip_max", Float.toString(Float.POSITIVE_INFINITY));
+            data_transformation_params.put("log_transform", Boolean.toString(false));
+            data_transformation_params.put("column_normalization", Integer.toString(column_normalization));
+            data_transformation_params.put("row_normalization", Integer.toString(row_normalization));
+            data_transformation_params.put("group_by", groupBy);
+            analysis.setDataTransformationParams(data_transformation_params);
 
             HashMap <String, String> clustering_params = new HashMap <String, String> ();
             clustering_params.put("linkage", "");
@@ -218,6 +235,11 @@ public class AnalysisInitializer extends HttpServlet {
             visualization_params.put("bin_range_start", "-1");
             visualization_params.put("bin_range_end", "-1");
             analysis.setVisualizationParams(visualization_params);
+            */
+            
+            analysis.setDataTransformationParams(new TransformationParams());
+            analysis.setClusteringParams(new ClusteringParams());
+            analysis.setVisualizationParams(new VisualizationParams());
             
             /*
             HashMap <String, Double> state_variables = new HashMap <String, Double> ();
@@ -248,6 +270,16 @@ public class AnalysisInitializer extends HttpServlet {
             // load system configuration details
             HashMap <String, String> slide_config = ReadConfig.getSlideConfig(installPath);
             session.setAttribute("slide_config", slide_config);
+            
+            // add HierarchicalClusterer to analysis
+            String py_module_path = slide_config.get("py-module-path");
+            String py_home = slide_config.get("python-dir");
+
+            HierarchicalClusterer hac = new HierarchicalClusterer (
+                            analysis.base_path + File.separator + "data",
+                            py_module_path, py_home);
+            analysis.setHierarchicalClusterer(hac);
+            
             
             // Finally add analysis to session
             session.setAttribute(analysis.analysis_name, analysis);

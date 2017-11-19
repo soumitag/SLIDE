@@ -5,6 +5,7 @@
  */
 package data.transforms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import net.sf.javaml.core.kdtree.KDTree;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -15,7 +16,9 @@ import vtbase.DataParsingException;
  *
  * @author Soumita
  */
-public class Imputer {
+public class Imputer implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
         
     public static final int IMPUTE_NONE = 0;
     public static final int IMPUTE_ROW_MEAN = 1;

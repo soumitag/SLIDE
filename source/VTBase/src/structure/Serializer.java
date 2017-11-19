@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import searcher.Searcher;
 
 /**
  *
@@ -26,9 +27,13 @@ public class Serializer {
         
         try (ObjectOutputStream oos
                 = new ObjectOutputStream(new FileOutputStream(filepath + File.separator + analysis.analysis_name + ".slide"))) {
-
+            
+            analysis.searcher = 1;
             oos.writeObject(analysis);
             System.out.println("Analysis saved.");
+            
+            // create a searcher object
+            analysis.setSearcher(new Searcher(analysis.database.species));
 
         } catch (Exception ex) {
             ex.printStackTrace();

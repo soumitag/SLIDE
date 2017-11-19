@@ -5,6 +5,7 @@
  */
 package structure;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,7 +13,9 @@ import java.util.Arrays;
  *
  * @author Soumita
  */
-public class DataMask {
+public class DataMask implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     int NUM_ROWS;
     int NUM_COLS;

@@ -30,27 +30,29 @@ try {
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Confirm Feature List Deletion</title>
         <link rel="stylesheet" href="vtbox-main.css">
+        <link rel="stylesheet" href="vtbox-tables.css">
         <script>
             function backtoView(){
                 window.location.href = "viewDeleteFeatureList.jsp?analysis_name=<%=analysis_name%>";
             }
             
             function confirmFeatureListDeletion(){
+                //alert("Please");
                 window.location.href = "deleteFeatureList.jsp?analysis_name=<%=analysis_name%>&feature_list_name=<%=feature_list_name%>";
             }
         
         </script>
     </head>
     <body>
-        <form name="confirmFeatureListDeletion" id="confirmFeatureListDeletion" >
+        <form name="confirmFeatureListDeletionForm" id="confirmFeatureListDeletionForm" >
             <table cellpadding="5" style="width: 100%;" border="0">
                 <tr>
-                    <td height="75" align="center">
+                    <td height="25" align="center">
                         <label>Do you want to delete <%=feature_list_name%> ? </label>
                     </td>
                 </tr>
                 <tr>
-                    <td height="75" align="center">
+                    <td height="25" align="center">
                         <button type="button" class="dropbtn" title="Yes delete feature list" id="btnYes" onclick="confirmFeatureListDeletion()">Yes</button>
                         &nbsp;
                         <button type="button" class="dropbtn" title="Back to Feature List" id="btnNo" onclick="backtoView()">No</button>

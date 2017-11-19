@@ -5,6 +5,7 @@
  */
 package structure;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -12,7 +13,9 @@ import java.util.Stack;
  *
  * @author Soumita
  */
-public class StateVariables {
+public class StateVariables implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
 
     public HashMap <String, Object> sv_map;
     

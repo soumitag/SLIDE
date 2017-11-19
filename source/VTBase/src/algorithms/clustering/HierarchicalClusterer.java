@@ -6,24 +6,31 @@
 package algorithms.clustering;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
+import structure.AnalysisContainer;
 import structure.Data;
 import structure.DataMask;
 import utils.Utils;
+import vtbase.SlideException;
 
 
 /**
  *
  * @author Soumita
  */
-public class HierarchicalClustering {
+public class HierarchicalClusterer implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     public static final String SINGLE_LINKAGE      = "single";
     public static final String COMPLETE_LINKAGE    = "complete";
@@ -42,61 +49,89 @@ public class HierarchicalClustering {
     public String PYTHON_HOME;
     public String PYTHON_MODULE_PATH;
     public String DATA_FILES_PATH;
-    public String DISTANCE_FUNCTION;
-    public String LINKAGE;
-    public int LEAF_ORDERING;
+    //public String DISTANCE_FUNCTION;
+    //public String LINKAGE;
+    //public int LEAF_ORDERING;
     
     // public double[][] linkage_tree;
     // public int[] leaf_ordering;
     // public double[][] dendogram_data;
     
-    Data data;
-    DataMask mask;
+    //AnalysisContainer analysis;
+    //Data data;
+    //DataMask mask;
+    HashMap <String, String> cache;
     
-    
-    public HierarchicalClustering (Data data,
-                                   String linkage, 
-                                   String distance_function, 
-                                   int leaf_ordering,
-                                   String data_files_path,
-                                   String python_module_path,
-                                   String python_home) {
-        this.data = data;
-        this.mask = new DataMask(this.data);
-        this.LINKAGE = linkage;
-        this.DISTANCE_FUNCTION = distance_function;
-        this.LEAF_ORDERING = leaf_ordering;
+    public HierarchicalClusterer (String data_files_path,
+                                  String python_module_path,
+                                  String python_home) {
+        
         this.PYTHON_MODULE_PATH = python_module_path;
         this.PYTHON_HOME = python_home;
         this.DATA_FILES_PATH = data_files_path;
+        
+        this.cache = new HashMap <String, String> ();
     }
     
-    public HierarchicalClustering () { }
+    public HierarchicalClusterer () { }
     
+    /*
     public void setDataMask(DataMask mask) {
         this.mask = mask;
     }
+    */
     
-    public BinaryTree doClustering(boolean use_cached) {
+    public BinaryTree doClustering(AnalysisContainer analysis,
+                                   String linkage, 
+                                   String distance_function, 
+                                   int leaf_ordering) throws SlideException {
         
-        if (use_cached) {
-            
-            String linkage_tree_fname = DATA_FILES_PATH + File.separator + "ClusteringOutput_0.txt";
-            return new BinaryTree(
-                Utils.loadDoubleDelimData(linkage_tree_fname, " ", false),
-                this.LEAF_ORDERING
-            );
-            
+        String key = getCacheKey(analysis);
+        if (this.cache.containsKey(key)) {
+            String filetag = cache.get(key);
+            String linkage_tree_fname = DATA_FILES_PATH + File.separator + "ClusteringOutput_" + filetag + ".txt";
+            double[][] linkage_tree = null;
+            try {
+                linkage_tree = Utils.loadDoubleDelimData(linkage_tree_fname, " ", false);
+            } catch (Exception e) {
+                throw new SlideException("Cannot read linkage file " + linkage_tree_fname, 55);
+            }
+            return new BinaryTree(linkage_tree, leaf_ordering);
         } else {
-            return doClustering();
+            try {
+                return doClustering(analysis, linkage, distance_function, leaf_ordering, key);
+            } catch (Exception e) {
+                throw new SlideException("Exception in HierarchicalClustering.java", 50);
+            }
+        }
+    }
+    
+    private String getCacheKey (AnalysisContainer analysis) { 
+        if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
+            String cluster_params_hash_string = analysis.clustering_params.getHashString();
+            String data_transform_params_hash_string = analysis.data_transformation_params.getHashString();
+            String key = cluster_params_hash_string + "_" + data_transform_params_hash_string;
+            return key;
+        } else {
+            String cluster_params_hash_string = analysis.clustering_params.getHashString();
+            String enrich_params_hash_string = analysis.enrichment_params.getHashString();
+            String key = cluster_params_hash_string + "_" + enrich_params_hash_string;
+            return key;
         }
     }
 
-    public BinaryTree doClustering() {
+    public BinaryTree doClustering (
+            AnalysisContainer analysis, String linkage, String distance_function, int leaf_ordering, String key)
+    throws SlideException {
         
-        int id = 0;
-        data.saveDataMatrix(DATA_FILES_PATH + File.separator + "InData.txt", "\t", mask);
+        String id = System.currentTimeMillis() + "";
+        Utils.saveDataMatrix(DATA_FILES_PATH + File.separator + "InData.txt", 
+                "\t", 
+                analysis.database.datacells,
+                new DataMask(analysis.database)
+        );
         String linkage_tree_fname = DATA_FILES_PATH + File.separator + "ClusteringOutput_" + id + ".txt";
+        String error_fname = DATA_FILES_PATH + File.separator + "ClusteringError_" + id + ".txt";
         
         try {
 
@@ -109,9 +144,9 @@ public class HierarchicalClustering {
                     PYTHON_MODULE_PATH + File.separator + "fast_hierarchical_clustering.py",
                     DATA_FILES_PATH,
                     "InData.txt",
-                    LINKAGE,
-                    DISTANCE_FUNCTION,
-                    id + ""
+                    linkage,
+                    distance_function,
+                    id
             );
             System.out.println(pb.toString());
             
@@ -127,13 +162,15 @@ public class HierarchicalClustering {
             //p.destroyForcibly();
         } catch (Exception e) {
             System.out.println(e);
+            throw new SlideException("Failed to start clustering.", 53);
         }
 
         File link_file = new File(linkage_tree_fname);
+        File error_file = new File(error_fname);
         
         boolean isClusteringSuccessful = true;
         int waiting = 0;
-        while (!link_file.exists()) {
+        while (!link_file.exists() && !error_file.exists()) {
             waiting++;
             try {
                 TimeUnit.MILLISECONDS.sleep(200);
@@ -147,6 +184,10 @@ public class HierarchicalClustering {
             }
         }
         System.out.println("Waited for: " + waiting);
+        
+        if (error_file.exists()) {
+            isClusteringSuccessful = false;
+        }
 
         if (isClusteringSuccessful) {
             // wait another 2 secs for filewrite to finish
@@ -170,7 +211,7 @@ public class HierarchicalClustering {
         */
         
         if (isClusteringSuccessful) {
-            double[][] linkage_tree = Utils.loadDoubleDelimData(linkage_tree_fname, " ", false);
+            double[][] linkage_tree = null;
             /*
             try {
                 Files.deleteIfExists(link_file.toPath());
@@ -178,11 +219,21 @@ public class HierarchicalClustering {
                 System.out.println(e);
             }
             */
-            return new BinaryTree(linkage_tree, this.LEAF_ORDERING);
+            try {
+                linkage_tree = Utils.loadDoubleDelimData(linkage_tree_fname, " ", false);
+            } catch (Exception e) {
+                throw new SlideException("Cannot read linkage file " + linkage_tree_fname, 55);
+            }
+            cache.put(key, id);
+            return new BinaryTree(linkage_tree, leaf_ordering);
         } else {
-            return null;
+            throw new SlideException("Failed to perform clustering.", 54);
         }
 
+    }
+    
+    public void clearCache() {
+        this.cache.clear();
     }
     
     public double[][] extractTopKNodes(double[][] linkage_tree, int start_node, int K) {

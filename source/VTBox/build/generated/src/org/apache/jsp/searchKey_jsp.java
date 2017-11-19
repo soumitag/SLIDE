@@ -185,9 +185,10 @@ try {
       out.write("        function makeGetRequest_2 (selected_search_indices_str) {\n");
       out.write("            //make a connection to the server ... specifying that you intend to make a GET request \n");
       out.write("            //to the server. Specifiy the page name and the URL parameters to send\n");
+      out.write("            var milliseconds = new Date().getTime();\n");
       out.write("            http.open('get', 'AddDataToList?mode=search_result&list_name=' + selected_list_name + '&search_indices=' + selected_search_indices_str + '&analysis_name=");
       out.print(analysis_name);
-      out.write("');\n");
+      out.write("' + '&timestamp=' + milliseconds);\n");
       out.write("\n");
       out.write("            //assign a handler for the response\n");
       out.write("            http.onreadystatechange = processResponse_2;\n");
@@ -430,12 +431,12 @@ try {
 
                     Iterator iter = gene_entrez_map.entrySet().iterator();
                     while(iter.hasNext()){
-                        
-                        Map.Entry pair = (Map.Entry)iter.next();
-                        if (search_strings.get(i).startsWith("entrez")) {
-            
+
+                            Map.Entry pair = (Map.Entry)iter.next();
+                            if (search_strings.get(i).startsWith("entrez")) {
+                
       out.write("\n");
-      out.write("                            <div class='e' id='");
+      out.write("                                <div class='e' id='");
       out.print(i + "_" + pair.getKey());
       out.write("' style='font-weight:normal' onclick='callFrmSearchKeyE(\"");
       out.print(pair.getKey());
@@ -448,12 +449,12 @@ try {
       out.write("\")' > ");
       out.print(pair.getKey());
       out.write(" </div>\n");
-      out.write("            ");
+      out.write("                ");
                     
-                        } else if (search_strings.get(i).startsWith("genesymbol")) {
-            
+                            } else if (search_strings.get(i).startsWith("genesymbol")) {
+                
       out.write("\n");
-      out.write("                            <div class='e' id='");
+      out.write("                                <div class='e' id='");
       out.print(i + "_" + pair.getKey());
       out.write("' style='font-weight:normal' onclick='callFrmSearchKeyE(\"");
       out.print(pair.getKey());
@@ -466,12 +467,12 @@ try {
       out.write("\")' > ");
       out.print(pair.getValue() );
       out.write(" </div>\n");
-      out.write("            ");
+      out.write("                ");
 
-                        }
+                            }
                     }
-
                 }
+
             }
     
       out.write("\n");
