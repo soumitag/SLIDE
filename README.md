@@ -10,7 +10,7 @@ To access the online version click [here](http://137.132.97.109/VTBox/) :point_l
 
 #### **User's Manual**
 
-SLIDE user's manual is avaialble [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Users_Manual.pdf) :point_left:      
+SLIDE user's manual is available [here](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Users_Manual.pdf) :point_left:      
 
 #### **Installation Instructions**
 Click [here](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip) to download a stand-alone version of SLIDE.  :point_left:  
