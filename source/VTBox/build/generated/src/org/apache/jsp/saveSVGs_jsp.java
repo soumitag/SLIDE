@@ -433,7 +433,8 @@ try {
       out.write("                        <input type=\"text\" id=\"detailed_view_feature_width\" name=\"detailed_view_feature_width\" value=\"200\">&nbsp;\n");
       out.write("                        Default Value: 200.\n");
       out.write("                        ");
- } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) { 
+ } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+                                analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) { 
       out.write("\n");
       out.write("                        <input type=\"text\" id=\"detailed_view_feature_width\" name=\"detailed_view_feature_width\" value=\"350\">&nbsp;\n");
       out.write("                        Default Value: 350.\n");

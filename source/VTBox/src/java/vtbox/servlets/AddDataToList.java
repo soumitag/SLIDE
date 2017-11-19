@@ -83,7 +83,7 @@ public class AddDataToList extends HttpServlet {
                     }
 
                 } else if (mode.equals("search_result")) {
-                    System.out.println("This seems impossible");;
+                    
                     // the user selected gene indices (of the original data) as a comma delimited string
                     String search_indices = request.getParameter("search_indices");
                     HashMap <String, ArrayList <Integer>> entrezPosMap = analysis.entrezPosMap;

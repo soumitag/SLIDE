@@ -38,7 +38,8 @@ try {
         } else {
             scrollPanel_width = 730 + (search_results.size()*32) + "";
         }
-    }  else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+    }  else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
+            analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
         scrollPanel_width = "880";
     }
     

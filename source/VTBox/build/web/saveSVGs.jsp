@@ -352,7 +352,8 @@ try {
                         <% if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) { %>
                         <input type="text" id="detailed_view_feature_width" name="detailed_view_feature_width" value="200">&nbsp;
                         Default Value: 200.
-                        <% } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) { %>
+                        <% } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+                                analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) { %>
                         <input type="text" id="detailed_view_feature_width" name="detailed_view_feature_width" value="350">&nbsp;
                         Default Value: 350.
                         <% } %>

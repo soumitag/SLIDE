@@ -93,7 +93,8 @@ try {
     int FEATURE_LABEL_FRAME_WIDTH = 200;
     if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
         FEATURE_LABEL_FRAME_WIDTH = 200;
-    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
+    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+            analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
         FEATURE_LABEL_FRAME_WIDTH = 350;
     }
     
