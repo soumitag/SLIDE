@@ -12,9 +12,10 @@
 <% 
     String analysis_to_stop = request.getParameter("analysis_to_stop");
     if(analysis_to_stop != null){
-        AnalysisContainer ac1 = (AnalysisContainer)session.getAttribute(analysis_to_stop);
-        ((Searcher)ac1.searcher).closeMongoDBConnection();
-        if(ac1 != null){
+        Object t = session.getAttribute(analysis_to_stop);
+        if (t != null) {
+            AnalysisContainer ac1 = (AnalysisContainer)t;
+            ((Searcher)ac1.searcher).closeMongoDBConnection();
             session.removeAttribute(analysis_to_stop);
         }
     }
@@ -64,8 +65,13 @@
             
             function stopAnalysis(analysis_to_stop){
                 //alert("Stop it");
-                window.location.href("<%=base_url%>/index.jsp?analysis_to_stop=" + analysis_to_stop);
+                window.location.href = "<%=base_url%>/index.jsp?analysis_to_stop=" + analysis_to_stop;
                
+            }
+            
+            function loadDemo(){
+                window.location.href = "<%=base_url%>newExperimentWizardDemo.jsp?newexperimentname=demo";
+                return false;
             }
                 
         </script>
@@ -165,11 +171,8 @@
             
         </style>
     </head>
-    <% if (status == null){ %>
-        <body onload="doSysReq()">
-    <% } else { %>
-        <body>
-    <%}%>
+    
+    <body>
         <!-- The Modal -->
         <div id="myModal" class="modal">
 
@@ -203,6 +206,11 @@
                             </td>
                             <td align="center">
                                 <button class="dropbtn" onclick="show_tab('opener')"> Open Active Analysis </button> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" align="center">
+                                <button class="dropbtn" onclick="loadDemo()"> &nbsp;&nbsp;&nbsp;Load Demo&nbsp;&nbsp;&nbsp; </button> 
                             </td>
                         </tr>
                 </table>
@@ -327,6 +335,11 @@
                     
                 </table>
 
+                    
+                    <div id="resolution_message" class="msg" style="width: 420px; position: fixed; bottom: 20px; left: 50%; margin-left: -210px">
+                        SLIDE is optimized for 1920&times;1040 and higher resolutions. 
+                    </div>
+                    
     </body>
     
     <script>
@@ -383,62 +396,32 @@
             
         
             function doSysReq() { 
-                var browser = "";
+                
                 var browserApp= "";
-                var browserVersion = "";
-                    if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ) {
+                    if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) !== -1 ) {
                         browserApp = "Opera";
-                        browserVersion = navigator.appVersion; 
-                    } else if(navigator.userAgent.indexOf("Chrome") != -1 ){
+                    } else if(navigator.userAgent.indexOf("Chrome") !== -1 ){
                         if(navigator.userAgent.indexOf("Edge") > -1){
                             browserApp = "Edge";
-                            browserVersion = navigator.appVersion; 
                         }else{
                             browserApp = "Chrome";
-                            browserVersion = navigator.appVersion; 
                         }
-                    } else if(navigator.userAgent.indexOf("Safari") != -1){
+                    } else if(navigator.userAgent.indexOf("Safari") !== -1){
                         browserApp = "Safari";
-                        browserVersion = navigator.appVersion;                     
-                    } else if(navigator.userAgent.indexOf("Firefox") != -1 ){
+                    } else if(navigator.userAgent.indexOf("Firefox") !== -1 ){
                         browserApp = "Firefox";
-                        browserVersion = navigator.appVersion; 
-                    } else if((navigator.userAgent.indexOf("MSIE") != -1 || navigator.appVersion.indexOf('Trident/') > 0)) {//IF IE > 10 
-                        browser = "ie";
+                    } else if((navigator.userAgent.indexOf("MSIE") !== -1 || navigator.appVersion.indexOf('Trident/') > 0)) {//IF IE > 10 
                         browserApp = "Internet Explorer";
-                        browserVersion = navigator.appVersion; 
                     } else {
                         browserApp = "Unknown";
                     }
 
-                    var OSName = "Unknown";
-                        if (window.navigator.userAgent.indexOf("Windows NT 10.0")!= -1) 
-                            OSName="Windows 10";
-                        if (window.navigator.userAgent.indexOf("Windows NT 6.2") != -1) 
-                            OSName="Windows 8";
-                        if (window.navigator.userAgent.indexOf("Windows NT 6.1") != -1) 
-                            OSName="Windows 7";
-                        if (window.navigator.userAgent.indexOf("Windows NT 6.0") != -1) 
-                            OSName="Windows Vista";
-                        if (window.navigator.userAgent.indexOf("Windows NT 5.1") != -1) 
-                            OSName="Windows XP";
-                        if (window.navigator.userAgent.indexOf("Windows NT 5.0") != -1) 
-                            OSName="Windows 2000";
-                        if (window.navigator.userAgent.indexOf("Mac")!= -1) 
-                            OSName="Mac/iOS";
-                        if (window.navigator.userAgent.indexOf("X11")!= -1) 
-                            OSName="UNIX";
-                        if (window.navigator.userAgent.indexOf("Linux")!= -1) 
-                            OSName="Linux";
-
                     var browserRes_W = window.screen.availWidth;
                     var browserRes_H = window.screen.availHeight; 
-                    //var screenRes = screen.width + " X " + screen.height; 
-
-                    //showModalWindow('sysreq.jsp?browser_app='+browserApp+'&browser_ver='+browserVersion+'&os_name='+OSName+'&browser_res='+browserRes+'&screen_res='+screenRes, '50%', '30%');
                     
                     if (browserApp !== "Internet Explorer" || (browserRes_W < 1920 || browserRes_H < 1080)) {
-                        showModalWindow('sysreq.jsp?browser_app='+ browserApp + '&browser_res_w=' + browserRes_W + '&browser_res_h=' + browserRes_H, '50%', '30%');
+                        var mesg = 'sysreq.jsp?browser_app='+ browserApp + '&browser_res_w=' + browserRes_W + '&browser_res_h=' + browserRes_H;
+                        showModalWindow(mesg, '50%', '30%');
                     }
                 }
     

@@ -23,7 +23,7 @@ try {
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
     
     Data db = analysis.database;
-    int num_features = db.features.size();
+    int num_features = db.metadata.nFeatures;
     
     String start_str = request.getParameter("start");
     String end_str = request.getParameter("end");

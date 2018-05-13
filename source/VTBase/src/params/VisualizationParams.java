@@ -21,6 +21,7 @@ public class VisualizationParams implements Serializable {
     public float bin_range_start;
     public float bin_range_end;
     public String heatmap_color_scheme;
+    public String row_label_type;
     
     public VisualizationParams() {
         leaf_ordering_strategy = "0";
@@ -28,7 +29,7 @@ public class VisualizationParams implements Serializable {
         bin_range_type = "data_bins";
         this.bin_range_start = -1;
         this.bin_range_end = -1;
-        heatmap_color_scheme = "blue_red";
+        heatmap_color_scheme = "blue_white_red";
     }
     
     public void setLeafOrderingStrategy(String leaf_ordering_strategy) {
@@ -53,6 +54,10 @@ public class VisualizationParams implements Serializable {
     
     public void setHeatmapColorScheme(String heatmap_color_scheme) {
         this.heatmap_color_scheme = heatmap_color_scheme;
+    }
+    
+    public void setRowLabelType(String row_label_type) {
+        this.row_label_type = row_label_type;
     }
     
     public int getBinRangeTypeIndex() {

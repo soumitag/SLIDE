@@ -18,8 +18,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import searcher.GeneObject;
 import structure.AnalysisContainer;
 import structure.Data;
+import structure.Feature;
+import structure.MetaData;
 import vtbox.SessionUtils;
 
 /**
@@ -69,7 +72,7 @@ public class HeatmapDendrogramGenerator extends HttpServlet {
 
             } else {
 
-                linkage_tree = new BinaryTree(database.features.size());
+                linkage_tree = new BinaryTree(database.metadata.nFeatures);
                 analysis.setLinkageTree(linkage_tree, false);
 
             }
@@ -77,16 +80,36 @@ public class HeatmapDendrogramGenerator extends HttpServlet {
             HashMap <String, ArrayList <Integer>> entrezPosMap = new HashMap <String, ArrayList <Integer>> ();
             
             for (int i = 0 ; i < linkage_tree.leaf_ordering.size(); i++) {
-                ArrayList <Integer> pos;
-                String eid = database.features.get(linkage_tree.leaf_ordering.get(i)).entrezId;
-                if(entrezPosMap.containsKey(eid)){
-                    pos = entrezPosMap.get(eid);
-                    pos.add(i);
+                Feature f = database.features.get(linkage_tree.leaf_ordering.get(i));
+                if (f.hasBadEntrez) {
+                    
+                    String eid = f.entrez;
+                    ArrayList <Integer> pos;
+                    if(entrezPosMap.containsKey(eid)){
+                        pos = entrezPosMap.get(eid);
+                        pos.add(i);
+                    } else {
+                        pos = new ArrayList <Integer> ();
+                        pos.add(i);
+                    }
+                    entrezPosMap.put(eid, pos);
+                        
                 } else {
-                    pos = new ArrayList <Integer> ();
-                    pos.add(i);
+                    ArrayList <String> entrez_ids = f.entrez_ids;
+
+                    for (int j=0; j<entrez_ids.size(); j++) {
+                        String eid = entrez_ids.get(j);
+                        ArrayList <Integer> pos;
+                        if(entrezPosMap.containsKey(eid)){
+                            pos = entrezPosMap.get(eid);
+                            pos.add(i);
+                        } else {
+                            pos = new ArrayList <Integer> ();
+                            pos.add(i);
+                        }
+                        entrezPosMap.put(eid, pos);
+                    }
                 }
-                entrezPosMap.put(eid, pos);
             }
             analysis.setEntrezPosMap(entrezPosMap);
 
@@ -100,7 +123,7 @@ public class HeatmapDendrogramGenerator extends HttpServlet {
             } else {
                 heatmap = new Heatmap(database, nBins, bin_range_type, linkage_tree.leaf_ordering);
             }
-            heatmap.genColorData();
+            heatmap.genColorData(analysis.visualization_params.heatmap_color_scheme);
             heatmap.assignBinsToRows();
             analysis.setHeatmap(heatmap);
             

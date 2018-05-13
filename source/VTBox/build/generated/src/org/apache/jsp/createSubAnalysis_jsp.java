@@ -3,6 +3,8 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import searcher.GeneObject;
+import structure.MetaData;
 import vtbox.SessionUtils;
 import utils.SessionManager;
 import utils.ReadConfig;
@@ -53,6 +55,8 @@ public final class createSubAnalysis_jsp extends org.apache.jasper.runtime.HttpJ
       _jspx_out = out;
       _jspx_resourceInjector = (org.glassfish.jsp.api.ResourceInjector) application.getAttribute("com.sun.appserv.jsp.resource.injector");
 
+      out.write("\n");
+      out.write("\n");
       out.write("\n");
       out.write("\n");
       out.write("\n");
@@ -119,7 +123,8 @@ try {
         
         ArrayList<Integer> filterListMap = new ArrayList<Integer>();
         for (int i = 0; i < analysis.database.raw_data.length; i++) {
-            String db_eid = analysis.database.features.get(i).entrezId;
+            String db_eid = analysis.database.features.get(i).entrez;
+            //String db_eid = analysis.database.metadata.getFeature(i, GeneObject.ENTREZ);
             if (specified_entrez_list.contains(db_eid)) {
                 filterListMap.add(i);
             }
@@ -192,7 +197,8 @@ try {
         
         ArrayList <Integer> filterListMap = new ArrayList <Integer>();
         for (int i = 0; i < analysis.database.raw_data.length; i++) {
-            String db_eid = analysis.database.features.get(i).entrezId;
+            String db_eid = analysis.database.features.get(i).entrez;
+            //String db_eid = analysis.database.metadata.getFeature(i, GeneObject.ENTREZ);
             if (file_entrez_list.contains(db_eid)) {
                 filterListMap.add(i);
             }

@@ -72,13 +72,18 @@ try {
     
     double num_features = 38;
     
-    String start_str = request.getParameter("start");
+    String refresh_type = request.getParameter("type");
     
     double start, end;
-    if (start_str != null && !start_str.equals("") && !start_str.equals("null")) {
-        start = Integer.parseInt(start_str);
+    if (refresh_type != null && refresh_type.equals("search")) {
+        start = analysis.state_variables.getDetailedViewStart();
     } else {
-        start = 0;
+        String start_str = request.getParameter("start");
+        if (start_str != null && !start_str.equals("") && !start_str.equals("null")) {
+            start = Integer.parseInt(start_str);
+        } else {
+            start = 0;
+        }   
     }
     
     end = start + num_features - 1;

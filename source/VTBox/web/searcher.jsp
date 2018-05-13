@@ -14,6 +14,12 @@ try {
     
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
+    boolean isSearchable = false;
+    if ((analysis.database.species.equalsIgnoreCase("human") || analysis.database.species.equalsIgnoreCase("mouse")) &&
+            (analysis.database.metadata.hasStandardMetaData() || (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION))) {
+        isSearchable = true;
+    }
 %>
 <html>
     <head>
@@ -119,7 +125,12 @@ try {
                         <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
                         <select name="queryType" id="queryType" form="SearchForm">
                             <option value="entrez">Entrez ID</option>
-                            <option value="genesymbol">Gene symbol</option>
+                            <option value="genesymbol">Gene Symbol</option>
+                            <option value="refseq" >RefSeq ID</option>
+                            <option value="ensembl_gene_id" >Ensembl gene ID</option>
+                            <option value="ensembl_transcript_id" >Ensembl transcript ID</option>
+                            <option value="ensembl_protein_id" >Ensembl protein ID</option>
+                            <option value="uniprot_id" >UniProt ID</option>
                             <option value="goid">GO ID</option>
                             <option value="goterm">GO Term</option>
                             <option value="pathid">Path ID</option>
@@ -144,12 +155,18 @@ try {
                         </select>
                     </td>
                     <td valign="middle" style="font-family:verdana; font-size:6;">
+                        <% if (isSearchable) { %>
                         <input type="text" id="searchText" name="searchText" size="30" onkeypress="keypressCallSearcher()" />
+                        <% } else { %>
+                        <input type="text" id="searchText" name="searchText" size="30" onkeypress="keypressCallSearcher()" disabled/>
+                        <% } %>
                     </td>
                     <td valign="middle">
-                        <!--<input type="button" value="Search" onclick="callSearcher()">-->
+                        <% if (isSearchable) { %>
                         <button type="button" name="Search" onclick="callSearcher()"> Search </button>
-                        <!--<img src="images/upload.png" alt="Upload" height="20" width="20"/>-->
+                        <% } else { %>
+                        <button type="button" name="Search" onclick="alert('When species is Other / no metadata columns have been mapped to standard identifiers, search and tagging features will not be available.')"> Search </button>
+                        <% } %>
                     </td>
                 
                 </tr>

@@ -4,6 +4,8 @@
     Author     : soumita
 --%>
 
+<%@page import="searcher.GeneObject"%>
+<%@page import="structure.MetaData"%>
 <%@page import="utils.Utils"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.AnalysisContainer"%>
@@ -20,7 +22,7 @@ try {
     
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
-
+    
     Data db = analysis.database;
     
     double feature_height = 20.0;
@@ -36,7 +38,7 @@ try {
     }
     
     double end = start + num_features - 1;
-    end = Math.min(end, analysis.database.features.size()-1);
+    end = Math.min(end, analysis.database.metadata.nFeatures-1);
     
     double image_height = 760.0;
     
@@ -97,30 +99,31 @@ try {
             
             for (int i=(int)start; i<=(int)end; i++) {
                 int index = linkage_tree.leaf_ordering.get(i);
-                String entrez_i = db.features.get(index).entrezId;
-                ArrayList <String> genesymbols = db.entrezGeneMap.get(entrez_i);
+                /*
+                String entrez_i = db.features.get(index).entrez;
+                if (db.features.get(index).hasBadEntrez) {
+                    entrez_i = "-";
+                }
+                ArrayList <String> genesymbols = db.entrezIdentifierMap.get(entrez_i);
                 
-                String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
+                String genes;
+                if(db.identifier_name.equals("entrez_2021158607524066")) {
+                    genes = (genesymbols.get(0)).toUpperCase();
+                } else {
+                    if (db.metadata.hasStandardMetaData()) {
+                        genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
+                    } else {
+                        genes = genesymbols.get(0).toUpperCase();
+                    }
+                }
+                
                 if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
                     analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
                         genes = Utils.checkAndRemoveHtml(genes);
                 }
-                
-                /*
-                if(genes.contains("<I>")){
-                    genes = genes.replace("<I>", "");
-                } 
-                
-                if (genes.contains("</I>")){
-                    genes = genes.replace("</I>", "");
-                }
                 */
-                /*
-                for (int j = 0; j < genesymbols.size()-1; j++) {
-                    genes += genesymbols.get(j) + ",";
-                }
-                genes += genesymbols.get(genesymbols.size()-1) + " (" + entrez_i + ")";
-                */
+                String genes = db.features.get(index).getFormattedFeatureName(analysis);
+                
                 double mid = feature_height*(i - start) + feature_height/2.0 + 3;
     %>
                 

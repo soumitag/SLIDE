@@ -21,7 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import searcher.GeneObject;
 import structure.Feature;
+import structure.MetaData;
 
 /**
  *
@@ -97,8 +99,8 @@ public class EnrichmentAnalysis implements Serializable {
             HashMap <String, Boolean> tempUniqueEids = new HashMap <String, Boolean> ();
             for (int i = 0; i < rownums.size(); i++) {
                 
-                String eid = features.get(rownums.get(i)).entrezId;
-                //System.out.println(i + ": " + eid);
+                String eid = features.get(rownums.get(i)).entrez;
+                
                 tempUniqueEids.put(eid, Boolean.TRUE);
                 
                 // add entrez-id -> feature-list-name mappings (e.g. 11386 -> [A8,B7]

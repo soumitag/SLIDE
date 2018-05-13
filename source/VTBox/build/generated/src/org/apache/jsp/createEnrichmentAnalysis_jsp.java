@@ -280,6 +280,8 @@ try {
       out.write("                document.getElementById(\"feature_list_names\").value = selected_feature_list_names.toString();\n");
       out.write("                //alert(document.getElementById(\"feature_list_names\").value);\n");
       out.write("                document.getElementById(\"mode\").value = \"process\";\n");
+      out.write("                document.getElementById(\"createEA_button\").innerHTML = \"Creating Analysis...\"\n");
+      out.write("                document.getElementById(\"createEA_button\").disabled = true;\n");
       out.write("                document.getElementById(\"createEnrichmentForm\").submit();\n");
       out.write("            }\n");
       out.write("\n");
@@ -449,7 +451,7 @@ try {
       out.write("        \n");
       out.write("        <tr>\n");
       out.write("            <td height=\"5px\" colspan=\"2\" align=\"center\">\n");
-      out.write("                <button type=\"button\" class=\"dropbtn\" title=\"Create\" onclick=\"createEnrichmentAnalysis()\">Create</button>\n");
+      out.write("                <button type=\"button\" class=\"dropbtn\" title=\"Create\" id=\"createEA_button\" onclick=\"createEnrichmentAnalysis()\">Create</button>\n");
       out.write("                <!--<input type=\"button\" value=\"Create\" onclick=\"createEnrichmentAnalysis()\">-->\n");
       out.write("                <input type=\"hidden\" id=\"feature_list_names\" name=\"feature_list_names\" value=\"\">\n");
       out.write("            </td>\n");

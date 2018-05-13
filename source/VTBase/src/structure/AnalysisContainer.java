@@ -25,6 +25,7 @@ import searcher.Searcher;
 import utils.Logger;
 import utils.SessionManager;
 import vtbase.DataParsingException;
+import vtbase.SlideException;
 
 /**
  *
@@ -91,7 +92,7 @@ public class AnalysisContainer implements Serializable {
     
     public void setDatabase (Data database) {
         this.database = database;
-        state_variables.init(database.features.size());
+        state_variables.init(database.metadata.nFeatures);
     }
     
     public void setClusteringParams (ClusteringParams clustering_params) {
@@ -171,8 +172,10 @@ public class AnalysisContainer implements Serializable {
     */
     
     public AnalysisContainer createSubAnalysis(String sub_analysis_name, 
-            ArrayList <Integer> filtered_entrez_ids, String installPath, String session_id) 
-    throws DataParsingException {
+                                               ArrayList <Integer> filtered_entrez_ids, 
+                                               String installPath, 
+                                               String session_id) 
+    throws DataParsingException, SlideException {
         
         AnalysisContainer sub_analysis = new AnalysisContainer();
         sub_analysis.setAnalysisName(sub_analysis_name);
@@ -203,6 +206,8 @@ public class AnalysisContainer implements Serializable {
         vp.setBinRangeType(this.visualization_params.bin_range_type);
         vp.setBinRangeStart(this.visualization_params.bin_range_start);
         vp.setBinRangeEnd(this.visualization_params.bin_range_end);
+        vp.setRowLabelType(this.visualization_params.row_label_type);
+        vp.setHeatmapColorScheme(this.visualization_params.heatmap_color_scheme);
         sub_analysis.setVisualizationParams(vp);
         
         /*
@@ -324,17 +329,4 @@ public class AnalysisContainer implements Serializable {
         
     }
     
-    // used only for testing, delete for production
-    public void saveFeatures_1() {
-            
-        try (ObjectOutputStream oos
-                = new ObjectOutputStream(new FileOutputStream("D:\\ad\\sg\\16_June_2017\\features.obj"))) {
-
-            oos.writeObject(database.features);
-            System.out.println("Features saved.");
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
 }

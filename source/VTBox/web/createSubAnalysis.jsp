@@ -4,6 +4,8 @@
     Author     : soumita
 --%>
 
+<%@page import="searcher.GeneObject"%>
+<%@page import="structure.MetaData"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="utils.SessionManager"%>
 <%@page import="utils.ReadConfig"%>
@@ -68,7 +70,8 @@ try {
         
         ArrayList<Integer> filterListMap = new ArrayList<Integer>();
         for (int i = 0; i < analysis.database.raw_data.length; i++) {
-            String db_eid = analysis.database.features.get(i).entrezId;
+            String db_eid = analysis.database.features.get(i).entrez;
+            //String db_eid = analysis.database.metadata.getFeature(i, GeneObject.ENTREZ);
             if (specified_entrez_list.contains(db_eid)) {
                 filterListMap.add(i);
             }
@@ -141,7 +144,8 @@ try {
         
         ArrayList <Integer> filterListMap = new ArrayList <Integer>();
         for (int i = 0; i < analysis.database.raw_data.length; i++) {
-            String db_eid = analysis.database.features.get(i).entrezId;
+            String db_eid = analysis.database.features.get(i).entrez;
+            //String db_eid = analysis.database.metadata.getFeature(i, GeneObject.ENTREZ);
             if (file_entrez_list.contains(db_eid)) {
                 filterListMap.add(i);
             }

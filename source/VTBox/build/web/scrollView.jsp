@@ -30,7 +30,7 @@ try {
     double image_height = 760.0;
     double feature_height = 20;
     int num_features = (int)(image_height/feature_height);
-    num_features = Math.min(num_features, analysis.database.features.size());
+    num_features = Math.min(num_features, analysis.database.metadata.nFeatures);
     
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
 
@@ -162,7 +162,7 @@ try {
             
             function loadMap (start, end) {
                 var labels_url = "featureLabelsScrollView.jsp?analysis_name=<%=analysis_name%>&start=" + start + "&rand=" + Math.random();
-                var search_url = "detailedSearchResultDisplayerScrollView.jsp?analysis_name=<%=analysis_name%>&start=" + start + "&rand=" + Math.random();
+                var search_url = "detailedSearchResultDisplayerScrollView.jsp?analysis_name=<%=analysis_name%>&start=" + start + "&rand=" + Math.random() + "&type=scroll";
                 document.getElementById('featureLabelsPanel').contentWindow.location.replace(labels_url);
                 document.getElementById('detailSearchPanel').contentWindow.location.replace(search_url);
                 makeGetRequest (start, end);
@@ -180,7 +180,7 @@ try {
             function refreshSearchPane() {
                 document.getElementById('detailSearchPanel').width = parseFloat(document.getElementById('detailSearchPanel').width) + 32;
                 document.getElementById('detailSearchHeaderPanel').width = parseFloat(document.getElementById('detailSearchHeaderPanel').width) + 32;
-                var url_text = "detailedSearchResultDisplayerScrollView.jsp?start=<%=start%>&analysis_name=<%=analysis_name%>";
+                var url_text = "detailedSearchResultDisplayerScrollView.jsp?type=search&analysis_name=<%=analysis_name%>";
                 //alert(document.getElementById('detailSearchPanel').width);
                 document.getElementById('detailSearchPanel').contentWindow.location.replace(url_text);
                 document.getElementById('detailSearchHeaderPanel').contentWindow.location.replace("detailedSearchResultHeader.jsp?analysis_name=<%=analysis_name%>");

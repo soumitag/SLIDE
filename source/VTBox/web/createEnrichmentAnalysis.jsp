@@ -224,6 +224,8 @@ try {
                 document.getElementById("feature_list_names").value = selected_feature_list_names.toString();
                 //alert(document.getElementById("feature_list_names").value);
                 document.getElementById("mode").value = "process";
+                document.getElementById("createEA_button").innerHTML = "Creating Analysis..."
+                document.getElementById("createEA_button").disabled = true;
                 document.getElementById("createEnrichmentForm").submit();
             }
 
@@ -363,7 +365,7 @@ try {
         
         <tr>
             <td height="5px" colspan="2" align="center">
-                <button type="button" class="dropbtn" title="Create" onclick="createEnrichmentAnalysis()">Create</button>
+                <button type="button" class="dropbtn" title="Create" id="createEA_button" onclick="createEnrichmentAnalysis()">Create</button>
                 <!--<input type="button" value="Create" onclick="createEnrichmentAnalysis()">-->
                 <input type="hidden" id="feature_list_names" name="feature_list_names" value="">
             </td>

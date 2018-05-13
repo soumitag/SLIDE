@@ -52,6 +52,10 @@
         <servlet-name>AnalysisTerminator</servlet-name>
         <servlet-class>vtbox.servlets.AnalysisTerminator</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>TemplateSampleMapping</servlet-name>
+        <servlet-class>vtbox.servlets.TemplateSampleMapping</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SerializeAnalysisServlet</servlet-name>
         <url-pattern>/SerializeAnalysisServlet</url-pattern>
@@ -108,6 +112,10 @@
     <servlet-mapping>
         <servlet-name>AnalysisTerminator</servlet-name>
         <url-pattern>/AnalysisTerminator</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TemplateSampleMapping</servlet-name>
+        <url-pattern>/TemplateSampleMapping</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

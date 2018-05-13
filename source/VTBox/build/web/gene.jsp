@@ -108,7 +108,7 @@ try {
             <tr>
                 <td class="e" id="<%= gene.entrez_id %>" style=""><%=gene.entrez_id%></td>
                 <td>&nbsp;&nbsp;</td>
-                <td class="e" id="<%= gene.genesymbol %>" style=""><%=gene.genesymbol.toUpperCase() %></td>                
+                <td class="e" id="<%= gene.gene_identifier %>" style=""><%=gene.gene_identifier.toUpperCase() %></td>                
             </tr>
             <tr>
             <td colspan="3"></td>

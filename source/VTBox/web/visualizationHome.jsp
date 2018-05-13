@@ -44,9 +44,7 @@ try {
     }
     
     String searchKeysFrame_width = "250";
-    //if (search_results.size() > 0) {
-    //    searchKeysFrame_width = "250";
-    //}
+
 %>
 <html>
     <script type = "text/javascript" language = "JavaScript" src="main.js"></script>
@@ -127,6 +125,17 @@ try {
         function openHome() {
              window.open('<%=base_url%>', '_blank');
         }
+        
+        function giveManual() {
+            var win = window.open("https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Users_Manual.pdf", '_blank');
+            win.focus();
+        }
+
+        function takeToIssues() {
+            var win = window.open("https://github.com/soumitag/SLIDE/issues", '_blank');
+            win.focus();
+        }
+    
         
     </script>
     <head>
@@ -214,15 +223,19 @@ try {
 
                     <table width="100%">
                         <tr>
-                            <td width="500" valign="top" style="min-height: 40px;">
-                                <iframe name="searchFrame" id="searchFrame" src="searcher.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" height="29" width="500" frameBorder="0" style="min-height: 35px;"></iframe>
+                            <td width="545" valign="top" style="min-height: 40px;">
+                                <iframe name="searchFrame" id="searchFrame" src="searcher.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" height="29" width="545" frameBorder="0" style="min-height: 35px;"></iframe>
                             </td>
                             
                             <td>
                                 &nbsp;
-                                <button name="spHandle" class="dropbtn" id="spHandle" onclick="toggleSelectionPanel()"> Hide Control Panel </button> &nbsp;
-                                <button name="saveAnalysis" class="dropbtn" id="saveAnalysis" onclick="saveAnalysis()"> Save Analysis </button> &nbsp;
-                                <button name="saveViz" class="dropbtn" id="saveViz" onclick="showModalWindow('saveSVGs.jsp?analysis_name=<%=analysis_name%>', '60%', '450px')">Save Visualizations</button> &nbsp;
+                                <div class="dropdown">
+                                    <button name="saver" class="dropbtn" id="saver"> Save </button> &nbsp;
+                                    <div class="dropdown-content">
+                                        <a onclick="saveAnalysis()" href="#"> Save Analysis </a>
+                                        <a onclick="showModalWindow('saveSVGs.jsp?analysis_name=<%=analysis_name%>', '60%', '450px')" href="#"> Save Visualizations </a>
+                                    </div>
+                                </div>
                                 <div class="dropdown">
                                     <button name="featureList" class="dropbtn" id="createList"> Feature List </button> &nbsp;
                                     <div class="dropdown-content">
@@ -241,8 +254,16 @@ try {
                                 </div>
                                 <button name="createFuncEnrichment" class="dropbtn" id="createFuncEnrichment" onclick="showModalWindow('createEnrichmentAnalysis.jsp?mode=input&analysis_name=<%=analysis_name%>', '60%', '550px')"> Functional Enrichment </button> &nbsp;
                                 <%  }   %>
+                                <button name="histHandle" class="dropbtn" id="histHandle" onclick="toggleHistogramPanel()"> Hide Histogram </button> &nbsp;
+                                <button name="spHandle" class="dropbtn" id="spHandle" onclick="toggleSelectionPanel()"> Hide Control Panel </button> &nbsp;
                                 <button name="openHome" class="dropbtn" id="openHome" onclick="openHome()"> Home </button> &nbsp;
-                                <button name="histHandle" class="dropbtn" id="histHandle" onclick="toggleHistogramPanel()"> Hide Histogram </button>
+                                <div class="dropdown">
+                                    <button id="man_create_analysis" class="dropbtn">Help</button>
+                                    <div class="dropdown-content">
+                                        <a onclick="giveManual();" href="#" title="Download detailed instructions for using SLIDE."> Download User Manual </a>
+                                        <a onclick="takeToIssues()" href="#"> Report An Issue </a>
+                                    </div>
+                                </div>
                             </td>
                             
                         </tr>

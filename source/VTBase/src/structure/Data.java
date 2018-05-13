@@ -26,6 +26,8 @@ import vtbase.DataParsingException;
 
 import data.transforms.Imputer;
 import data.transforms.Normalizer;
+import utils.FileHandler;
+import vtbase.SlideException;
 
 /**
  *
@@ -44,6 +46,13 @@ public final class Data implements Serializable {
     
     // each row or gene is a Feature object
     public ArrayList <Feature> features;
+    
+    // entrez_id to current gene identifier (genesymbol / refseq /uniprot etc) mapping
+    // entrezGeneMap is shared across all (sub-)analyses
+    //public HashMap <String, ArrayList <String>> entrezIdentifierMap;
+    
+    // holds user provided, unprocessed meta data columns
+    public MetaData metadata;
     
     // Mappings for column access
     public ArrayList <String> sampleNames;
@@ -64,10 +73,6 @@ public final class Data implements Serializable {
     public String exptype;
     public boolean isTimeSeries;
     public boolean isDataLogTransformed;
-    
-    // entrez_id to gene name mapping
-    // entrezGeneMap is shared across all (sub-)analyses
-    public HashMap <String, ArrayList <String>> entrezGeneMap;
 
     public float CLIPPING_MIN;
     public float CLIPPING_MAX;
@@ -78,6 +83,8 @@ public final class Data implements Serializable {
     public float RAW_DATA_NONZERO_MIN;
     public double[] DATA_MIN_MAX;
     
+    public String identifier_name;
+    
     public Data() {}    // used in cloneDB and for testing
     
     public Data(String filename, 
@@ -85,17 +92,19 @@ public final class Data implements Serializable {
                 String delimiter, 
                 boolean hasHeader,
                 String sample_series_mapping_filename,
+                String sample_series_mapping_delimiter,
                 int start_row,
                 int end_row,
                 int[] data_height_width,    // the height in data_height_width includes header rows if any
-                ArrayList <Integer> metacols, 
-                int genesymbolcol, 
-                int entrezcol, 
+                String[] metacolnames,
+                HashMap <String, Integer> metacol_identifier_mappings, 
+                HashMap <String, Integer> unmapped_metacols, 
                 String species,
                 boolean isTimeSeries,
                 boolean logTransformData,
                 int column_normalization_strategy,
                 int row_normalization_strategy,
+                boolean hasReplicates,
                 int replicate_handling,
                 int imputeK
     ) throws DataParsingException {
@@ -106,11 +115,15 @@ public final class Data implements Serializable {
         String[] colheaders = getColHeaders (hasHeader, filename, delimiter, data_height_width);
         //processSampleInfo(colheaders, datacols, exptype, ordcol, sample_info);
         
-        createSampleSeriesMappings(sample_series_mapping_filename, isTimeSeries, colheaders);
+        createSampleSeriesMappings(sample_series_mapping_filename, sample_series_mapping_delimiter, 
+                                   isTimeSeries, hasReplicates, colheaders, metacolnames);
         processSampleInfo(colheaders);
         
-        String[][] genesymbol_entrez_ids = loadData(filename, start_row, end_row, data_height_width, delimiter, hasHeader, genesymbolcol, entrezcol, impute_type);
-        processMetaCols(genesymbol_entrez_ids);
+        //String[][] genesymbol_entrez_ids = loadData(filename, start_row, end_row, data_height_width, delimiter, hasHeader, genesymbolcol, entrezcol, impute_type);
+        loadData(filename, start_row, end_row, delimiter, metacol_identifier_mappings, unmapped_metacols, impute_type);
+        
+        //processMetaCols(genesymbol_entrez_ids);
+        processMetaCols(metacol_identifier_mappings, unmapped_metacols);
         
         processNonMetaCols(logTransformData);
         //transformData(heatmap_normalization_type, clustering_normalization_type);
@@ -136,8 +149,6 @@ public final class Data implements Serializable {
         
         this.species = species;
         this.isTimeSeries = isTimeSeries;
-
-        //String[] colheaders = getColHeaders (hasHeader, filename, delimiter, data_height_width);
         
         this.raw_data = p_values;
         
@@ -160,34 +171,47 @@ public final class Data implements Serializable {
         
         processSampleInfo(colheaders);
         
-        String[][] genesymbol_entrez_ids = new String[nonmasked_funcgrp_count][2];
-        int count = 0;
+        int nFeatures = 0;
         for (int i=0; i<functional_group_names.size(); i++) {
             if (functional_group_mask[i]) {
-                String[] qualified_functional_name = functional_group_details.get(functional_group_names.get(i));
-                genesymbol_entrez_ids[count][0] = qualified_functional_name[0];
-                genesymbol_entrez_ids[count][1] = qualified_functional_name[1];
-                count++;
+                nFeatures++;
             }
         }
         
-        //processMetaCols(genesymbol_entrez_ids);
-        entrezGeneMap = new HashMap<String, ArrayList<String>>();
-        features = new ArrayList<Feature>();
-        for (int i = 0; i < genesymbol_entrez_ids.length; i++) {
-            Feature f = new Feature();
-            f.setGeneSymbol(genesymbol_entrez_ids[i][1]);
-            f.setEntrezID(genesymbol_entrez_ids[i][0]);
-            f.setAliases(new ArrayList<String>());
-            features.add(f);
-
-            ArrayList<String> value = new ArrayList<String>();
-            value.add(genesymbol_entrez_ids[i][1]);
-            entrezGeneMap.put(genesymbol_entrez_ids[i][0], value);
-        }
+        metadata = new MetaData(nFeatures);
+        metadata.addMetaCol("go_pathway_id");
+        metadata.addMetaCol("go_pathway_term");
+        metadata.setHasMappedMetadata(false);
         
+        int count = 0;
+        features = new ArrayList <> ();
+        //entrezIdentifierMap = new HashMap <> ();
+        for (int i=0; i<functional_group_names.size(); i++) {
+            if (functional_group_mask[i]) {
+                String[] qualified_functional_name = functional_group_details.get(functional_group_names.get(i));
+                try {
+                    metadata.addFeature(count, "go_pathway_id", qualified_functional_name[0]);
+                    metadata.addFeature(count, "go_pathway_term", qualified_functional_name[1]);
+                } catch (SlideException se) {
+                    System.out.println(se);
+                }
+                
+                Feature f = new Feature();
+                f.setEntrezs (qualified_functional_name[0], false, null);
+                f.setIdentifiers (qualified_functional_name[1], null);
+                features.add(f);
+                
+                /*
+                ArrayList <String> temp = new ArrayList <> ();
+                temp.add(qualified_functional_name[1]);
+                entrezIdentifierMap.put(qualified_functional_name[0], temp);
+                */
+                count++;
+            }
+        }
+        this.identifier_name = "entrez_2021158607524066";
+     
         processNonMetaCols(functional_group_mask, nonmasked_funcgrp_count);
-        //transformData(heatmap_normalization_type, clustering_normalization_type);
         transformData(column_normalization_strategy, row_normalization_strategy);
         
         this.DATA_MIN_MAX = computeDataRange();
@@ -203,12 +227,19 @@ public final class Data implements Serializable {
                 String groupBy,
                 String clipping_type,
                 float clip_min,
-                float clip_max
+                float clip_max,
+                String identifier_name
     ) throws DataParsingException {
         
         setClippingRange(clipping_type, clip_min, clip_max);
         processNonMetaCols(selectedSampleNames, logTransformData, replicate_handling, groupBy);
         transformData(column_normalization_strategy, row_normalization_strategy);
+        
+        if (!this.identifier_name.equals(identifier_name)) {
+            //this.entrezIdentifierMap = metadata.mapFeatureIdentifiers(species, identifier_name, features);
+            metadata.mapFeatureIdentifiers(species, identifier_name, features);
+            this.identifier_name = identifier_name;
+        }
         
         this.DATA_MIN_MAX = computeDataRange();
     }
@@ -225,30 +256,44 @@ public final class Data implements Serializable {
                 EnrichmentAnalysis ea
     ) throws DataParsingException {
         
-        String[][] genesymbol_entrez_ids = new String[ea.testParams.nonmasked_funcgrp_count][2];
-        int count = 0;
+       
+        int nFeatures = 0;
         for (int i=0; i<ea.testParams.funcgrp_names.size(); i++) {
             if (ea.testParams.funcgrp_mask[i]) {
-                String[] qualified_functional_name = ea.funcgrp_details_map.get(ea.testParams.funcgrp_names.get(i));
-                genesymbol_entrez_ids[count][0] = qualified_functional_name[0];
-                genesymbol_entrez_ids[count][1] = qualified_functional_name[1];
-                count++;
+                nFeatures++;
             }
         }
         
-        //processMetaCols(genesymbol_entrez_ids);
-        entrezGeneMap = new HashMap<String, ArrayList<String>>();
-        features = new ArrayList<Feature>();
-        for (int i = 0; i < genesymbol_entrez_ids.length; i++) {
-            Feature f = new Feature();
-            f.setGeneSymbol(genesymbol_entrez_ids[i][1]);
-            f.setEntrezID(genesymbol_entrez_ids[i][0]);
-            f.setAliases(new ArrayList<String>());
-            features.add(f);
-
-            ArrayList<String> value = new ArrayList<String>();
-            value.add(genesymbol_entrez_ids[i][1]);
-            entrezGeneMap.put(genesymbol_entrez_ids[i][0], value);
+        metadata = new MetaData(nFeatures);
+        metadata.addMetaCol("go_pathway_id");
+        metadata.addMetaCol("go_pathway_term");
+        metadata.setHasMappedMetadata(false);
+        
+        int count = 0;
+        features = new ArrayList <> ();
+        //entrezIdentifierMap = new HashMap <> ();
+        for (int i=0; i<ea.testParams.funcgrp_names.size(); i++) {
+            if (ea.testParams.funcgrp_mask[i]) {
+                String[] qualified_functional_name = ea.funcgrp_details_map.get(ea.testParams.funcgrp_names.get(i));
+                try {
+                    metadata.addFeature(count, "go_pathway_id", qualified_functional_name[0]);
+                    metadata.addFeature(count, "go_pathway_term", qualified_functional_name[1]);
+                } catch (SlideException se) {
+                    System.out.println(se);
+                }
+                
+                Feature f = new Feature();
+                f.setEntrezs (qualified_functional_name[0], false, null);
+                f.setIdentifiers (qualified_functional_name[1], null);
+                features.add(f);
+                
+                /*
+                ArrayList <String> temp = new ArrayList <> ();
+                temp.add(qualified_functional_name[1]);
+                entrezIdentifierMap.put(qualified_functional_name[0], temp);
+                */
+                count++;
+            }
         }
         
         processNonMetaCols(ea.testParams.funcgrp_mask, ea.testParams.nonmasked_funcgrp_count);
@@ -258,28 +303,36 @@ public final class Data implements Serializable {
         this.DATA_MIN_MAX = computeDataRange();
     }
     
-    public String[][] loadData (String filename, 
+    public void loadData (String filename, 
                         int start_row,
                         int end_row,
-                        int[] data_height_width,    // the height in data_height_width includes header rows if any
                         String delimiter, 
-                        boolean hasHeader, 
-                        int genesymbolcol,
-                        int entrezcol,
+                        HashMap <String, Integer> metacol_identfier_mappings,
+                        HashMap <String, Integer> unmapped_metacols,
                         int impute_type
     ) throws DataParsingException {
         
+        ArrayList <String> mapped_metacol_names = new ArrayList<>(metacol_identfier_mappings.keySet());
+        ArrayList <String> unmapped_metacol_names = new ArrayList<>(unmapped_metacols.keySet());
         
         ArrayList <Integer> columns = new ArrayList <Integer> ();
+        ArrayList <String> column_names = new ArrayList <> ();
         for (int i=0; i<samples.size(); i++) {
             columns.addAll(samples.get(i).file_column_numbers);
+            column_names.addAll(samples.get(i).column_headers);
         }
         
         int row_count = end_row - start_row + 1;
         raw_data = new float[row_count][columns.size()];
-        String[][] genesymbol_entrez_ids = new String[row_count][2];
         
-        //ArrayList <ArrayList <Integer>> impute_indicator = new ArrayList <ArrayList <Integer>> ();
+        metadata = new MetaData(row_count);
+        for (int m = 0; m < mapped_metacol_names.size(); m++) {
+            metadata.addMetaCol(mapped_metacol_names.get(m));
+            metadata.setHasMappedMetadata(true);
+        }
+        for (int m = 0; m < unmapped_metacols.size(); m++) {
+            metadata.addMetaCol(unmapped_metacol_names.get(m));
+        }
         
         Imputer imputer = new Imputer(raw_data.length, raw_data[0].length);
         
@@ -287,11 +340,12 @@ public final class Data implements Serializable {
         
         try {
             
-            String[][] unprocessed_data = Utils.loadDelimData(filename, delimiter, false);
+            String[][] unprocessed_data = FileHandler.loadDelimData(filename, delimiter, false);
 
             int count = 0;
             String[] lineData = null;
             
+            String metacol_name;
             int i = 0;
             for (int row=0; row<unprocessed_data.length; row++) {
 
@@ -304,8 +358,9 @@ public final class Data implements Serializable {
                             raw_data[i][j] = Float.parseFloat(lineData[columns.get(j)].trim().toLowerCase());
                         } catch (NumberFormatException e) {
                             if (impute_type == data.transforms.Imputer.IMPUTE_NONE) {
+                                String val = lineData[columns.get(j)].trim().toLowerCase();
                                 throw new DataParsingException(
-                                    "Error while reading data file. Non-numeric value found at non-metadata column " + (j+1) + ", row" + (i+1)
+                                    "Error while reading data file. Non-numeric value '" + val + "' found at non-metadata column '" + column_names.get(j) + "', row" + (i+1)
                                 );
                             } else {
                                 raw_data[i][j] = Float.NEGATIVE_INFINITY;
@@ -314,17 +369,15 @@ public final class Data implements Serializable {
                         }
                     }
                     
-                    //impute_indicator.add(impute_cols);
-                    if (genesymbolcol > -1) {
-                        genesymbol_entrez_ids[i][0] = lineData[genesymbolcol];
-                    } else {
-                        genesymbol_entrez_ids[i][0] = "";
+                    for (int m = 0; m < mapped_metacol_names.size(); m++) {
+                        metacol_name = mapped_metacol_names.get(m);
+                        metadata.addFeature(i, metacol_name, 
+                                lineData[metacol_identfier_mappings.get(metacol_name)].trim().toLowerCase());
                     }
-                    
-                    if (entrezcol > -1) {
-                        genesymbol_entrez_ids[i][1] = lineData[entrezcol];
-                    } else {
-                        genesymbol_entrez_ids[i][1] = "";
+                    for (int m = 0; m < unmapped_metacol_names.size(); m++) {
+                        metacol_name = unmapped_metacol_names.get(m);
+                        metadata.addFeature(i, metacol_name, 
+                                lineData[unmapped_metacols.get(metacol_name)].trim().toLowerCase());
                     }
                     
                     i++;
@@ -342,10 +395,6 @@ public final class Data implements Serializable {
                 raw_data = imputer.impute(raw_data, impute_type);
             }
             
-            //knnImpute(impute_indicator, imputeK, 0.5);
-            
-            return genesymbol_entrez_ids;
-            
         } catch (DataParsingException e) {
             
             throw e;
@@ -354,7 +403,7 @@ public final class Data implements Serializable {
             
             System.out.println("Error reading input data:");
             System.out.println(e);
-            throw new DataParsingException("Error while reading data file.");
+            throw new DataParsingException("Unknown error while reading data file. If the problem persists please report an issue.");
             
         }
         
@@ -365,7 +414,7 @@ public final class Data implements Serializable {
                                    String delim,
                                    int[] data_height_width) {
         if (hasHeader) {
-            return Utils.getFileHeader(filename, delim);
+            return FileHandler.getFileHeader(filename, delim);
         } else {
             String[] colheaders = new String[data_height_width[1]];
             for (int i = 0; i < data_height_width[1]; i++) {
@@ -780,113 +829,27 @@ public final class Data implements Serializable {
         }
     }
     
-    // creates entrezGeneMap and features
-    // entrezGeneMap is shared across all (sub-)analyses
-    private void processMetaCols(String[][] genesymbol_entrez_id){
-        
-        int bad_entrez_ids = -1;
-        ArrayList<String> gene_aliases;
-        
-        entrezGeneMap = new HashMap <String, ArrayList <String>> ();
-        MongoDBConnect mdb = new MongoDBConnect(species, "geneMap");
-        
-        features = new ArrayList<Feature>();
-        for (int i = 0; i < genesymbol_entrez_id.length; i++) {
+    private void processMetaCols(HashMap <String, Integer> metacol_identifier_mappings,
+                                 HashMap <String, Integer> unmapped_metacol_map) {
+        try {
             
-            gene_aliases = new ArrayList<String>();
-
-            String genesymbol = genesymbol_entrez_id[i][0].trim().toLowerCase();
-            String entrez_id = genesymbol_entrez_id[i][1].trim().toLowerCase();
+            //entrezIdentifierMap = new HashMap <> ();
+            features = new ArrayList <> ();
             
-            String parsed_entrez_id = null;
-
-            if (genesymbol.isEmpty() && entrez_id.isEmpty()) {
-                
-                gene_aliases.add(Integer.toString(bad_entrez_ids));
-                parsed_entrez_id = Integer.toString(bad_entrez_ids);
-                bad_entrez_ids--;
-
-            } else if (genesymbol.isEmpty() && !(entrez_id.isEmpty())) {
-                
-                gene_aliases = mdb.getGeneSymbol(entrez_id);
-                
-                if(gene_aliases.isEmpty()){
-                    gene_aliases.add("Unknown_" + entrez_id);
-                }
-                
-                parsed_entrez_id = entrez_id;
-                
-            } else if (!(genesymbol.isEmpty()) && !(entrez_id.isEmpty())) {
-                
-                gene_aliases = mdb.getGeneSymbol(entrez_id);
-                
-                if(gene_aliases.isEmpty()){
-                    gene_aliases.add("Unknown_" + entrez_id);
-                } else {
-                    if (gene_aliases.contains(genesymbol)) {
-                        for (int ga = 0; ga < gene_aliases.size(); ga++) {
-                            if (gene_aliases.get(ga).equals(genesymbol)) {
-                                String temp = gene_aliases.get(ga);
-                                gene_aliases.set(ga, gene_aliases.get(0));
-                                gene_aliases.set(0, temp);
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                parsed_entrez_id = entrez_id;
-                
-            } else if (!(genesymbol).isEmpty() && entrez_id.isEmpty()) {
-                
-                String eid = mdb.getEntrezID(genesymbol);
-                
-                if (eid != null) {
-                    
-                    parsed_entrez_id = eid;
-                    gene_aliases = mdb.getGeneSymbol(eid);
-                    
-                    if(gene_aliases.isEmpty()){
-                        gene_aliases.add(genesymbol);
-                    } else {
-                        //ArrayList <String> gene_aliases_cpy = new ArrayList <String> ();
-                        if (gene_aliases.contains(genesymbol)){
-                            for(int ga = 0; ga < gene_aliases.size(); ga++){
-                                if(gene_aliases.get(ga).equals(genesymbol)){
-                                    String temp = gene_aliases.get(ga);
-                                    gene_aliases.set(ga, gene_aliases.get(0));
-                                    gene_aliases.set(0, temp);
-                                    break;
-                                } 
-                            }
-                        }
-                    }
-                    
-                } else {
-                    
-                    parsed_entrez_id = Integer.toString(bad_entrez_ids);
-                    gene_aliases.add(genesymbol);
-                    bad_entrez_ids--;
-                    
-                }
-            }
-
-            entrezGeneMap.put(parsed_entrez_id, gene_aliases);
-            
-            Feature f = new Feature();
-            
-            if(gene_aliases.contains(genesymbol)){
-                f.setGeneSymbol(genesymbol);
+            if (metacol_identifier_mappings.size() > 0) {
+                List <String> mapped_metacols = new ArrayList <>(metacol_identifier_mappings.keySet());
+                this.identifier_name = mapped_metacols.get(0);
             } else {
-                f.setGeneSymbol(gene_aliases.get(0));
+                List <String> unmapped_metacols = new ArrayList <>(unmapped_metacol_map.keySet());
+                this.identifier_name = unmapped_metacols.get(0);
             }
-            f.setEntrezID(parsed_entrez_id);
-            f.setAliases(gene_aliases);
+            metadata.mapFeatureEntrezs(species, features);
+            //this.entrezIdentifierMap = metadata.mapFeatureIdentifiers(species, this.identifier_name, features);
+            metadata.mapFeatureIdentifiers(species, this.identifier_name, features);
             
-            features.add(f);
+        } catch (Exception e) {
+            System.out.println(e);
         }
-
-        mdb.closeMongoDBConnection();     
     }
     
     private void processSampleInfo (String[] colheaders){
@@ -945,11 +908,45 @@ public final class Data implements Serializable {
         
     }
     
-    private void createSampleSeriesMappings (
-            String metafilename, boolean isTimeSeries, String[] colheaders
-    ) throws DataParsingException {
+    private void createSampleSeriesMappings ( String metafilename, 
+                                              String metafile_delimiter,
+                                              boolean isTimeSeries, 
+                                              boolean hasReplicates, 
+                                              String[] colheaders, 
+                                              String[] metacolnames
+                                            ) throws DataParsingException {
         
-        SampleMappings sm = UserInputParser.parseSampleMappingsFile(metafilename, isTimeSeries, colheaders);
+        SampleMappings sm;
+        
+        if (!isTimeSeries && !hasReplicates) {
+        
+            HashMap <String, Boolean> metacols = new HashMap <> ();
+            for (int i = 0; i < metacolnames.length; i++) {
+                metacols.put(metacolnames[i], true);
+            }
+            
+            sm = new SampleMappings();
+            for (int i = 0; i < colheaders.length; i++) {
+                if (!metacols.containsKey(colheaders[i])) {
+                    if (!sm.sampleNames.contains(colheaders[i])) {
+                        sm.sampleNames.add(colheaders[i]);
+                        ArrayList<Integer> col_ids = new ArrayList<Integer>();
+                        col_ids.add(i);
+                        sm.sampleToColumnMap.put(colheaders[i], col_ids);
+                    } else {
+                        String msg = "Error while parsing headers. Found two columns with the same name: '" + colheaders[i] + "'.";
+                        throw new DataParsingException(msg);
+                    }
+                }
+            }
+            
+        } else {
+            sm = UserInputParser.parseSampleMappingsFile(metafilename, 
+                                                         metafile_delimiter, 
+                                                         isTimeSeries, 
+                                                         hasReplicates, 
+                                                         colheaders);
+        }
         
         this.sampleNames = sm.sampleNames;
         this.timeStamps = sm.timeStamps;
@@ -984,7 +981,7 @@ public final class Data implements Serializable {
     
     
     public Data cloneDB (ArrayList <Integer> filtered_row_indices) 
-    throws DataParsingException {
+    throws DataParsingException, SlideException {
         
         Data cloneData = new Data();
         
@@ -1006,34 +1003,25 @@ public final class Data implements Serializable {
         cloneData.exptype = this.exptype;
         cloneData.isTimeSeries = this.isTimeSeries;
         cloneData.isDataLogTransformed = this.isDataLogTransformed;
+        cloneData.identifier_name = this.identifier_name;
         
-        // cloneData.current_sample_names = this.current_sample_names; // now set in processNonMetaCols
-        
-        cloneData.entrezGeneMap = this.entrezGeneMap;
-        
-        /*
-        ArrayList <Integer> filtered_row_indices = new ArrayList <Integer> ();
-        for (int i=0; i<raw_data.length; i++) {
-            String eid = features.get(i).entrezId;
-            if (filtered_entrez_ids.contains(eid)) {
-                filtered_row_indices.add(i);
-            }
-        }
-        */
-         
-        // the data
-        // cloneData.datacells = datacells.getFilteredDataCells(filtered_row_indices);     // replicate handled data
-        
+        //cloneData.entrezGeneMap = this.entrezGeneMap;
+
+        // copy raw data
         float[][] filtered_raw_data = new float[filtered_row_indices.size()][datacells.width];
-        // each row or gene is a Feature object
-        ArrayList <Feature> filtered_features = new ArrayList <Feature> ();
+        ArrayList <Feature> filtered_features = new ArrayList <> ();
         for (int i=0; i<filtered_row_indices.size(); i++) {
-            //filtered_raw_data[i] = raw_data[filtered_row_indices.get(i)];
             filtered_raw_data[i] = datacells.dataval[filtered_row_indices.get(i)];
             filtered_features.add(features.get(filtered_row_indices.get(i)));
         }
         cloneData.raw_data = filtered_raw_data;
         cloneData.features = filtered_features;
+        
+        // copy metadata
+        cloneData.metadata = metadata.cloneMetaData(filtered_row_indices);
+        cloneData.metadata.mapFeatureEntrezs(cloneData.species, cloneData.features);
+        //cloneData.entrezIdentifierMap = metadata.mapFeatureIdentifiers(cloneData.species, cloneData.identifier_name, cloneData.features);
+        cloneData.metadata.mapFeatureIdentifiers(cloneData.species, cloneData.identifier_name, cloneData.features);
         
         cloneData.processNonMetaCols(false);
         transformData(Normalizer.COL_NORMALIZATION_NONE, Normalizer.ROW_NORMALIZATION_NONE);

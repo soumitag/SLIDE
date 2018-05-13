@@ -82,6 +82,16 @@ function colorBins(val){
     document.getElementById("txtNBins").value = val;
 }
 
+function rowLabelType(label) {
+    var rlabel = document.getElementById("identifierType");
+    for (var i = 0; i < rlabel.options.length; i++) {
+        if (rlabel.options[i].value === label) {
+            rlabel.options[i].selected = true;
+            break;
+        }
+    }
+}
+
 function binRangeStartEnd(num, start, end){
     //alert(num);
     //alert(start);

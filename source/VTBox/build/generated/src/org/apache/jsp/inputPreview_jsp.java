@@ -3,12 +3,12 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import utils.FileHandler;
 import vtbox.SessionUtils;
 import utils.SessionManager;
 import utils.ReadConfig;
-import java.util.ArrayList;
 import utils.Utils;
-import java.io.File;;
+import java.io.File;
 
 public final class inputPreview_jsp extends org.apache.jasper.runtime.HttpJspBase
     implements org.apache.jasper.runtime.JspSourceDependent {
@@ -53,6 +53,9 @@ public final class inputPreview_jsp extends org.apache.jasper.runtime.HttpJspBas
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
+      out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
         
@@ -89,11 +92,14 @@ try {
         
         String filename_in = request.getParameter("file");
         String analysis_name = request.getParameter("analysis_name"); 
+        String type = request.getParameter("upload_type"); 
         
         //String tempFolder = pageContext.getServletContext().getRealPath("") + File.separator + "temp" + File.separator + request.getSession().getId();
         String installPath = SessionManager.getInstallPath(application.getResourceAsStream("/WEB-INF/slide-web-config.txt"));
         String tempFolder = installPath + File.separator + "temp" + File.separator + request.getSession().getId();
-        String filename = tempFolder + File.separator + analysis_name + "_" + filename_in;
+        
+        String filename =   tempFolder + File.separator + analysis_name + "_" + type + "_" + filename_in;
+        //String filename = tempFolder + File.separator + analysis_name + "_" + filename_in;
         
         String headerchk = request.getParameter("head");
         boolean hasHeader = true;
@@ -104,26 +110,15 @@ try {
         }
       
         String delimval = request.getParameter("delim");
-        String fileDelimiter = "";
-        if(delimval.equals("commaS")){
-            fileDelimiter = ",";
-        } else if (delimval.equals("tabS")) {
-            fileDelimiter = "\t";
-        } else if (delimval.equals("spaceS")){
-            fileDelimiter = " ";
-        } else if (delimval.equals("semiS")) {
-            fileDelimiter = ";";
-        } else if (delimval.equals("hyphenS")) {
-            fileDelimiter = "-";
-        }
-        
+        String fileDelimiter = Utils.getDelimiter(delimval);
+                
     
       out.write("\n");
       out.write("    \n");
       out.write("    ");
 
         String[] colheaders = null;
-        String[][] data = Utils.loadDelimData(filename, fileDelimiter, false, 12);
+        String[][] data = FileHandler.loadDelimData(filename, fileDelimiter, false, 12);
         int start_row = 0;
         if (hasHeader) {
             colheaders = data[0];

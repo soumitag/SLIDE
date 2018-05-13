@@ -4,6 +4,8 @@
     Author     : Soumita
 --%>
 
+<%@page import="searcher.GeneObject"%>
+<%@page import="structure.MetaData"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.Iterator"%>
@@ -55,8 +57,16 @@ try {
                 </tr>
                 <% for (int i=0; i < filterListIndices.size(); i++){ %>
                 <tr>
-                    <% String genesymbol = analysis.database.features.get(filterListIndices.get(i)).genesymbol;
-                       String entrez = analysis.database.features.get(filterListIndices.get(i)).entrezId;
+                    <% 
+                       
+                       String genesymbol = analysis.database.features.get(filterListIndices.get(i)).identifier;
+                       String entrez = analysis.database.features.get(filterListIndices.get(i)).entrez;
+                       
+                       /*
+                       int index = filterListIndices.get(i);
+                       String entrez = analysis.database.metadata.getFeature(index, GeneObject.ENTREZ);
+                       String genesymbol = analysis.database.metadata.getFeature(index, GeneObject.GENESYMBOL);
+                       */
                     %>
                     <td height="20" align="left">
                         <label><%=genesymbol%>, <%=entrez%></label>

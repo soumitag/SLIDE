@@ -163,9 +163,9 @@ try {
       out.write("</td>\n");
       out.write("                <td>&nbsp;&nbsp;</td>\n");
       out.write("                <td class=\"e\" id=\"");
-      out.print( gene.genesymbol );
+      out.print( gene.gene_identifier );
       out.write("\" style=\"\">");
-      out.print(gene.genesymbol.toUpperCase() );
+      out.print(gene.gene_identifier.toUpperCase() );
       out.write("</td>                \n");
       out.write("            </tr>\n");
       out.write("            <tr>\n");

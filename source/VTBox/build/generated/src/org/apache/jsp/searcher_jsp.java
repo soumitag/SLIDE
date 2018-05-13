@@ -55,6 +55,12 @@ try {
     
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
+    boolean isSearchable = false;
+    if ((analysis.database.species.equalsIgnoreCase("human") || analysis.database.species.equalsIgnoreCase("mouse")) &&
+            (analysis.database.metadata.hasStandardMetaData() || (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION))) {
+        isSearchable = true;
+    }
 
       out.write("\n");
       out.write("<html>\n");
@@ -169,7 +175,12 @@ try {
       out.write("\n");
       out.write("                        <select name=\"queryType\" id=\"queryType\" form=\"SearchForm\">\n");
       out.write("                            <option value=\"entrez\">Entrez ID</option>\n");
-      out.write("                            <option value=\"genesymbol\">Gene symbol</option>\n");
+      out.write("                            <option value=\"genesymbol\">Gene Symbol</option>\n");
+      out.write("                            <option value=\"refseq\" >RefSeq ID</option>\n");
+      out.write("                            <option value=\"ensembl_gene_id\" >Ensembl gene ID</option>\n");
+      out.write("                            <option value=\"ensembl_transcript_id\" >Ensembl transcript ID</option>\n");
+      out.write("                            <option value=\"ensembl_protein_id\" >Ensembl protein ID</option>\n");
+      out.write("                            <option value=\"uniprot_id\" >UniProt ID</option>\n");
       out.write("                            <option value=\"goid\">GO ID</option>\n");
       out.write("                            <option value=\"goterm\">GO Term</option>\n");
       out.write("                            <option value=\"pathid\">Path ID</option>\n");
@@ -200,12 +211,30 @@ try {
       out.write("                        </select>\n");
       out.write("                    </td>\n");
       out.write("                    <td valign=\"middle\" style=\"font-family:verdana; font-size:6;\">\n");
+      out.write("                        ");
+ if (isSearchable) { 
+      out.write("\n");
       out.write("                        <input type=\"text\" id=\"searchText\" name=\"searchText\" size=\"30\" onkeypress=\"keypressCallSearcher()\" />\n");
+      out.write("                        ");
+ } else { 
+      out.write("\n");
+      out.write("                        <input type=\"text\" id=\"searchText\" name=\"searchText\" size=\"30\" onkeypress=\"keypressCallSearcher()\" disabled/>\n");
+      out.write("                        ");
+ } 
+      out.write("\n");
       out.write("                    </td>\n");
       out.write("                    <td valign=\"middle\">\n");
-      out.write("                        <!--<input type=\"button\" value=\"Search\" onclick=\"callSearcher()\">-->\n");
+      out.write("                        ");
+ if (isSearchable) { 
+      out.write("\n");
       out.write("                        <button type=\"button\" name=\"Search\" onclick=\"callSearcher()\"> Search </button>\n");
-      out.write("                        <!--<img src=\"images/upload.png\" alt=\"Upload\" height=\"20\" width=\"20\"/>-->\n");
+      out.write("                        ");
+ } else { 
+      out.write("\n");
+      out.write("                        <button type=\"button\" name=\"Search\" onclick=\"alert('When species is Other / no metadata columns have been mapped to standard identifiers, search and tagging features will not be available.')\"> Search </button>\n");
+      out.write("                        ");
+ } 
+      out.write("\n");
       out.write("                    </td>\n");
       out.write("                \n");
       out.write("                </tr>\n");

@@ -50,7 +50,7 @@ function submitform_1(){
             //document.homePage.setAttribute("action","index.jsp");
             //document.homePage.submit();   
         } else{
-            document.homePage.setAttribute("action","newExperiment.jsp");
+            document.homePage.setAttribute("action","newExperimentWizard.jsp");
             document.homePage.submit();        
         }
         

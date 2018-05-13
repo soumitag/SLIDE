@@ -11,10 +11,13 @@ package utils;
  */
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import structure.AnalysisContainer;
+import org.apache.commons.io.FileUtils;
+import vtbase.DataParsingException;
 
 public class SessionManager {
     
@@ -81,10 +84,53 @@ public class SessionManager {
         
         // source file paths
         String temp_data_filepath = session_dir + File.separator + 
-                                    analysis_name + "_" + filename_in;
+                                    analysis_name + "_data_" + filename_in;
         
         String temp_map_filepath = session_dir + File.separator + 
-                                   analysis_name + "_" + sample_series_mapping_filename_in;
+                                   analysis_name + "_mapping_" + sample_series_mapping_filename_in;
+        
+        // target file paths
+        String filename = session_dir + File.separator + 
+                          analysis_name + File.separator + 
+                          "data" + File.separator + 
+                          "data_" + filename_in;
+        
+        String sample_series_mapping_filename = session_dir + File.separator + 
+                                                analysis_name + File.separator + 
+                                                "data" + File.separator + 
+                                                "mapping_" + sample_series_mapping_filename_in;
+
+        // copy two files from source to target
+        File data_file = new File(temp_data_filepath);
+        File target_data_file = new File(filename);
+        if (target_data_file.exists()) {
+            target_data_file.delete();
+        }
+        data_file.renameTo(target_data_file);
+        
+        File map_file = new File(temp_map_filepath);
+        File target_map_file = new File(sample_series_mapping_filename);
+        if (target_map_file.exists()) {
+            target_map_file.delete();
+        }
+        map_file.renameTo(target_map_file);
+        
+        return new String[]{filename, sample_series_mapping_filename};
+    }
+    
+    public static String[] moveInputFilesToAnalysisDir_Demo (
+            String installPath, String session_id, String analysis_name,
+            String filename_in, 
+            String sample_series_mapping_filename_in,
+            String temp_data_filepath,
+            String temp_map_filepath) {
+        
+        // copy the data file from temp location to data dir
+        //String tempFolder = pageContext.getServletContext().getRealPath("") + File.separator + "temp" + File.separator + request.getSession().getId();
+        String session_dir = installPath + File.separator + "temp" + File.separator + session_id;
+        
+        // source file paths
+        
         
         // target file paths
         String filename = session_dir + File.separator + 
@@ -98,12 +144,44 @@ public class SessionManager {
                                                 sample_series_mapping_filename_in;
 
         // copy two files from source to target
-        File data_file = new File(temp_data_filepath);
-        data_file.renameTo(new File(filename));
-        File map_file = new File(temp_map_filepath);
-        map_file.renameTo(new File(sample_series_mapping_filename));
+        try {
+            File data_file_source = new File(temp_data_filepath);
+            File data_file_target = new File(filename);
+            FileUtils.copyFile(data_file_source, data_file_target);
+
+            File map_file_source = new File(temp_map_filepath);
+            File map_file_target = new File(sample_series_mapping_filename);
+            FileUtils.copyFile(map_file_source, map_file_target);
+
+            return new String[]{filename, sample_series_mapping_filename};
+        } catch (Exception e) {
+            return null;
+        }
         
-        return new String[]{filename, sample_series_mapping_filename};
+    }
+    
+    public static String[] getColumnHeaders(String installPath, 
+                                            String session_id, 
+                                            String analysis_name,
+                                            String filename_in, 
+                                            String type,
+                                            boolean hasHeader, 
+                                            String fileDelimiter) 
+    throws DataParsingException, IOException {
+        
+        String filename =   installPath + File.separator + 
+                            "temp" + File.separator + 
+                            session_id + File.separator + 
+                            analysis_name + "_" + type + "_" + filename_in;
+        
+        String[] colheaders = null;
+        String[][] data = FileHandler.loadDelimData(filename, fileDelimiter, false, 12);
+        if (hasHeader) {
+            colheaders = data[0];
+        }
+        
+        return colheaders;
+        
     }
     
 }

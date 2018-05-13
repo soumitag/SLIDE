@@ -12,6 +12,7 @@
     
 try {
     String analysis_name = request.getParameter("analysis_name");
+    String isDemo = request.getParameter("isDemo");
     String load_type = request.getParameter("load_type");
     if (load_type != null && (load_type.equalsIgnoreCase("reopen") || load_type.equalsIgnoreCase("file"))) {
         AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
@@ -42,7 +43,7 @@ try {
 
             <tr>
                 <td rowspan="3" align="top" valign="top" height="100%" style="border-style: solid; border-color: #E1E1E1">
-                    <iframe name="selectionPanel" id="selectionPanel" src="selectionPanel.jsp?analysis_name=<%=analysis_name%>&load_type=<%=load_type%>" marginwidth="0" height="100%" width="300" frameBorder="0" style="display: inline; position: relative; top: 0px; left: 0px"></iframe>
+                    <iframe name="selectionPanel" id="selectionPanel" src="selectionPanel.jsp?analysis_name=<%=analysis_name%>&load_type=<%=load_type%>&isDemo=<%=isDemo%>" marginwidth="0" height="100%" width="300" frameBorder="0" style="display: inline; position: relative; top: 0px; left: 0px"></iframe>
                 </td>
                 <td height="100%" width="100%">
                     <iframe name="visualizationPanel" id="visualizationPanel" src="visualizationHome.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" height="100%" width="100%" frameBorder="0"></iframe>

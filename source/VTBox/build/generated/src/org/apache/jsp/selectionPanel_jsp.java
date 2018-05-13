@@ -169,7 +169,7 @@ try {
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label>Replicate Handling: </label></b><br>\n");
-      out.write("                    <input type=\"radio\" name=\"repHandle\" value=\"0\" checked=\"checked\"> Use Separately<br>\n");
+      out.write("                    <input type=\"radio\" name=\"repHandle\" value=\"0\" checked=\"checked\"> Show All Replicates<br>\n");
       out.write("                    <input type=\"radio\" name=\"repHandle\" value=\"1\"> Mean<br>\n");
       out.write("                    <input type=\"radio\" name=\"repHandle\" value=\"2\"> Median\n");
       out.write("                </td>\n");
@@ -208,7 +208,7 @@ try {
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
-      out.write("                    <b><label>Row Scaling: </label></b><br>\n");
+      out.write("                    <b><label>Row Centering: </label></b><br>\n");
       out.write("                    <input type=\"radio\" name=\"normRule_Row\" value=\"0\" checked=\"checked\"> None <br>\n");
       out.write("                    <input type=\"radio\" name=\"normRule_Row\" value=\"1\"> Scale Rows to 0-1 <br>\n");
       out.write("                    <input type=\"radio\" name=\"normRule_Row\" value=\"2\"> Mean Center Rows <br>\n");
@@ -221,7 +221,7 @@ try {
       out.write("\n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\">\n");
-      out.write("                    <b><label>Group By: </label></b> &nbsp;\n");
+      out.write("                    <b><label>Group Columns By: </label></b> <br>\n");
       out.write("                    <input type=\"radio\" name=\"groupBy\" value=\"sample\" checked=\"checked\"> Sample &nbsp;\n");
       out.write("                    <input type=\"radio\" name=\"groupBy\" value=\"time\"> Time<br>\n");
       out.write("                </td>\n");
@@ -300,6 +300,50 @@ try {
       out.write("            \n");
       out.write("            <tr> <td colspan='4' align=center height=\"20\"> <b>Visualization Controls</b> </td></tr>\n");
       out.write("            \n");
+      out.write("            ");
+  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
+      out.write("\n");
+      out.write("            <tr>\n");
+      out.write("                <td colspan=\"4\" style=\"padding: 10px;\">\n");
+      out.write("                    <b><label style=\"display: inline-block; padding-bottom: 5px\">Row Label: </label></b> <br>\n");
+      out.write("                    <select id=\"identifierType\" name=\"identifierType\">\n");
+      out.write("                        \n");
+      out.write("                    ");
+ if (analysis.database.metadata.hasStandardMetaData())    {   
+      out.write("    \n");
+      out.write("                        <option id=\"entrez\" value=\"entrez_2021158607524066\" checked=\"checked\">Entrez</option>\n");
+      out.write("                        <option id=\"genesymbol\" value=\"genesymbol_2021158607524066\" >Gene Symbol</option>\n");
+      out.write("                        <option id=\"refseq\" value=\"refseq_2021158607524066\" >RefSeq Gene</option>\n");
+      out.write("                        <option id=\"ensembl_gene_id\" value=\"ensembl_gene_id_2021158607524066\" >Ensembl Gene Id</option>\n");
+      out.write("                        <option id=\"ensembl_transcript_id\" value=\"ensembl_transcript_id_2021158607524066\" >Ensembl Gene Id</option>\n");
+      out.write("                        <option id=\"ensembl_protein_id\" value=\"ensembl_protein_id_2021158607524066\" >Ensembl Protein Id</option>\n");
+      out.write("                        <option id=\"uniprot_id\" value=\"uniprot_id_2021158607524066\" >Uniprot Id</option>\n");
+      out.write("                    ");
+  }   
+      out.write("\n");
+      out.write("                    ");
+
+                        ArrayList <String> nonstandard_metacolnames = analysis.database.metadata.getNonStandardMetaColNames();
+                        for (int i=0; i<nonstandard_metacolnames.size(); i++) {
+                            String name = nonstandard_metacolnames.get(i);
+                    
+      out.write("\n");
+      out.write("                            <option id=\"");
+      out.print(name);
+      out.write("\" value=\"");
+      out.print(name);
+      out.write("\" >");
+      out.print(name);
+      out.write("</option>\n");
+      out.write("                    ");
+  }   
+      out.write("\n");
+      out.write("                    </select>\n");
+      out.write("                </td>\n");
+      out.write("            </tr>\n");
+      out.write("            ");
+  }   
+      out.write("\n");
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
@@ -368,7 +412,10 @@ try {
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\"> \n");
       out.write("                    <b><label>Heatmap Color Scheme: </label></b><br>\n");
-      out.write("                    <input type=\"radio\" name=\"colorScheme\" value=\"row\" checked=\"checked\"> Blue-White-Red <br>\n");
+      out.write("                    <input type=\"radio\" name=\"colorScheme\" value=\"blue_white_red\" checked=\"checked\"> Blue-White-Red <br>\n");
+      out.write("                    <input type=\"radio\" name=\"colorScheme\" value=\"blue_white_maroon\"> Sapphire-White-Maroon <br>\n");
+      out.write("                    <input type=\"radio\" name=\"colorScheme\" value=\"green_black_red\"> Green-Black-Red <br>\n");
+      out.write("                    <input type=\"radio\" name=\"colorScheme\" value=\"blue_black_yellow\"> Blue-Black-Yellow <br>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            <!--\n");
@@ -552,6 +599,41 @@ try {
         }
     
       out.write("\n");
+      out.write("    \n");
+      out.write("    <script>\n");
+      out.write("        rowLabelType('");
+      out.print(analysis.visualization_params.row_label_type);
+      out.write("');\n");
+      out.write("    </script>\n");
+      out.write("    \n");
+      out.write("    ");
+
+        String isDemo = request.getParameter("isDemo");
+        if (isDemo != null) {
+            if (isDemo.equalsIgnoreCase("yes")) {
+    
+      out.write("\n");
+      out.write("                <script>\n");
+      out.write("                    binRange(");
+      out.print(analysis.visualization_params.getBinRangeTypeIndex());
+      out.write(");\n");
+      out.write("                    binRangeStartEnd(");
+      out.print(analysis.visualization_params.getBinRangeTypeIndex());
+      out.write(',');
+      out.write(' ');
+      out.print(analysis.visualization_params.bin_range_start);
+      out.write(',');
+      out.write(' ');
+      out.print(analysis.visualization_params.bin_range_end);
+      out.write(");\n");
+      out.write("                </script>\n");
+      out.write("    ");
+
+            }
+        }
+    
+      out.write("\n");
+      out.write("    \n");
       out.write("</html>\n");
 
   

@@ -201,3 +201,89 @@ button:disabled {
     z-index: 1;
     height: 30px;
 }
+
+.create_analysis_container_div {
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    width: 90%; 
+    background-color: #FFFFFF; 
+    padding-left: 10px;
+}
+
+.page_title_div {
+    position: relative; 
+    top: 0px; 
+    left: 0px; 
+    width: 100%;
+    height: 50px;
+    background-color: #FFFFFF; 
+    text-align:center;
+    padding-top: 20px;
+    font-family: verdana;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.error_msg_div {
+    position: relative; 
+    padding: 10px; 
+    left: 0px;
+    display: float;
+    text-align:center;
+    background-color: #ffff80;
+    font-family: verdana;
+    font-weight: normal;
+}
+
+.analysis_data_div {
+    position: relative; 
+    top: 10px; 
+    left: 0px;
+    display: float;
+}
+
+.analysis_params_div {
+    position: relative; 
+    top: 20px; 
+    left: 0px;
+}
+
+.analysis_params_inner_divs {
+    position: relative; 
+}
+
+.input {
+    font-family: verdana;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.input td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.input th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 8px;
+    text-align: left;
+    background-color: #efefef;
+    font-weight: bold;
+    border: 1px solid #dddddd;
+}
+
+.notes {
+    padding-left: 30px; 
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
+    text-align:left;
+    font-family: verdana;
+    font-weight: normal;
+    display: inline-block;
+    width: 800px;
+}
+

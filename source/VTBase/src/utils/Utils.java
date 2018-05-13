@@ -56,6 +56,26 @@ public class Utils {
         }
     }
     
+    public static String getDelimiter(String delimval) {
+        
+        String fileDelimiter = "";
+        if(delimval.equals("commaS")){
+            fileDelimiter = ",";
+        } else if (delimval.equals("tabS")) {
+            fileDelimiter = "\t";
+        } else if (delimval.equals("spaceS")){
+            fileDelimiter = " ";
+        } else if (delimval.equals("semiS")) {
+            fileDelimiter = ";";
+        } else if (delimval.equals("hyphenS")) {
+            fileDelimiter = "-";
+        } else if (delimval.equals("pipeS")) {
+            fileDelimiter = "|";
+        }
+        
+        return fileDelimiter;
+    }
+    
     /*
     public double[] getDataBB(Point[] data) {
         
@@ -693,6 +713,7 @@ public class Utils {
         }
     }
     
+    /*
     public int[][] loadIntDelimData (String inFile, String delim, boolean hasHeader) 
     throws IOException {
         String[][] data = loadDelimData (inFile, delim, hasHeader);
@@ -716,151 +737,12 @@ public class Utils {
         }
         return doubleData;
     }
+    */
     
-    public static String[][] loadDelimData (String inFile, String delim, boolean hasHeader) 
-    throws IOException {
-             
-        BufferedReader br1, br2 = null;
-        String line;
-        
-        String[][] data;
-                
-        //try {
-
-            int count = 1;
-            br1 = new BufferedReader(new FileReader(inFile));
-            line = br1.readLine();
-            String[] lineData = line.split(delim);
-            while ((line = br1.readLine()) != null) {
-                count++;
-            }
-            br1.close();
-            
-            if (hasHeader) {
-                data = new String[count-1][lineData.length];
-            } else {
-                data = new String[count][lineData.length];
-            }
-            
-            count = 0;
-            br2 = new BufferedReader(new FileReader(inFile));
-            boolean isFirst = true;
-            while ((line = br2.readLine()) != null) {
-
-                if (isFirst & hasHeader) {
-                    isFirst = false;
-                } else {
-                    lineData = line.split(delim);
-                    data[count++] = lineData;
-                }
-            }
-            br2.close();
-            
-            return data;
-          
-        /*
-        } catch (Exception e) {
-            System.out.println("Error reading input data:");
-            System.out.println(e);
-            return null;
-        }
-        */
-    }
     
-    public static String[][] loadDelimData (String inFile, String delim, boolean hasHeader, int maxRows) {
-             
-        BufferedReader br = null;
-        String line;
-        
-        Vector <String []> dataVec = new Vector <String []> ();
-                
-        try {
-
-            br = new BufferedReader(new FileReader(inFile));
-
-            int count = 0;
-            String[] lineData = null;
-            boolean isFirst = true;
-            while ((line = br.readLine()) != null) {
-
-                if (isFirst & hasHeader) {
-                    isFirst = false;
-                } else {
-                    lineData = line.split(delim);
-                    dataVec.add(lineData);
-                    count++;
-                }
-                
-                if (count == maxRows) {
-                    break;
-                }
-            }
-            
-            String[][] data = new String[dataVec.size()][lineData.length];
-            dataVec.copyInto(data);
-            
-            br.close();
-            
-            return data;
-            
-        } catch (Exception e) {
-            System.out.println("Error reading input data:");
-            System.out.println(e);
-            return null;
-        }
-    }
     
-    public static int[] getFileDimensions (String inFile, String delim) {
-        
-        boolean isFirst = true;
-        int[] height_width = new int[2];
-        String line;
-        
-        try {
-            
-            BufferedReader br = new BufferedReader(new FileReader(inFile));
-        
-            while ((line = br.readLine()) != null) {
-                if (isFirst) {
-                    height_width[1] = (line.split(delim)).length;
-                    isFirst = false;
-                }
-                height_width[0]++;
-            }
-            
-        } catch (Exception e) {
-            
-            System.out.println("Error reading input data:");
-            System.out.println(e);
-            return null;
-            
-        }
-        
-        return height_width;
-    }
     
-    public static String[] getFileHeader (String inFile, String delim) {
-        
-        String[] headers = null;
-        
-        try {
-            
-            BufferedReader br = new BufferedReader(new FileReader(inFile));
-            String line = br.readLine();
-            if (line != null) {
-                headers = line.split(delim);
-            }
-            
-        } catch (Exception e) {
-            
-            System.out.println("Error reading input data:");
-            System.out.println(e);
-            return null;
-            
-        }
-        
-        return headers;
-    }
+    
        
     public void println (Object o) {
         if (debugModeOn) {

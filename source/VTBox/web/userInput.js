@@ -47,26 +47,47 @@ function getdelimitervalue(){
     document.getElementById("Preview").style.visibility = "visible";
 }
 
+function getmapdelimitervalue(){
+    var d = document.getElementById("mapDelimS");
+    var optionDelim = d.options[d.selectedIndex].value;
+    document.getElementById("mapdelimval").value = optionDelim;
+}
+
 function getspeciesname(){
     var d = document.getElementById("species");
     var optionSpecies = d.options[d.selectedIndex].value;
     document.getElementById("species_name").value = optionSpecies;
-    
+    if (optionSpecies === "other") {
+        document.getElementById("metadata_mapping_tr").style.display = "none";
+        alert("When species is 'Other' search and tagging features will not be available.");
+    } else {
+        document.getElementById("metadata_mapping_tr").style.display = "table-row";
+    }
 }
 
-function filePreview(analysis_name){
-    var filestr = document.getElementById("fileinputname").value;
-    var filedelim = document.getElementById("delimval").value;
-        
-    var fileheader = document.getElementById("headerflag").checked;
-    var col_header_str = "";
-    
-    var url_text = "inputPreview.jsp?file=" +filestr + "&delim=" + filedelim + "&analysis_name=" + analysis_name + "&head=" + fileheader + "&col_header=" + col_header_str;
-    
-    document.getElementById('previewFrame').contentWindow.location.replace(url_text);
-    document.getElementById('previewFrame').style.display = "inline";
-    document.getElementById('previewFrame').style.height = 200;
-    document.getElementById('previewFrame').style.width = "100%";
+function filePreview(analysis_name, upload_type){
+    //alert(document.getElementById('Preview').innerText);
+    if(document.getElementById('Preview').innerText.toLowerCase() === "preview"){
+        var filestr = document.getElementById("fileinputname").value;
+        var filedelim = document.getElementById("delimval").value; 
+        //var fileheader = document.getElementById("headerflag").checked;
+        var fileheader = "on";    
+        var col_header_str = "";
+
+        //var url_text = "inputPreview.jsp?file=" +filestr + "&delim=" + filedelim + "&analysis_name=" + analysis_name + "&head=" + fileheader + "&col_header=" + col_header_str;
+
+        var url_text = "inputPreview.jsp?file=" +filestr + "&delim=" + filedelim + "&analysis_name=" + analysis_name + "&head=" + fileheader + "&upload_type=" + upload_type + "&col_header=" + col_header_str;
+
+        document.getElementById('previewFrame').contentWindow.location.replace(url_text);
+        document.getElementById('previewFrame').style.display = "inline";
+        document.getElementById('previewFrame').style.height = 200;
+        document.getElementById('previewFrame').style.width = "100%";
+        document.getElementById('Preview').innerText = "Close Preview";
+        //alert(document.getElementById('Preview').innerText);    
+    }else if(document.getElementById('Preview').innerText.toLowerCase() === "close preview"){
+        document.getElementById('previewFrame').style.display = "none";
+        document.getElementById('Preview').innerText = "Preview";
+    }
 }
 
 function mapFilePreview(){
@@ -90,7 +111,7 @@ function checkselectoptions(){
     }
     if(document.getElementById("delimval").value == ""){
         x = 0;
-        alert("Please select a data delimiter.");
+        alert("Please select a delimiter for the data file.");
     }
     if(document.getElementById("species_name").value == ""){
         x = 0;
@@ -101,22 +122,42 @@ function checkselectoptions(){
     
 }
 
-function createNewExp(){
-    //document.fileInputForm.setAttribute("action","init.jsp");
-    var x = checkselectoptions();
-    //alert(x);
-    if(x === 1) {
-        document.getElementById('EnterNewExperiment').innerHTML = 'Creating...';
-        document.getElementById("EnterNewExperiment").disabled = true;
-        document.fileInputForm.setAttribute("action","AnalysisInitializer");
-        document.fileInputForm.submit();
-    }
-}
 
 function setTimeSeriesAs(str) {
     document.getElementById('isTimeSeries').value = str;
+    
+    if(str === 'yes'){
+        document.getElementById('sample_attributes_div').style.display = "inline";
+        document.getElementById('isTimeSeries').value = 'yes';
+        //alert(document.getElementById('isTimeSeries').value);
+    } else if(str === 'no') {
+        str1 = document.getElementById('hasReplicates').value;
+        document.getElementById('isTimeSeries').value = 'no';
+        if (str1 === 'no'){
+            document.getElementById('sample_attributes_div').style.display = "none";
+        }
+    }
 }
 
+function setReplicatesAs(str) {
+    document.getElementById('hasReplicates').value = str;
+    
+    if(str === 'yes'){
+        document.getElementById('sample_attributes_div').style.display = "inline";
+        document.getElementById('hasReplicates').value = 'yes';
+        document.getElementById('time_series_td').style.display = "table-row";
+        //alert(document.getElementById('hasReplicates').value);
+    } else if(str === 'no') {
+        str1 = document.getElementById('isTimeSeries').value;
+        document.getElementById('hasReplicates').value = 'no';
+        document.getElementById('sample_attributes_div').style.display = "none";
+        document.getElementById('time_series_td').style.display = "none";
+        if (str1 === 'no'){
+            document.getElementById('sample_attributes_div').style.display = "none";
+            document.getElementById('time_series_td').style.display = "none";
+        }
+    }
+}
 
 function showrepnumchk(){
     document.getElementById("lblreplnum").style.visibility = "visible";
@@ -338,18 +379,55 @@ function chknumrange (f) {
     
 }
 
-function uploadData() {
+function uploadDataFile() {
     // start uploading file to server
     var x = document.getElementById('selectmrnafilename').value;
-    var y = document.getElementById('selectmapfilename').value;
-    if (x == "" || y == ""){
-        alert("Please enter a valid input and mapping file");
-    } else {    
+    var d = document.getElementById("delimval").value;
+    
+    if (x == ""){
+        alert("Please select a data file.");
+    } else if (d == "") {
+        alert("Please select the delimiter used in data file.");
+    } else {
         document.getElementById('notice_board').style.display = 'none';
-        document.getElementById('input_table').style.display = 'none';
+        //document.getElementById('input_table').style.display = 'none';
+        document.getElementById('analysis_params_div').style.display = 'none';
         document.getElementById("data_upload_btn").disabled = true;
         document.getElementById('data_upload_btn').innerHTML = 'Uploading...';
-        document.getElementById('upload_form').submit();
+        var form = document.getElementById('data_upload_form');
+        var form_action = document.getElementById('data_upload_form_action').value;
+        form.action = form_action + "&delimval=" + document.getElementById('delimval').value;
+        //alert(form.action);
+        form.submit();
+    }
+}
+
+function uploadMappingFile() {
+    //alert('but why');
+    var y = document.getElementById('select_map_filename').value;
+    var d = document.getElementById("mapdelimval").value;
+    var t = document.getElementById('isTimeSeries').value;
+    var r = document.getElementById('hasReplicates').value;
+    var x = document.getElementById('fileinputname').value;
+    var e = document.getElementById("delimval").value;
+
+    if (y === ""){
+        alert("Please select a mapping file.");
+    } else if (d === "") {
+        alert("Please select the delimiter used in mapping file.");
+    } else {
+        document.getElementById('mapping_notice_board').style.display = 'none';
+        document.getElementById("mapUploadButton").disabled = true;
+        document.getElementById('mapUploadButton').innerHTML = 'Uploading...';
+        var form_action = document.getElementById('mapping_upload_form_action').value;
+        var form = document.getElementById('sampleAttributeForm');
+        form.action = form_action + "&delimval=" + d + 
+                                    "&is_time_course=" + t + 
+                                    "&has_replicates=" + r + 
+                                    "&data_filename=" + x + 
+                                    "&data_fileDelimiter=" + e;
+        //alert(form.action);
+        form.submit();
     }
 }
 

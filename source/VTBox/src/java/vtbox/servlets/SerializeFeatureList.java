@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import searcher.GeneObject;
 import structure.AnalysisContainer;
+import structure.MetaData;
 
 /**
  *
@@ -63,10 +65,9 @@ public class SerializeFeatureList extends HttpServlet {
         ArrayList <Integer> filterList = analysis.filterListMap.get(feature_list_name);
         
         for (int i=0; i<filterList.size(); i++) {
-            str = str + analysis.database.features.get(filterList.get(i)).genesymbol + delimiter;
+            str = str + analysis.database.features.get(filterList.get(i)).identifier + delimiter;
         }
         
-        int read = 0;
         byte[] bytes = str.getBytes();
         OutputStream os = response.getOutputStream();
         os.write(bytes, 0, bytes.length);

@@ -85,20 +85,26 @@ public class DoSearch extends HttpServlet {
                     }
                 }
 
-            } else if (queryType != null && queryType.equals("entrez") || queryType.equals("genesymbol")) {
+            } else if (queryType != null && queryType.equals("entrez") || queryType.equals("genesymbol") || queryType.equals("refseq")
+                        || queryType.equals("ensembl_gene_id") || queryType.equals("ensembl_transcript_id") || queryType.equals("ensembl_protein_id")
+                        || queryType.equals("uniprot_id")) {
 
                 StringTokenizer st = new StringTokenizer(searchString, ",");
 
                 while(st.hasMoreTokens()) {
-                    ArrayList <GeneObject> part_genes = searcher.processGeneQuery(st.nextToken(), searchType, queryType);
+                    String qString = st.nextToken();
+                    ArrayList <GeneObject> part_genes = searcher.processGeneQuery(qString, searchType, queryType);
                     for(int i = 0; i < part_genes.size(); i++){
                         GeneObject gene = part_genes.get(i);
                         CompactSearchResultContainer csrc = new CompactSearchResultContainer();
-                        csrc.createGeneSearchResult(gene.entrez_id, gene.genesymbol);
+                        csrc.createGeneSearchResult(gene.entrez_id, gene.gene_identifier);
                         current_search_results.add(csrc);
                     }
+                    current_search_results.addAll(
+                            analysis.database.metadata.searchMetadata(analysis.database.features, queryType, qString)
+                    );
                 }
-
+                
             }
 
             ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;

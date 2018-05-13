@@ -22,6 +22,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import utils.ReadConfig;
 import utils.SessionManager;
+import utils.Utils;
 
 /**
  *
@@ -79,12 +80,13 @@ public class DataUploader extends HttpServlet {
         // Set overall request size constraint
         upload.setSizeMax(MAX_REQUEST_SIZE);
 
+        String type = request.getParameter("upload_type");
         String analysis_name = request.getParameter("analysis_name");
+        String delimval = request.getParameter("delimval");
         
         String filePath = "";
         String fileName = "";
-        String data_filename = "", mapping_filename = "";
-        int count = 0;
+        
         try {
             // Parse the request
             List items = upload.parseRequest(request);
@@ -94,38 +96,56 @@ public class DataUploader extends HttpServlet {
 
                 if (!item.isFormField()) {
                     fileName = new File(item.getName()).getName();
-                    if (fileName.toLowerCase().endsWith(".txt")) {
-                        filePath = uploadFolder + File.separator + analysis_name + "_" + fileName;
+                    
+                    if (fileName.toLowerCase().endsWith(".xls") ||
+                        fileName.toLowerCase().endsWith(".xlsx")) {
+                        
+                        String msg = "Upload Failed! SLIDE cannot process Excel files. Please provide a delimited file in tsv, csv or txt format.";
+                        getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=" + msg + "&filename=" + fileName + "&type=" + type).forward(request, response);
+                        return;
+                        
+                    } else {
+                    
+                        filePath = uploadFolder + File.separator + analysis_name + "_" + type + "_" + fileName;
                         File uploadedFile = new File(filePath);
                         System.out.println(filePath);
                         // saves the file to upload directory
                         item.write(uploadedFile);
                         item.delete();
-                        
-                        if(count == 0){
-                            data_filename = fileName;
-                        } else if (count == 1){
-                            mapping_filename = fileName;
-                        }
-                        count++;
-                    } else {
-                        String msg = "Upload Failed. Files with only .txt extensions can be uploaded";
-                        getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=" + msg + "&filename=" + fileName).forward(request, response);
-                        return;
                     }
                 }
             }
             
             // displays uploadCompleted.jsp page after upload finished
-            getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=&data_filename=" + data_filename + "&mapping_filename=" + mapping_filename).forward(request, response);
+            if (type.equals("mapping")) {
+                String isTimeSeries = request.getParameter("is_time_course");
+                String hasReplicates = request.getParameter("has_replicates");
+                String data_filename = request.getParameter("data_filename");
+                String data_fileDelimiter = request.getParameter("data_fileDelimiter");
+                getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=&filename=" + fileName + 
+                                                         "&analysis_name=" + analysis_name + 
+                                                         "&delimval=" + delimval + 
+                                                         "&type=" + type +
+                                                         "&isTimeSeries=" + isTimeSeries + 
+                                                         "&hasReplicates=" + hasReplicates + 
+                                                         "&data_filename=" + data_filename +
+                                                         "&data_fileDelimiter=" + data_fileDelimiter
+                ).forward(request, response);
+            } else {
+                getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=&filename=" + fileName + 
+                                                         "&analysis_name=" + analysis_name + 
+                                                         "&delimval=" + delimval  + 
+                                                         "&type=" + type
+                ).forward(request, response);
+            }
 
         } catch (FileUploadException ex) {
             // displays uploadCompleted.jsp page after upload finished
-            getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=" + ex.toString() + "&filename=" + fileName).forward(request, response);
+            getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=" + ex.toString() + "&filename=" + fileName + "&type=" + type).forward(request, response);
             //throw new ServletException(ex);
         } catch (Exception ex) {
             // displays uploadCompleted.jsp page after upload finished
-            getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=" + ex.toString() + "&filename=" + fileName).forward(request, response);
+            getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=" + ex.toString() + "&filename=" + fileName + "&type=" + type).forward(request, response);
             //throw new ServletException(ex);
         }
 

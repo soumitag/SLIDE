@@ -598,13 +598,13 @@ public class ConfigureSlide {
                 }
             }
         
-            String[] collection_names = {"pathwayMap", "goMap2", "geneMap2", "entrezAliasMap", "aliasEntrezMap"};
+            String[] collection_names = {"pathwayMap", "goMap2", "geneMap2", "entrezAliasMap", "aliasEntrezMap", "ensemblEntrezMap", "ensemblprotEntrezMap", "ensembltranscriptEntrezMap", "EntrezMap", "geneMap", "goMap", "refseqEntrezMap", "uniprotEntrezMap"};
             
             DBCollection collection;
             DBObject obj;
             for (int i=0; i<collection_names.length; i++) {
                 
-                print("\tImporting collection " + (i+1) + " of 5...");
+                print("\tImporting collection " + (i+1) + " of 13...");
                 
                 // Process MM
                 String collection_name = "MM_" + collection_names[i];

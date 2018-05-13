@@ -3,6 +3,8 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import searcher.GeneObject;
+import structure.MetaData;
 import utils.Utils;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
@@ -60,6 +62,8 @@ public final class featurelabels_jsp extends org.apache.jasper.runtime.HttpJspBa
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
     
@@ -70,7 +74,7 @@ try {
 
     Data db = analysis.database;
     
-    double num_features = db.features.size();
+    double num_features = db.metadata.nFeatures;
     
     String start_str = request.getParameter("start");
     String end_str = request.getParameter("end");
@@ -130,20 +134,32 @@ try {
             BinaryTree linkage_tree = analysis.linkage_tree;
             
             for (int i=(int)start; i<=(int)end; i++) {
-                String entrez_i = db.features.get(linkage_tree.leaf_ordering.get(i)).entrezId;
-                ArrayList <String> genesymbols = db.entrezGeneMap.get(entrez_i);
-                String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
+                int index = linkage_tree.leaf_ordering.get(i);
                 /*
-                for (int j = 0; j < genesymbols.size()-1; j++) {
-                    genes += genesymbols.get(j) + ",";
+                String entrez_i = db.features.get(index).entrez;
+                if (db.features.get(index).hasBadEntrez) {
+                    entrez_i = "-";
                 }
-                genes += genesymbols.get(genesymbols.size()-1) + " (" + entrez_i + ")";
-                */
-                double mid = feature_height*(i - start) + feature_height*0.60;
+                ArrayList <String> genesymbols = db.entrezIdentifierMap.get(entrez_i);
+                String genes;
+                if(db.identifier_name.equals("entrez_2021158607524066")) {
+                    genes = (genesymbols.get(0)).toUpperCase();
+                } else {
+                    if (db.metadata.hasStandardMetaData()) {
+                        genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
+                    } else {
+                        genes = genesymbols.get(0).toUpperCase();
+                    }
+                }
+                
                 if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
                     analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
                     genes = Utils.checkAndRemoveHtml(genes);
                 }
+                */
+                String genes = db.features.get(index).getFormattedFeatureName(analysis);
+                
+                double mid = feature_height*(i - start) + feature_height*0.60;
     
       out.write("\n");
       out.write("    \n");

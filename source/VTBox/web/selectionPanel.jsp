@@ -119,7 +119,7 @@ try {
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label>Replicate Handling: </label></b><br>
-                    <input type="radio" name="repHandle" value="0" checked="checked"> Use Separately<br>
+                    <input type="radio" name="repHandle" value="0" checked="checked"> Show All Replicates<br>
                     <input type="radio" name="repHandle" value="1"> Mean<br>
                     <input type="radio" name="repHandle" value="2"> Median
                 </td>
@@ -158,7 +158,7 @@ try {
             
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
-                    <b><label>Row Scaling: </label></b><br>
+                    <b><label>Row Centering: </label></b><br>
                     <input type="radio" name="normRule_Row" value="0" checked="checked"> None <br>
                     <input type="radio" name="normRule_Row" value="1"> Scale Rows to 0-1 <br>
                     <input type="radio" name="normRule_Row" value="2"> Mean Center Rows <br>
@@ -169,7 +169,7 @@ try {
             <% if (database.isTimeSeries) { %>
             <tr>
                 <td colspan="4" style="padding: 10px;">
-                    <b><label>Group By: </label></b> &nbsp;
+                    <b><label>Group Columns By: </label></b> <br>
                     <input type="radio" name="groupBy" value="sample" checked="checked"> Sample &nbsp;
                     <input type="radio" name="groupBy" value="time"> Time<br>
                 </td>
@@ -240,6 +240,32 @@ try {
             
             <tr> <td colspan='4' align=center height="20"> <b>Visualization Controls</b> </td></tr>
             
+            <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
+            <tr>
+                <td colspan="4" style="padding: 10px;">
+                    <b><label style="display: inline-block; padding-bottom: 5px">Row Label: </label></b> <br>
+                    <select id="identifierType" name="identifierType">
+                        
+                    <% if (analysis.database.metadata.hasStandardMetaData())    {   %>    
+                        <option id="entrez" value="entrez_2021158607524066" checked="checked">Entrez</option>
+                        <option id="genesymbol" value="genesymbol_2021158607524066" >Gene Symbol</option>
+                        <option id="refseq" value="refseq_2021158607524066" >RefSeq Gene</option>
+                        <option id="ensembl_gene_id" value="ensembl_gene_id_2021158607524066" >Ensembl Gene Id</option>
+                        <option id="ensembl_transcript_id" value="ensembl_transcript_id_2021158607524066" >Ensembl Gene Id</option>
+                        <option id="ensembl_protein_id" value="ensembl_protein_id_2021158607524066" >Ensembl Protein Id</option>
+                        <option id="uniprot_id" value="uniprot_id_2021158607524066" >Uniprot Id</option>
+                    <%  }   %>
+                    <%
+                        ArrayList <String> nonstandard_metacolnames = analysis.database.metadata.getNonStandardMetaColNames();
+                        for (int i=0; i<nonstandard_metacolnames.size(); i++) {
+                            String name = nonstandard_metacolnames.get(i);
+                    %>
+                            <option id="<%=name%>" value="<%=name%>" ><%=name%></option>
+                    <%  }   %>
+                    </select>
+                </td>
+            </tr>
+            <%  }   %>
             
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
@@ -292,7 +318,10 @@ try {
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
                     <b><label>Heatmap Color Scheme: </label></b><br>
-                    <input type="radio" name="colorScheme" value="row" checked="checked"> Blue-White-Red <br>
+                    <input type="radio" name="colorScheme" value="blue_white_red" checked="checked"> Blue-White-Red <br>
+                    <input type="radio" name="colorScheme" value="blue_white_maroon"> Sapphire-White-Maroon <br>
+                    <input type="radio" name="colorScheme" value="green_black_red"> Green-Black-Red <br>
+                    <input type="radio" name="colorScheme" value="blue_black_yellow"> Blue-Black-Yellow <br>
                 </td>
             </tr>
             <!--
@@ -388,6 +417,25 @@ try {
             }
         }
     %>
+    
+    <script>
+        rowLabelType('<%=analysis.visualization_params.row_label_type%>');
+    </script>
+    
+    <%
+        String isDemo = request.getParameter("isDemo");
+        if (isDemo != null) {
+            if (isDemo.equalsIgnoreCase("yes")) {
+    %>
+                <script>
+                    binRange(<%=analysis.visualization_params.getBinRangeTypeIndex()%>);
+                    binRangeStartEnd(<%=analysis.visualization_params.getBinRangeTypeIndex()%>, <%=analysis.visualization_params.bin_range_start%>, <%=analysis.visualization_params.bin_range_end%>);
+                </script>
+    <%
+            }
+        }
+    %>
+    
 </html>
 <%
   

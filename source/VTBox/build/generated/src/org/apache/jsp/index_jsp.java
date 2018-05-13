@@ -54,9 +54,10 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
  
     String analysis_to_stop = request.getParameter("analysis_to_stop");
     if(analysis_to_stop != null){
-        AnalysisContainer ac1 = (AnalysisContainer)session.getAttribute(analysis_to_stop);
-        ((Searcher)ac1.searcher).closeMongoDBConnection();
-        if(ac1 != null){
+        Object t = session.getAttribute(analysis_to_stop);
+        if (t != null) {
+            AnalysisContainer ac1 = (AnalysisContainer)t;
+            ((Searcher)ac1.searcher).closeMongoDBConnection();
             session.removeAttribute(analysis_to_stop);
         }
     }
@@ -107,10 +108,17 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            \n");
       out.write("            function stopAnalysis(analysis_to_stop){\n");
       out.write("                //alert(\"Stop it\");\n");
-      out.write("                window.location.href(\"");
+      out.write("                window.location.href = \"");
       out.print(base_url);
-      out.write("/index.jsp?analysis_to_stop=\" + analysis_to_stop);\n");
+      out.write("/index.jsp?analysis_to_stop=\" + analysis_to_stop;\n");
       out.write("               \n");
+      out.write("            }\n");
+      out.write("            \n");
+      out.write("            function loadDemo(){\n");
+      out.write("                window.location.href = \"");
+      out.print(base_url);
+      out.write("newExperimentWizardDemo.jsp?newexperimentname=demo\";\n");
+      out.write("                return false;\n");
       out.write("            }\n");
       out.write("                \n");
       out.write("        </script>\n");
@@ -210,17 +218,8 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            \n");
       out.write("        </style>\n");
       out.write("    </head>\n");
-      out.write("    ");
- if (status == null){ 
-      out.write("\n");
-      out.write("        <body onload=\"doSysReq()\">\n");
-      out.write("    ");
- } else { 
-      out.write("\n");
-      out.write("        <body>\n");
-      out.write("    ");
-}
-      out.write("\n");
+      out.write("    \n");
+      out.write("    <body>\n");
       out.write("        <!-- The Modal -->\n");
       out.write("        <div id=\"myModal\" class=\"modal\">\n");
       out.write("\n");
@@ -254,6 +253,11 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                            </td>\n");
       out.write("                            <td align=\"center\">\n");
       out.write("                                <button class=\"dropbtn\" onclick=\"show_tab('opener')\"> Open Active Analysis </button> \n");
+      out.write("                            </td>\n");
+      out.write("                        </tr>\n");
+      out.write("                        <tr>\n");
+      out.write("                            <td colspan=\"3\" align=\"center\">\n");
+      out.write("                                <button class=\"dropbtn\" onclick=\"loadDemo()\"> &nbsp;&nbsp;&nbsp;Load Demo&nbsp;&nbsp;&nbsp; </button> \n");
       out.write("                            </td>\n");
       out.write("                        </tr>\n");
       out.write("                </table>\n");
@@ -406,6 +410,11 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                    \n");
       out.write("                </table>\n");
       out.write("\n");
+      out.write("                    \n");
+      out.write("                    <div id=\"resolution_message\" class=\"msg\" style=\"width: 420px; position: fixed; bottom: 20px; left: 50%; margin-left: -210px\">\n");
+      out.write("                        SLIDE is optimized for 1920&times;1040 and higher resolutions. \n");
+      out.write("                    </div>\n");
+      out.write("                    \n");
       out.write("    </body>\n");
       out.write("    \n");
       out.write("    <script>\n");
@@ -470,62 +479,32 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            \n");
       out.write("        \n");
       out.write("            function doSysReq() { \n");
-      out.write("                var browser = \"\";\n");
+      out.write("                \n");
       out.write("                var browserApp= \"\";\n");
-      out.write("                var browserVersion = \"\";\n");
-      out.write("                    if((navigator.userAgent.indexOf(\"Opera\") || navigator.userAgent.indexOf('OPR')) != -1 ) {\n");
+      out.write("                    if((navigator.userAgent.indexOf(\"Opera\") || navigator.userAgent.indexOf('OPR')) !== -1 ) {\n");
       out.write("                        browserApp = \"Opera\";\n");
-      out.write("                        browserVersion = navigator.appVersion; \n");
-      out.write("                    } else if(navigator.userAgent.indexOf(\"Chrome\") != -1 ){\n");
+      out.write("                    } else if(navigator.userAgent.indexOf(\"Chrome\") !== -1 ){\n");
       out.write("                        if(navigator.userAgent.indexOf(\"Edge\") > -1){\n");
       out.write("                            browserApp = \"Edge\";\n");
-      out.write("                            browserVersion = navigator.appVersion; \n");
       out.write("                        }else{\n");
       out.write("                            browserApp = \"Chrome\";\n");
-      out.write("                            browserVersion = navigator.appVersion; \n");
       out.write("                        }\n");
-      out.write("                    } else if(navigator.userAgent.indexOf(\"Safari\") != -1){\n");
+      out.write("                    } else if(navigator.userAgent.indexOf(\"Safari\") !== -1){\n");
       out.write("                        browserApp = \"Safari\";\n");
-      out.write("                        browserVersion = navigator.appVersion;                     \n");
-      out.write("                    } else if(navigator.userAgent.indexOf(\"Firefox\") != -1 ){\n");
+      out.write("                    } else if(navigator.userAgent.indexOf(\"Firefox\") !== -1 ){\n");
       out.write("                        browserApp = \"Firefox\";\n");
-      out.write("                        browserVersion = navigator.appVersion; \n");
-      out.write("                    } else if((navigator.userAgent.indexOf(\"MSIE\") != -1 || navigator.appVersion.indexOf('Trident/') > 0)) {//IF IE > 10 \n");
-      out.write("                        browser = \"ie\";\n");
+      out.write("                    } else if((navigator.userAgent.indexOf(\"MSIE\") !== -1 || navigator.appVersion.indexOf('Trident/') > 0)) {//IF IE > 10 \n");
       out.write("                        browserApp = \"Internet Explorer\";\n");
-      out.write("                        browserVersion = navigator.appVersion; \n");
       out.write("                    } else {\n");
       out.write("                        browserApp = \"Unknown\";\n");
       out.write("                    }\n");
       out.write("\n");
-      out.write("                    var OSName = \"Unknown\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"Windows NT 10.0\")!= -1) \n");
-      out.write("                            OSName=\"Windows 10\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"Windows NT 6.2\") != -1) \n");
-      out.write("                            OSName=\"Windows 8\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"Windows NT 6.1\") != -1) \n");
-      out.write("                            OSName=\"Windows 7\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"Windows NT 6.0\") != -1) \n");
-      out.write("                            OSName=\"Windows Vista\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"Windows NT 5.1\") != -1) \n");
-      out.write("                            OSName=\"Windows XP\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"Windows NT 5.0\") != -1) \n");
-      out.write("                            OSName=\"Windows 2000\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"Mac\")!= -1) \n");
-      out.write("                            OSName=\"Mac/iOS\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"X11\")!= -1) \n");
-      out.write("                            OSName=\"UNIX\";\n");
-      out.write("                        if (window.navigator.userAgent.indexOf(\"Linux\")!= -1) \n");
-      out.write("                            OSName=\"Linux\";\n");
-      out.write("\n");
       out.write("                    var browserRes_W = window.screen.availWidth;\n");
       out.write("                    var browserRes_H = window.screen.availHeight; \n");
-      out.write("                    //var screenRes = screen.width + \" X \" + screen.height; \n");
-      out.write("\n");
-      out.write("                    //showModalWindow('sysreq.jsp?browser_app='+browserApp+'&browser_ver='+browserVersion+'&os_name='+OSName+'&browser_res='+browserRes+'&screen_res='+screenRes, '50%', '30%');\n");
       out.write("                    \n");
       out.write("                    if (browserApp !== \"Internet Explorer\" || (browserRes_W < 1920 || browserRes_H < 1080)) {\n");
-      out.write("                        showModalWindow('sysreq.jsp?browser_app='+ browserApp + '&browser_res_w=' + browserRes_W + '&browser_res_h=' + browserRes_H, '50%', '30%');\n");
+      out.write("                        var mesg = 'sysreq.jsp?browser_app='+ browserApp + '&browser_res_w=' + browserRes_W + '&browser_res_h=' + browserRes_H;\n");
+      out.write("                        showModalWindow(mesg, '50%', '30%');\n");
       out.write("                    }\n");
       out.write("                }\n");
       out.write("    \n");

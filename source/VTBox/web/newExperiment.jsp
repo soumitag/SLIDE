@@ -85,7 +85,7 @@ try {
     String url = request.getRequestURL().toString();
     String base_url = url.substring(0, url.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
     session.setAttribute("base_url", base_url);
-        
+    
     String ua = request.getHeader( "User-Agent" );
     boolean isChrome = false;
     isChrome = ( ua != null && ua.indexOf( "Chrome" ) != -1 );

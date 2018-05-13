@@ -79,7 +79,7 @@ try {
     double image_height = 760.0;
     double feature_height = 20;
     int num_features = (int)(image_height/feature_height);
-    num_features = Math.min(num_features, analysis.database.features.size());
+    num_features = Math.min(num_features, analysis.database.metadata.nFeatures);
     
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
 
@@ -220,7 +220,7 @@ try {
       out.write("&start=\" + start + \"&rand=\" + Math.random();\n");
       out.write("                var search_url = \"detailedSearchResultDisplayerScrollView.jsp?analysis_name=");
       out.print(analysis_name);
-      out.write("&start=\" + start + \"&rand=\" + Math.random();\n");
+      out.write("&start=\" + start + \"&rand=\" + Math.random() + \"&type=scroll\";\n");
       out.write("                document.getElementById('featureLabelsPanel').contentWindow.location.replace(labels_url);\n");
       out.write("                document.getElementById('detailSearchPanel').contentWindow.location.replace(search_url);\n");
       out.write("                makeGetRequest (start, end);\n");
@@ -240,9 +240,7 @@ try {
       out.write("            function refreshSearchPane() {\n");
       out.write("                document.getElementById('detailSearchPanel').width = parseFloat(document.getElementById('detailSearchPanel').width) + 32;\n");
       out.write("                document.getElementById('detailSearchHeaderPanel').width = parseFloat(document.getElementById('detailSearchHeaderPanel').width) + 32;\n");
-      out.write("                var url_text = \"detailedSearchResultDisplayerScrollView.jsp?start=");
-      out.print(start);
-      out.write("&analysis_name=");
+      out.write("                var url_text = \"detailedSearchResultDisplayerScrollView.jsp?type=search&analysis_name=");
       out.print(analysis_name);
       out.write("\";\n");
       out.write("                //alert(document.getElementById('detailSearchPanel').width);\n");

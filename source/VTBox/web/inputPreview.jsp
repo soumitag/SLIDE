@@ -4,10 +4,13 @@
     Author     : soumitag
 --%>
 
+<%@page import="utils.FileHandler"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="utils.SessionManager"%>
 <%@page import="utils.ReadConfig"%>
-<%@page contentType="text/html" pageEncoding="UTF-8" import="java.util.ArrayList, utils.Utils, java.io.File;" %>
+<%@page import="utils.Utils"%>
+<%@page import="java.io.File"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%
         
@@ -42,11 +45,14 @@ try {
         
         String filename_in = request.getParameter("file");
         String analysis_name = request.getParameter("analysis_name"); 
+        String type = request.getParameter("upload_type"); 
         
         //String tempFolder = pageContext.getServletContext().getRealPath("") + File.separator + "temp" + File.separator + request.getSession().getId();
         String installPath = SessionManager.getInstallPath(application.getResourceAsStream("/WEB-INF/slide-web-config.txt"));
         String tempFolder = installPath + File.separator + "temp" + File.separator + request.getSession().getId();
-        String filename = tempFolder + File.separator + analysis_name + "_" + filename_in;
+        
+        String filename =   tempFolder + File.separator + analysis_name + "_" + type + "_" + filename_in;
+        //String filename = tempFolder + File.separator + analysis_name + "_" + filename_in;
         
         String headerchk = request.getParameter("head");
         boolean hasHeader = true;
@@ -57,24 +63,13 @@ try {
         }
       
         String delimval = request.getParameter("delim");
-        String fileDelimiter = "";
-        if(delimval.equals("commaS")){
-            fileDelimiter = ",";
-        } else if (delimval.equals("tabS")) {
-            fileDelimiter = "\t";
-        } else if (delimval.equals("spaceS")){
-            fileDelimiter = " ";
-        } else if (delimval.equals("semiS")) {
-            fileDelimiter = ";";
-        } else if (delimval.equals("hyphenS")) {
-            fileDelimiter = "-";
-        }
-        
+        String fileDelimiter = Utils.getDelimiter(delimval);
+                
     %>
     
     <%
         String[] colheaders = null;
-        String[][] data = Utils.loadDelimData(filename, fileDelimiter, false, 12);
+        String[][] data = FileHandler.loadDelimData(filename, fileDelimiter, false, 12);
         int start_row = 0;
         if (hasHeader) {
             colheaders = data[0];

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import structure.AnalysisContainer;
 import structure.Data;
 import structure.DataMask;
+import utils.FileHandler;
 import utils.Utils;
 import vtbase.SlideException;
 
@@ -92,7 +93,7 @@ public class HierarchicalClusterer implements Serializable {
             String linkage_tree_fname = DATA_FILES_PATH + File.separator + "ClusteringOutput_" + filetag + ".txt";
             double[][] linkage_tree = null;
             try {
-                linkage_tree = Utils.loadDoubleDelimData(linkage_tree_fname, " ", false);
+                linkage_tree = FileHandler.loadDoubleDelimData(linkage_tree_fname, " ", false);
             } catch (Exception e) {
                 throw new SlideException("Cannot read linkage file " + linkage_tree_fname, 55);
             }
@@ -220,7 +221,7 @@ public class HierarchicalClusterer implements Serializable {
             }
             */
             try {
-                linkage_tree = Utils.loadDoubleDelimData(linkage_tree_fname, " ", false);
+                linkage_tree = FileHandler.loadDoubleDelimData(linkage_tree_fname, " ", false);
             } catch (Exception e) {
                 throw new SlideException("Cannot read linkage file " + linkage_tree_fname, 55);
             }

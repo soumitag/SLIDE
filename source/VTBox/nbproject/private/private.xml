@@ -3,19 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/11_Nov_2017/VTBox/web/scrollView.jsp</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/detailedHeatMap.jsp</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/visualizationHome.jsp</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/Exception.jsp</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/hierarchicalClusteringFeedback.jsp</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/params.js</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/drillDownPanel.jsp</file>
-            <file>file:/C:/11_Nov_2017/VTBox/src/java/vtbox/SessionUtils.java</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/createFeatureList.jsp</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/selectionPanel.jsp</file>
-            <file>file:/C:/11_Nov_2017/VTBox/src/java/vtbox/servlets/AnalysisReInitializer.java</file>
-            <file>file:/C:/11_Nov_2017/VTBox/src/java/vtbox/servlets/HeatmapDendrogramGenerator.java</file>
-            <file>file:/C:/11_Nov_2017/VTBox/web/createEnrichmentAnalysis.jsp</file>
+            <file>file:/E:/SOUMITA/7_Apr_2018_wDemo_Post_Review/VTBox/web/drillDownPanel.jsp</file>
+            <file>file:/E:/SOUMITA/7_Apr_2018_wDemo_Post_Review/VTBox/web/detailedSearchResultDisplayerScrollView.jsp</file>
+            <file>file:/E:/SOUMITA/7_Apr_2018_wDemo_Post_Review/VTBox/web/getHeatmapData.jsp</file>
+            <file>file:/E:/SOUMITA/7_Apr_2018_wDemo_Post_Review/VTBox/web/saveSVGs.jsp</file>
         </group>
     </open-files>
 </project-private>

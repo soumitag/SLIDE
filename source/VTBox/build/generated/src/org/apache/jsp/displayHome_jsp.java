@@ -53,6 +53,7 @@ public final class displayHome_jsp extends org.apache.jasper.runtime.HttpJspBase
     
 try {
     String analysis_name = request.getParameter("analysis_name");
+    String isDemo = request.getParameter("isDemo");
     String load_type = request.getParameter("load_type");
     if (load_type != null && (load_type.equalsIgnoreCase("reopen") || load_type.equalsIgnoreCase("file"))) {
         AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
@@ -90,6 +91,8 @@ try {
       out.print(analysis_name);
       out.write("&load_type=");
       out.print(load_type);
+      out.write("&isDemo=");
+      out.print(isDemo);
       out.write("\" marginwidth=\"0\" height=\"100%\" width=\"300\" frameBorder=\"0\" style=\"display: inline; position: relative; top: 0px; left: 0px\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                <td height=\"100%\" width=\"100%\">\n");

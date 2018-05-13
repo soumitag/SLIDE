@@ -71,7 +71,7 @@ try {
 
     Data db = analysis.database;
     
-    int num_features = db.features.size();
+    int num_features = db.metadata.nFeatures;
     
     String start_str = request.getParameter("start");
     String end_str = request.getParameter("end");
@@ -451,7 +451,12 @@ try {
       out.write(" </div>\n");
       out.write("                ");
                     
-                            } else if (search_strings.get(i).startsWith("genesymbol")) {
+                            } else if (search_strings.get(i).startsWith("genesymbol") || 
+                                        search_strings.get(i).startsWith("refseq") ||
+                                        search_strings.get(i).startsWith("ensembl_gene_id") ||
+                                        search_strings.get(i).startsWith("ensembl_transcript_id") ||
+                                        search_strings.get(i).startsWith("ensembl_protein_id") ||
+                                        search_strings.get(i).startsWith("uniprot_id")) {
                 
       out.write("\n");
       out.write("                                <div class='e' id='");

@@ -70,7 +70,7 @@ try {
     
     HashMap <String, ArrayList <Integer>> entrezPosMap = analysis.entrezPosMap;
     
-    double num_features = db.features.size();
+    double num_features = db.metadata.nFeatures;
     
     String start_str = request.getParameter("start");
     String end_str = request.getParameter("end");

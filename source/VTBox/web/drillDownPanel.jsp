@@ -22,7 +22,7 @@ try {
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
     
     Data db = analysis.database;
-    int num_features = db.features.size();
+    int num_features = db.metadata.nFeatures;
     
     String start_node_id = request.getParameter("start_node_id");
     String showDendrogram = request.getParameter("show_dendrogram");

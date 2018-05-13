@@ -35,11 +35,17 @@ public class Searcher {
     private MongoClient mongoClient;
     private DB db;
     //private DBCollection geneMap;
+    private DBCollection entrezMap;
     private DBCollection aliasEntrezMap;
     private DBCollection entrezAliasMap;
     private DBCollection geneMap2;
     private DBCollection goMap2;
     private DBCollection pathwayMap;
+    private DBCollection refseqMap;
+    private DBCollection ensemblGeneMap;
+    private DBCollection ensemblTranscriptMap;
+    private DBCollection ensemblProteinMap;
+    private DBCollection uniprotMap;
     private String species;
     public boolean isConnected;
     
@@ -57,22 +63,34 @@ public class Searcher {
             // Connect to databases
                 db = mongoClient.getDB("geneVocab_HomoSapiens"); 
                 
+                entrezMap = db.getCollection("HS_EntrezMap");
                 aliasEntrezMap = db.getCollection("HS_aliasEntrezMap");
                 entrezAliasMap = db.getCollection("HS_entrezAliasMap");
                 geneMap2 = db.getCollection("HS_geneMap2");
                 goMap2 = db.getCollection("HS_goMap2");
                 pathwayMap = db.getCollection("HS_pathwayMap");
+                refseqMap = db.getCollection("HS_refseqEntrezMap");
+                ensemblGeneMap = db.getCollection("HS_ensemblEntrezMap");
+                ensemblTranscriptMap = db.getCollection("HS_ensembltranscriptEntrezMap");
+                ensemblProteinMap = db.getCollection("HS_ensemblprotEntrezMap");
+                uniprotMap = db.getCollection("HS_uniprotEntrezMap");
                                 
                 isConnected = true;
                 
             } else if (species.equals("mouse")){    // mouse 
                 db = mongoClient.getDB("geneVocab_MusMusculus");
                 
+                entrezMap = db.getCollection("MM_EntrezMap");
                 aliasEntrezMap = db.getCollection("MM_aliasEntrezMap");
                 entrezAliasMap = db.getCollection("MM_entrezAliasMap");
                 geneMap2 = db.getCollection("MM_geneMap2");
                 goMap2 = db.getCollection("MM_goMap2");
                 pathwayMap = db.getCollection("MM_pathwayMap");
+                refseqMap = db.getCollection("MM_refseqEntrezMap");
+                ensemblGeneMap = db.getCollection("MM_ensemblEntrezMap");
+                ensemblTranscriptMap = db.getCollection("MM_ensembltranscriptEntrezMap");
+                ensemblProteinMap = db.getCollection("MM_ensemblprotEntrezMap");
+                uniprotMap = db.getCollection("MM_uniprotEntrezMap");
                 
                 isConnected = true;
             }
@@ -174,7 +192,7 @@ public class Searcher {
                     }
                     aliases_str += (String) aliases.get(aliases.size()- 1).get("alias");
                     //gene_symbols.add(aliases_str); 
-                    gene_info.setGeneSymbol(aliases_str);
+                    gene_info.setGeneIdentifier(aliases_str, GeneObject.ENTREZ);
                     //entrez_ids.add((String)match.get("_id"));
                     genes_info.add(gene_info);
                 }
@@ -190,13 +208,83 @@ public class Searcher {
                         //gene_symbols.add((String)match.get("_id")); 
                         //entrez_ids.add((String)match.get("entrez")); 
                         GeneObject gene_info = new GeneObject();
-                        gene_info.setGeneSymbol((String)match.get("_id")); 
+                        gene_info.setGeneIdentifier((String)match.get("_id"), GeneObject.GENESYMBOL); 
                         gene_info.setEntrezID((String)entrezs.get(i).get("entrez"));
                         genes_info.add(gene_info);
                     }
                 }
+            } else if (queryType.equals("refseq")) {
+                cursor = refseqMap.find(query);
+                while (cursor.hasNext()) {
+                    DBObject match = (DBObject)cursor.next();
+                    List <BasicDBObject> entrezs = (List <BasicDBObject>) match.get("entrezs");  
+                    
+                    for(int i = 0; i < entrezs.size(); i++ ){                        
+                        GeneObject gene_info = new GeneObject();
+                        gene_info.setGeneIdentifier((String)match.get("_id"), GeneObject.REFSEQ_ID); 
+                        gene_info.setEntrezID((String)entrezs.get(i).get("entrez"));
+                        genes_info.add(gene_info);
+                    }
+                    
+                }
+            } else if (queryType.equals("ensembl_gene_id")) {
+                cursor = ensemblGeneMap.find(query);
+                 while (cursor.hasNext()) {
+                    DBObject match = (DBObject)cursor.next();
+                    List <BasicDBObject> entrezs = (List <BasicDBObject>) match.get("entrezs");  
+                    
+                    for(int i = 0; i < entrezs.size(); i++ ){                        
+                        GeneObject gene_info = new GeneObject();
+                        gene_info.setGeneIdentifier((String)match.get("_id"), GeneObject.ENSEMBL_GENE_ID); 
+                        gene_info.setEntrezID((String)entrezs.get(i).get("entrez"));
+                        genes_info.add(gene_info);
+                    }
+                    
+                }
+            } else if (queryType.equals("ensembl_transcript_id")) {
+                cursor = ensemblTranscriptMap.find(query);
+                 while (cursor.hasNext()) {
+                    DBObject match = (DBObject)cursor.next();
+                    List <BasicDBObject> entrezs = (List <BasicDBObject>) match.get("entrezs");  
+                    
+                    for(int i = 0; i < entrezs.size(); i++ ){                        
+                        GeneObject gene_info = new GeneObject();
+                        gene_info.setGeneIdentifier((String)match.get("_id"), GeneObject.ENSEMBL_TRANSCRIPT_ID); 
+                        gene_info.setEntrezID((String)entrezs.get(i).get("entrez"));
+                        genes_info.add(gene_info);
+                    }
+                    
+                }
+            } else if (queryType.equals("ensembl_protein_id")) {
+                cursor = ensemblProteinMap.find(query);
+                 while (cursor.hasNext()) {
+                    DBObject match = (DBObject)cursor.next();
+                    List <BasicDBObject> entrezs = (List <BasicDBObject>) match.get("entrezs");  
+                    
+                    for(int i = 0; i < entrezs.size(); i++ ){                        
+                        GeneObject gene_info = new GeneObject();
+                        gene_info.setGeneIdentifier((String)match.get("_id"), GeneObject.ENSEMBL_PROTEIN_ID); 
+                        gene_info.setEntrezID((String)entrezs.get(i).get("entrez"));
+                        genes_info.add(gene_info);
+                    }
+                    
+                }
+            } else if (queryType.equals("uniprot_id")) {
+                cursor = uniprotMap.find(query);
+                while (cursor.hasNext()) {
+                    DBObject match = (DBObject)cursor.next();
+                    List <BasicDBObject> entrezs = (List <BasicDBObject>) match.get("entrezs");  
+                    
+                    for(int i = 0; i < entrezs.size(); i++ ){                        
+                        GeneObject gene_info = new GeneObject();
+                        gene_info.setGeneIdentifier((String)match.get("_id"), GeneObject.UNIPROT_ID); 
+                        gene_info.setEntrezID((String)entrezs.get(i).get("entrez"));
+                        genes_info.add(gene_info);
+                    }
+                    
+                }
             }
-                             
+            
             
         }catch(Exception e){
             System.out.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -448,5 +536,130 @@ public class Searcher {
             System.out.println( e.getClass().getName() + ": " + e.getMessage() );
         }
         return pathinfo;
+    }
+    
+    public ArrayList <ArrayList <String>> getAllIdentifiersFromDB (String entrezid) {
+        
+        ArrayList <ArrayList <String>> db_values = new ArrayList <ArrayList <String>> ();
+        DBCursor cursor = null;
+        
+        try {
+            BasicDBObject query = null; 
+            query = new BasicDBObject("_id", entrezid.trim().toLowerCase());
+            cursor = entrezMap.find(query);
+            
+            while(cursor.hasNext()){
+                
+                String[] DBObjectNames = {"aliases", "refseqs", "ensembl_genes", "ensembl_transcripts", "ensembl_proteins", "uniprots"};
+                String[] DBElementNames = {"alias", "refseq", "ensembl_gene", "ensembl_transcript", "ensembl_protein", "uniprot"};
+                
+                if(cursor.hasNext()){
+                    
+                    DBObject match = (DBObject)cursor.next();
+                    
+                    for (int t=0; t<DBObjectNames.length; t++) {
+                        List <BasicDBObject> aliases = (List <BasicDBObject>) match.get(DBObjectNames[t]);
+                        ArrayList <String> temp = new ArrayList <> ();
+                        for(int j = 0; j < aliases.size(); j++){
+                            temp.add((String)aliases.get(j).get(DBElementNames[t]));
+                        }
+                        db_values.add(temp);
+                    }
+                    
+                }
+                
+            }
+        } catch(Exception e){
+            System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+        }
+        
+        return db_values;        
+    }
+    
+    public ArrayList <String> getIdentifiersFromDB (String entrezid, int identifier_type) {
+        
+        ArrayList <String> db_values = new ArrayList <> ();
+        DBCursor cursor = null;
+        
+        try {
+            BasicDBObject query = null; 
+            query = new BasicDBObject("_id", entrezid.trim().toLowerCase());
+            cursor = entrezMap.find(query);
+
+            String[] DBObjectNames = {"aliases", "refseqs", "ensembl_genes", "ensembl_transcripts", "ensembl_proteins", "uniprots"};
+            String[] DBElementNames = {"alias", "refseq", "ensembl_gene", "ensembl_transcript", "ensembl_protein", "uniprot"};
+
+            if (cursor.hasNext()) {
+
+                DBObject match = (DBObject) cursor.next();
+
+                List<BasicDBObject> aliases = (List<BasicDBObject>) match.get(DBObjectNames[identifier_type-1]);
+                for (int j = 0; j < aliases.size(); j++) {
+                    db_values.add((String) aliases.get(j).get(DBElementNames[identifier_type-1]));
+                }
+            }
+
+        } catch(Exception e){
+            System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+        }
+        
+        return db_values;        
+    }
+    
+    public ArrayList <String> getEntrezFromDB (String identifier, int identifier_type) {
+        
+        ArrayList <String> db_entrezs = new ArrayList <> ();
+        DBCursor cursor = null;
+        
+        String fieldname = "entrezs";
+
+        try {
+            
+            BasicDBObject query = null; 
+            query = new BasicDBObject("_id", identifier.trim().toLowerCase());
+            
+            switch (identifier_type) {
+                case GeneObject.ENTREZ:
+                    db_entrezs.add(identifier);
+                    return db_entrezs;
+                case GeneObject.GENESYMBOL:
+                    //cursor = geneMap2.find(query);
+                    cursor = aliasEntrezMap.find(query);
+                    fieldname = "entrez_ids";
+                    break;
+                case GeneObject.REFSEQ_ID:
+                    cursor = refseqMap.find(query);
+                    break;
+                case GeneObject.ENSEMBL_GENE_ID:
+                    cursor = ensemblGeneMap.find(query);
+                    break;
+                case GeneObject.ENSEMBL_PROTEIN_ID:
+                    cursor = ensemblProteinMap.find(query);
+                    break;
+                case GeneObject.ENSEMBL_TRANSCRIPT_ID:
+                    cursor = ensemblTranscriptMap.find(query);
+                    break;
+                case GeneObject.UNIPROT_ID:
+                    cursor = uniprotMap.find(query);
+                    break;
+                default:
+                    break;
+            }
+            
+            if (!(cursor == null) && cursor.hasNext()) {
+
+                DBObject match = (DBObject) cursor.next();
+
+                List<BasicDBObject> aliases = (List<BasicDBObject>) match.get(fieldname);
+                for (int j = 0; j < aliases.size(); j++) {
+                    db_entrezs.add((String) aliases.get(j).get("entrez"));
+                }
+            }
+            
+        } catch(Exception e){
+            System.out.println( e.getClass().getName() + ": " + e.getMessage() );
+        }
+        
+        return db_entrezs;
     }
 }

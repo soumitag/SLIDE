@@ -1,0 +1,357 @@
+<%-- 
+    Document   : index
+    Created on : 6 Jan, 2017, 10:50:29 AM
+    Author     : soumitag
+--%>
+
+<%@page import="vtbox.SessionUtils"%>
+<%@page import="utils.SessionManager"%>
+<%@page import="utils.ReadConfig"%>
+<%@page import="java.io.File"%>
+<%@page import="structure.AnalysisContainer"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%
+try {
+%>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>SLIDE</title>
+<script type = "text/javascript" language = "JavaScript" src="userInput.js"></script>
+
+    <link rel="stylesheet" href="vtbox-main.css">
+    <link rel="stylesheet" href="vtbox-tables.css">
+
+<script>
+    
+    function uploadCompletion (status, data_filename, mapping_filename) {
+        
+        document.getElementById('data_upload_btn').innerHTML = 'Upload';
+        document.getElementById("data_upload_btn").disabled = false;
+        alert("Data File " + data_filename + " and Sample Mapping File " + mapping_filename + " has been uploaded.");
+        if (status == "") {
+            // if upload succeded display rest of the input interface
+            document.getElementById('input_table').style.display = 'inline';
+            document.getElementById("fileinputname").value = data_filename;
+            document.getElementById("mapfilename").value = mapping_filename;
+            // reset all remaining fields
+            //document.getElementById('fileInputForm').reset();
+            //$('#upload_form')[0].reset();
+        } else {
+            // if upload failed display upload status message
+            document.getElementById('notice_board').style.display = 'inline';
+            document.getElementById('notice_board').innerHTML = status;
+        }
+
+    }
+
+
+    function createNewExp_1(){
+    //document.fileInputForm.setAttribute("action","init.jsp");
+    //var x = checkselectoptions();
+    //alert(x);
+    //if(x === 1) {
+        document.getElementById('EnterNewExperiment').innerHTML = 'Creating...';
+        document.getElementById("EnterNewExperiment").disabled = true;
+        document.fileInputFormDemo.setAttribute("action","AnalysisInitializer");
+        document.fileInputFormDemo.submit();
+    //}
+}
+</script>
+
+</head>
+
+<% 
+    
+    String msg = request.getParameter("msg");
+    String analysis_name = request.getParameter("txtnewexperiment");
+
+    // get isntallation directory
+    String installPath = SessionManager.getInstallPath(application.getResourceAsStream("/WEB-INF/slide-web-config.txt"));
+    
+    // get the current session's id
+    String session_id = "";
+    
+    // check if a session already exists 
+    if (request.getSession(false) == null) {
+        // if not, create new session
+        session = request.getSession(true);
+        session_id = session.getId();
+    } else {
+        // if it does, check if an analysis of same name exists in the session
+        if (session.getAttribute(analysis_name) == null) {
+            // if not, create required temp folders for this analysis
+            session_id = session.getId();
+        } else {
+            // if it does, send back to previous page with error message
+            getServletContext().getRequestDispatcher("/index.jsp?status=analysis_exists&analysis_name=" + analysis_name).forward(request, response);
+            return;
+        }
+    }
+    
+    // create session directory
+    SessionManager.createSessionDir(installPath, session_id);
+    
+    // set base url
+    String url = request.getRequestURL().toString();
+    String base_url = url.substring(0, url.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
+    session.setAttribute("base_url", base_url);
+        
+    String ua = request.getHeader( "User-Agent" );
+    boolean isChrome = false;
+    isChrome = ( ua != null && ua.indexOf( "Chrome" ) != -1 );
+    System.out.println(isChrome);
+%>
+
+
+<body>
+    <label style="height: 40px;font-family: verdana;font-size: 20px;font-weight: normal;text-align: center;background-color: #ffff80;" >
+                    This is a demo of SLIDE's input interface with the inputs preset. Simply click 'Create' to explore the whole lung mouse transcriptome data.
+    </label>
+            <table cellpadding="5" style="width: 100%;" border="0">
+                
+                <tr>
+                    <td colspan="1" align="center"><h2>Demo Experiment Input</h2></td>
+                </tr>
+            <% if (msg != null) { %>
+                <tr>
+                    <td class="error_msg" colspan="2"  align="center">
+                        <%=msg%>
+                    </td>
+                </tr>
+            <% } %>
+            <form name="fileInputForm" method ="get" action="">
+            <tr>
+                <td>
+                    <b><label>Input Data File Name</label></b>
+            	</td>
+               
+                <td>
+                    <input type="text" id="selectmrnafilename" name="selectmrnafilename" size="70" value="GSE42638_quantiled_log_transformed.txt" disabled />    
+                    <iframe id="upload_target" name="upload_target" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>
+                    <div id="notice_board" name="notice_board" style="display:none"></div>
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    <b><label>Input Sample to Column Mapping File</label></b>
+            	</td>
+                
+                <td>
+                    <input type="text" id="selectmapfilename" name="selectmapfilename" size="70" value="GSE42638_SampleMappings.txt" disabled />
+                 &nbsp;&nbsp;
+                    <!--<button type="button" id="data_upload_btn" title="Upload Selected Datafile To Server" onclick="uploadData();">Upload</button>-->
+                </td>
+            </tr>
+            </table>
+            
+            <!--<form name="fileInputForm" method ="get" action="">-->
+            
+            <input type="hidden" name="fileinputname" id="fileinputname" />
+            <input type="hidden" name="newexperimentname" id="newexperimentname" value="<%=analysis_name%>" />
+            <input type="hidden" name="mapfilename" id="mapfilename" />
+            <table id="input_table" cellpadding="5" style="width: 100%; display: inline" border="0">
+
+            <tr>
+                <td>
+            	&nbsp;
+            	</td>
+
+                <td colspan="1">
+                    <input type="checkbox" id="headerflag" name="headerflag" checked="checked" disabled > The input file has headers included</input>
+                </td>
+            </tr>
+            <!--
+            <tr>
+                <td>
+                    <b><label>Specify k for k Nearest Neighbor based data imputation</label></b>
+            	</td>
+
+                <td colspan="1">
+                    <input type="text" id="txtKNN" name="txtKNN" size="3" /> 
+                </td>
+            </tr>
+            -->
+            <!--
+            <tr>
+                <td>
+            	&nbsp;
+            	</td>
+                          
+                <td colspan="1">
+                    <input type="checkbox" id="log2flag" name="log2flag"> Perform log base 2 transformation of the data</input>
+                </td>
+            </tr>
+            -->
+            <tr>
+                <td>
+                    <b><label>How Many Rows Should be Read from the File?</label></b>
+            	</td>
+                <td colspan="1">
+                    <input type="radio" name="rowLoading" value="1" checked="checked" disabled> All
+                    &nbsp; 
+                    <input type="radio" name="rowLoading" value="0" disabled> 
+                    From Row &nbsp; <input type="text" id="txtFromRow" name="txtFromRow" size="5" disabled />
+                    &nbsp; To &nbsp; <input type="text" id="txtToRow" name="txtToRow" size="5" disabled />
+                    &nbsp; (count 2nd Row as 1 if data has header)
+                </td>
+            </tr>
+             <tr>
+                <td> 
+                    <b><label>Data Imputation</label></b>                    
+                </td>
+                <td colspan="1">
+                    <select id="imputeD" name="imputeD" onchange="getimputevalue();" disabled>
+                        <option id="imputeHyphen" value="-1">-</option>
+                        <option id="imputeNone" value="0" selected>None</option>
+                        <option id="imputeRowMean" value="1" >Impute with row mean</option>
+                        <option id="imputeColMean" value="2" >Impute with column mean</option>
+                        <option id="imputeRowMedian" value="3" >Impute with row median</option>
+                        <option id="imputeColMedian" value="4">Impute with column median</option>
+                    </select>                  
+                <input type="hidden" name="imputeval" id="imputeval" />
+            </tr>
+            
+            <tr>
+                <td> 
+                    <b><label>File Delimiter</label></b>                    
+                </td>
+                <td colspan="1">
+                    <select id="delimS" name="delimS" onchange="getdelimitervalue();" disabled>
+                        <option id="hyphenS" value="hyphenS" >-</option>
+                        <option id="commaS" value="commaS" >Comma</option>
+                        <option id="tabS" value="tabS" selected>Tab</option>
+                        <option id="spaceS" value="spaceS" >Space</option>
+                        <option id="semiS" value="semiS">Semicolon</option>
+                    </select>
+                    <button type="button" class="dropbtn" id="Preview" title="File Preview" style="visibility: hidden" onclick="filePreview('<%=analysis_name%>');">Preview</button>
+                    <!--<input type="button" id="Preview" value="Preview" style="visibility: hidden" onClick="filePreview();"></input>--> 
+                </td>
+                <input type="hidden" name="delimval" id="delimval" />
+            </tr>
+            
+            <tr>
+                <td colspan="2">
+                    <iframe name="previewFrame" id="previewFrame" src="" style="display: hidden" height="0" width="0"> </iframe>
+                </td>
+            </tr>
+            
+            <tr>
+            	<td>
+                    <b><label>Enter the Species name</label></b>
+            	</td>
+                <td colspan="1">
+                    <select id="species" onchange="getspeciesname();" disabled>
+                        <option id="nospecies" value="nospecies" >-</option>
+                        <option id="human" value="human" selected>Homo sapiens</option>
+                    	<option id="mouse" value="mouse" >Mus musculus</option>
+                    </select>
+                </td>
+            <input type="hidden" name="species_name" id="species_name" disabled />
+            </tr>
+            
+            <tr>
+            	<td>
+                    <b><label>Enter the Non-numeric Features Column Numbers</label></b>
+            	</td>
+                <td colspan="1">
+                    <input type="text" name="txtNumMetaCols" id="txtNumMetaCols" value="1-3" onchange="chknumrange(this);" disabled />
+                    &nbsp; &nbsp; 
+                    (Specify range as 1-4 or specific columns as 1,3,4)
+                </td>
+            </tr>    
+            
+            <tr>
+            	<td>
+                    <b><label>Enter the Gene Symbol Column Numbers (if any)</label></b>
+            	</td>
+                <td colspan="1">
+                    <input type="text" name="txtGeneSymbolCol" id="txtGeneSymbolCol" value="2" onchange="chkisEmptyOrNumber(this);" disabled />
+                    &nbsp; &nbsp; 
+                    (The gene symbol column should be one of the meta-data columns specified above)
+                </td>
+                                
+            </tr>
+            
+            <tr>
+            	<td>
+                    <b><label>Enter the Entrez ID Column Numbers (if any)</label></b>
+            	</td>
+                <td colspan="1">
+                    <input type="text" name="txtEntrezCol" id="txtEntrezCol" value="3" onchange="chkisEmptyOrNumber(this);" disabled />
+                    &nbsp; &nbsp; 
+                    (The entrez id column should be one of the meta-data columns specified above)
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <b><label>Is this a Time Course Data?</label></b>
+            	</td>
+                <td colspan="1">
+                    <input type="radio" name="timeSeries" value="no" onclick="setTimeSeriesAs('no')" disabled> No
+                    &nbsp; 
+                    <input type="radio" name="timeSeries" value="yes" checked="checked" onclick="setTimeSeriesAs('yes')" disabled> Yes
+                </td>
+                <input type="hidden" name="isTimeSeries" id="isTimeSeries" value="no"/>
+            </tr>
+            
+                     
+           
+             
+            <tr>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+                
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <button type="button" class="dropbtn" id="EnterNewExperiment" title="Enter New Experiment" onclick="createNewExp_1()">Create</button>                    
+                </td>
+            </tr>
+            
+            </table>
+            
+    <p> &nbsp;</p>
+
+</form > 
+                    
+                    
+<form name="fileInputFormDemo" method ="get" action="">
+    <input type="hidden" name="newexperimentname" id="newexperimentname" value="demo" />           
+    <input type="hidden" name="fileinputname" id="fileinputname" value="GSE42638_quantiled_log_transformed.txt" />
+    <input type="hidden" name="mapfilename" id="mapfilename" value="GSE42638_SampleMappings.txt" />
+    <input type="hidden" name="headerflag" id="headerflag" value="on" />
+    <input type="hidden" name="imputeval" id="imputeval" value="0" />
+    <input type="hidden" name="delimval" id="delimval" value="tabS" />
+    <input type="hidden" name="species_name" id="species_name" value="mouse" />
+    <input type="hidden" name="txtNumMetaCols" id="txtNumMetaCols" value="1-3" />
+    <input type="hidden" name="txtGeneSymbolCol" id="txtGeneSymbolCol" value="2" />
+    <input type="hidden" name="txtEntrezCol" id="txtEntrezCol" value="3" />
+    <input type="hidden" name="isTimeSeries" id="isTimeSeries" value="yes" />
+    <input type="hidden" name="rowLoading" id="rowLoading" value="1" />
+    <input type="hidden" name="txtFromRow" id="txtFromRow" value="" />
+    <input type="hidden" name="txtToRow" id="txtToRow" value="" />
+    <input type="hidden" name="isDemo" id="isDemo" value="yes" />
+    <input type="hidden" name="fileinput_fullpath" id="fileinputname" value="D:\\data\\GSE42638_quantiled_log_transformed.txt" />
+    <input type="hidden" name="mapfile_fullpath" id="mapfilename" value="D:\\data\\GSE42638_SampleMappings.txt" />
+    
+    
+
+</form>                  
+
+  
+</body>
+
+</html>
+
+<%
+  
+} catch (Exception e) {
+
+    SessionUtils.logException(session, request, e);
+    getServletContext().getRequestDispatcher("/Exception.jsp").forward(request, response);
+    
+}
+
+%>

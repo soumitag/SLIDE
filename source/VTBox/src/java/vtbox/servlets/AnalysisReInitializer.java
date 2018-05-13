@@ -63,6 +63,7 @@ public class AnalysisReInitializer extends HttpServlet {
             String log2chk = null;
             String clippingType = "none";
             String binRangeType = "";
+            String identifierType = "";
 
             // enrichment parameters' not used for gene level visualizations
             double significance_level = 0.0;
@@ -79,6 +80,7 @@ public class AnalysisReInitializer extends HttpServlet {
                 log2chk = request.getParameter("log2flag");
                 clippingType = request.getParameter("clippingType");
                 binRangeType = request.getParameter("binningRange");
+                identifierType = request.getParameter("identifierType");
 
             } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
                     analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION)  {
@@ -168,7 +170,8 @@ public class AnalysisReInitializer extends HttpServlet {
                         groupBy,
                         clippingType, 
                         clip_min, 
-                        clip_max
+                        clip_max,
+                        identifierType
                 );
                 
             } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
@@ -249,6 +252,7 @@ public class AnalysisReInitializer extends HttpServlet {
             visualization_params.setBinRangeStart((float)rangeStart);
             visualization_params.setBinRangeEnd((float)rangeEnd);
             visualization_params.setHeatmapColorScheme(heatmap_color_scheme);
+            visualization_params.setRowLabelType(identifierType);
             
             analysis.setDataTransformationParams(data_transformation_params);
             analysis.setClusteringParams(clustering_params);
@@ -261,7 +265,8 @@ public class AnalysisReInitializer extends HttpServlet {
             analysis.setStateVariables(state_variables);
             */
             analysis.state_variables.setDetailedViewStart(0);
-            analysis.state_variables.setDetailedViewEnd(Math.min(37, analysis.database.features.size()-1));
+            //analysis.state_variables.setDetailedViewEnd(Math.min(37, analysis.database.features.size()-1));
+            analysis.state_variables.setDetailedViewEnd(Math.min(37, analysis.database.metadata.nFeatures));
             
             getServletContext().getRequestDispatcher("/visualizationHome.jsp?analysis_name=" + analysis_name).forward(request, response);
             

@@ -3,6 +3,8 @@
     Created on : 23 Apr, 2017, 1:35:27 PM
     Author     : Soumita
 --%>
+<%@page import="searcher.GeneObject"%>
+<%@page import="structure.MetaData"%>
 <%@page import="utils.Utils"%>
 <%@page import="graphics.HeatmapData"%>
 <%@page import="vtbox.SessionUtils"%>
@@ -203,16 +205,33 @@ try {
                 BinaryTree linkage_tree = analysis.linkage_tree;
 
                 for (int i=(int)start; i<=(int)end; i++) {
+                    
                     int index = linkage_tree.leaf_ordering.get(i);
-                    String entrez_i = database.features.get(index).entrezId;
-                    ArrayList <String> genesymbols = database.entrezGeneMap.get(entrez_i);
-                    String genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
-                    double mid = (feature_height*(i - start) + feature_height/2.0) + sample_name_height;
+                    /*
+                    String entrez_i = database.features.get(index).entrez;
+                    if (database.features.get(index).hasBadEntrez) {
+                        entrez_i = "-";
+                    }
+                    ArrayList <String> genesymbols = database.entrezIdentifierMap.get(entrez_i);
+                    String genes;
+                    if(analysis.database.identifier_name.equals("entrez_2021158607524066")) {
+                        genes = (genesymbols.get(0)).toUpperCase();
+                    } else {
+                        if (analysis.database.metadata.hasStandardMetaData()) {
+                            genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
+                        } else {
+                            genes = genesymbols.get(0).toUpperCase();
+                        }
+                    }
                     
                     if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
                         analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
                         genes = Utils.checkAndRemoveHtml(genes);
                     }
+                    */
+                    String genes = database.features.get(index).getFormattedFeatureName(analysis);
+                    
+                    double mid = (feature_height*(i - start) + feature_height/2.0) + sample_name_height;
             %>
                 
                     <text id="label_<%=i%>" x="<%=TABLE_WIDTH+search_result_width+10%>" y="<%=mid%>" font-family="Verdana" font-size="12" fill="black" style="display: inline;">

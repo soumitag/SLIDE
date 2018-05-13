@@ -88,9 +88,7 @@ try {
     }
     
     String searchKeysFrame_width = "250";
-    //if (search_results.size() > 0) {
-    //    searchKeysFrame_width = "250";
-    //}
+
 
       out.write("\n");
       out.write("<html>\n");
@@ -181,6 +179,17 @@ try {
       out.write("', '_blank');\n");
       out.write("        }\n");
       out.write("        \n");
+      out.write("        function giveManual() {\n");
+      out.write("            var win = window.open(\"https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Users_Manual.pdf\", '_blank');\n");
+      out.write("            win.focus();\n");
+      out.write("        }\n");
+      out.write("\n");
+      out.write("        function takeToIssues() {\n");
+      out.write("            var win = window.open(\"https://github.com/soumitag/SLIDE/issues\", '_blank');\n");
+      out.write("            win.focus();\n");
+      out.write("        }\n");
+      out.write("    \n");
+      out.write("        \n");
       out.write("    </script>\n");
       out.write("    <head>\n");
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
@@ -267,19 +276,23 @@ try {
       out.write("\n");
       out.write("                    <table width=\"100%\">\n");
       out.write("                        <tr>\n");
-      out.write("                            <td width=\"500\" valign=\"top\" style=\"min-height: 40px;\">\n");
+      out.write("                            <td width=\"545\" valign=\"top\" style=\"min-height: 40px;\">\n");
       out.write("                                <iframe name=\"searchFrame\" id=\"searchFrame\" src=\"searcher.jsp?analysis_name=");
       out.print(analysis_name);
-      out.write("\" marginwidth=\"0\" height=\"29\" width=\"500\" frameBorder=\"0\" style=\"min-height: 35px;\"></iframe>\n");
+      out.write("\" marginwidth=\"0\" height=\"29\" width=\"545\" frameBorder=\"0\" style=\"min-height: 35px;\"></iframe>\n");
       out.write("                            </td>\n");
       out.write("                            \n");
       out.write("                            <td>\n");
       out.write("                                &nbsp;\n");
-      out.write("                                <button name=\"spHandle\" class=\"dropbtn\" id=\"spHandle\" onclick=\"toggleSelectionPanel()\"> Hide Control Panel </button> &nbsp;\n");
-      out.write("                                <button name=\"saveAnalysis\" class=\"dropbtn\" id=\"saveAnalysis\" onclick=\"saveAnalysis()\"> Save Analysis </button> &nbsp;\n");
-      out.write("                                <button name=\"saveViz\" class=\"dropbtn\" id=\"saveViz\" onclick=\"showModalWindow('saveSVGs.jsp?analysis_name=");
+      out.write("                                <div class=\"dropdown\">\n");
+      out.write("                                    <button name=\"saver\" class=\"dropbtn\" id=\"saver\"> Save </button> &nbsp;\n");
+      out.write("                                    <div class=\"dropdown-content\">\n");
+      out.write("                                        <a onclick=\"saveAnalysis()\" href=\"#\"> Save Analysis </a>\n");
+      out.write("                                        <a onclick=\"showModalWindow('saveSVGs.jsp?analysis_name=");
       out.print(analysis_name);
-      out.write("', '60%', '450px')\">Save Visualizations</button> &nbsp;\n");
+      out.write("', '60%', '450px')\" href=\"#\"> Save Visualizations </a>\n");
+      out.write("                                    </div>\n");
+      out.write("                                </div>\n");
       out.write("                                <div class=\"dropdown\">\n");
       out.write("                                    <button name=\"featureList\" class=\"dropbtn\" id=\"createList\"> Feature List </button> &nbsp;\n");
       out.write("                                    <div class=\"dropdown-content\">\n");
@@ -314,8 +327,16 @@ try {
       out.write("                                ");
   }   
       out.write("\n");
+      out.write("                                <button name=\"histHandle\" class=\"dropbtn\" id=\"histHandle\" onclick=\"toggleHistogramPanel()\"> Hide Histogram </button> &nbsp;\n");
+      out.write("                                <button name=\"spHandle\" class=\"dropbtn\" id=\"spHandle\" onclick=\"toggleSelectionPanel()\"> Hide Control Panel </button> &nbsp;\n");
       out.write("                                <button name=\"openHome\" class=\"dropbtn\" id=\"openHome\" onclick=\"openHome()\"> Home </button> &nbsp;\n");
-      out.write("                                <button name=\"histHandle\" class=\"dropbtn\" id=\"histHandle\" onclick=\"toggleHistogramPanel()\"> Hide Histogram </button>\n");
+      out.write("                                <div class=\"dropdown\">\n");
+      out.write("                                    <button id=\"man_create_analysis\" class=\"dropbtn\">Help</button>\n");
+      out.write("                                    <div class=\"dropdown-content\">\n");
+      out.write("                                        <a onclick=\"giveManual();\" href=\"#\" title=\"Download detailed instructions for using SLIDE.\"> Download User Manual </a>\n");
+      out.write("                                        <a onclick=\"takeToIssues()\" href=\"#\"> Report An Issue </a>\n");
+      out.write("                                    </div>\n");
+      out.write("                                </div>\n");
       out.write("                            </td>\n");
       out.write("                            \n");
       out.write("                        </tr>\n");

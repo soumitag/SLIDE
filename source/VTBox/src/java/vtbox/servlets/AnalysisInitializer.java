@@ -24,10 +24,11 @@ import structure.Data;
 import structure.AnalysisContainer;
 import structure.CompactSearchResultContainer;
 import searcher.Searcher;
-import utils.Utils;
+import utils.FileHandler;
 import utils.Logger;
 import utils.ReadConfig;
 import utils.SessionManager;
+import utils.Utils;
 import vtbase.DataParsingException;
 import vtbox.SessionUtils;
 
@@ -72,26 +73,35 @@ public class AnalysisInitializer extends HttpServlet {
             String filename_in = request.getParameter("fileinputname");
             String sample_series_mapping_filename_in = request.getParameter("mapfilename");
             
-            String[] fnames = SessionManager.moveInputFilesToAnalysisDir(installPath, 
+            String isDemo = request.getParameter("isDemo");
+            String[] fnames = null;
+            if(isDemo != null && isDemo.equalsIgnoreCase("yes")){
+                
+                String full_filepath = request.getParameter("fileinput_fullpath");
+                String full_samplepath = request.getParameter("mapfile_fullpath");
+                
+                fnames = SessionManager.moveInputFilesToAnalysisDir_Demo(installPath, 
+                    request.getSession().getId(), 
+                    analysis.analysis_name, filename_in, 
+                    sample_series_mapping_filename_in,
+                    full_filepath, full_samplepath);
+                
+            } else {
+            
+                fnames = SessionManager.moveInputFilesToAnalysisDir(installPath, 
                     request.getSession().getId(), 
                     analysis.analysis_name, filename_in, sample_series_mapping_filename_in);
+            }
             
             String filename = fnames[0];
             String sample_series_mapping_filename = fnames[1];
-
-            String headerchk = request.getParameter("headerflag");
-            String log2chk = request.getParameter("log2flag");
-        
-            boolean hasHeader = false;
-            if(headerchk == null || !headerchk.equals("on")){
-                hasHeader = false;
-            } else {
-                hasHeader = true;
-            }
             
             int impute_type = Integer.parseInt(request.getParameter("imputeval"));
-            String delimval = request.getParameter("delimval");
+            
+            String delimiter = Utils.getDelimiter(request.getParameter("delimval"));
+            String sample_series_mapping_delimiter = Utils.getDelimiter(request.getParameter("mapdelimval"));
 
+            /*
             String delimiter = null;
             if(delimval.equals("commaS")){
                 delimiter = ",";
@@ -104,58 +114,66 @@ public class AnalysisInitializer extends HttpServlet {
             } else if (delimval.equals("hyphenS")) {
                 delimiter = "-";
             }
+            */
 
             String species = request.getParameter("species_name");
 
-            String metacols = request.getParameter("txtNumMetaCols");
-            ArrayList <Integer> metaColIds = Utils.getColIdFrmString(metacols);
+            String[] col_names = request.getParameter("col_names").split(",");
+            HashMap <String, Integer> col_map = new HashMap <> ();
+            for (int i=0; i<col_names.length; i++) {
+                col_map.put(col_names[i], i);
+            }
+            
+            String temp = request.getParameter("identifier_mappings");
+            HashMap <String, Integer> metacol_identifier_mappings = new HashMap <> ();
+            String[] identifier_mappings = new String[0];
+            if (temp != null && !temp.equals("")) {
+                identifier_mappings = temp.split(",");
+                for (int i=0; i<identifier_mappings.length; i+=2) {
+                    metacol_identifier_mappings.put(identifier_mappings[i+1], col_map.get(identifier_mappings[i]));
+                }
+            }
+            
+            temp = request.getParameter("metacolnames");
+            HashMap <String, Integer> unmapped_metacols = new HashMap <> ();
+            String[] metacolnames = new String[0];
+            if (temp != null && !temp.equals("")) {
+                metacolnames = temp.split(",");
+                for (int i=0; i<metacolnames.length; i++) {
+                    int index = -1;
+                    for (int j=0; j<identifier_mappings.length; j+=2) {
+                        if (identifier_mappings[j].equals(metacolnames[i])) {
+                            index = j;
+                        }
+                    }
+                    if (index == -1) {
+                        unmapped_metacols.put(metacolnames[i], col_map.get(metacolnames[i]));
+                    }
+                }
+            }
 
-            int genesymbolcol = -1;
-            String txtGeneSymbolCol = request.getParameter("txtGeneSymbolCol");
-            if (txtGeneSymbolCol != null && !txtGeneSymbolCol.equals("")) {
-                try {
-                    genesymbolcol = Integer.parseInt(txtGeneSymbolCol) - 1;
-                    if (genesymbolcol < 0) {
-                        genesymbolcol = -1;
-                    }
-                } catch (Exception e) {
-                    genesymbolcol = -1;
-                }
-            }
-            
-            int entrezcol = -1;
-            String txtEntrezCol = request.getParameter("txtEntrezCol");
-            if (txtEntrezCol != null && !txtEntrezCol.equals("")) {
-                try {
-                    entrezcol = Integer.parseInt(txtEntrezCol) - 1;
-                    if (entrezcol < 0) {
-                        entrezcol = -1;
-                    }
-                } catch (Exception e) {
-                    entrezcol = -1;
-                }
-            }
-            
             // the height in data_height_width includes header rows if any
-            int[] data_height_width = Utils.getFileDimensions(filename, delimiter);
+            int[] data_height_width = FileHandler.getFileDimensions(filename, delimiter);
             
             String istimeSeriesStr = request.getParameter("isTimeSeries");
-            boolean isTimeSeries = false;
-            if(istimeSeriesStr.equals("yes")){
-                isTimeSeries = true;
-            } else {
-                isTimeSeries = false;
-            }
+            boolean isTimeSeries;
+            isTimeSeries = istimeSeriesStr.equals("yes");
             
-            boolean logTransformData = false;
-            if(log2chk == null || !log2chk.equals("on")){
-                logTransformData = false;
-            } else {
-                logTransformData = true;
-            }
+            String hasReplicatesStr = request.getParameter("hasReplicates");
+            boolean hasReplicates;
+            hasReplicates = hasReplicatesStr.equals("yes");
             
             int rowLoading = Integer.parseInt(request.getParameter("rowLoading"));
             int start_row, end_row;
+            if (rowLoading == 1) {
+                start_row = 1;
+                end_row = data_height_width[0] - 1;
+            } else {
+                start_row = Integer.parseInt(request.getParameter("txtFromRow"));
+                end_row = Integer.parseInt(request.getParameter("txtToRow"));
+            }
+            /*
+            boolean hasHeader = true;
             if (rowLoading == 1) {
                 if (hasHeader) {
                     start_row = 1;
@@ -173,7 +191,7 @@ public class AnalysisInitializer extends HttpServlet {
                 start_row = start_row - 1;
                 end_row = end_row - 1;
             }
-
+            */
             int column_normalization = Normalizer.COL_NORMALIZATION_NONE;
             int row_normalization = Normalizer.ROW_NORMALIZATION_NONE;
             int replicate_handling = Data.REPLICATE_HANDLING_NONE;
@@ -183,70 +201,42 @@ public class AnalysisInitializer extends HttpServlet {
                 database = new Data (filename, 
                                     impute_type,
                                     delimiter, 
-                                    hasHeader, 
+                                    true,                   // hasHeader - headers in data file are now mandatory
                                     sample_series_mapping_filename,
+                                    sample_series_mapping_delimiter,
                                     start_row, 
                                     end_row,
-                                    data_height_width,  // the height in data_height_width includes header rows if any
-                                    metaColIds, 
-                                    genesymbolcol,
-                                    entrezcol,
+                                    data_height_width,      // the height in data_height_width includes header rows if any
+                                    metacolnames,
+                                    metacol_identifier_mappings, 
+                                    unmapped_metacols,
                                     species,
                                     isTimeSeries,
-                                    logTransformData,
+                                    false,                  // logTransformData - removed support for log transforming at start
                                     column_normalization,
                                     row_normalization,
+                                    hasReplicates,
                                     replicate_handling,
                                     5
                 );
             } catch (DataParsingException e) {
                 // send back to where it came from
                 String msg = e.getLocalizedMessage();
-                getServletContext().getRequestDispatcher("/newExperiment.jsp?txtnewexperiment=" + projectname + "&msg=" + msg).forward(request, response);
+                getServletContext().getRequestDispatcher("/newExperimentWizard.jsp?txtnewexperiment=" + projectname + "&msg=" + msg).forward(request, response);
                 return;
             }
 
             analysis.setDatabase(database);
             
-            /*
-            HashMap <String, String> data_transformation_params = new HashMap <String, String> ();
-            data_transformation_params.put("replicate_handling", Integer.toString(0));
-            data_transformation_params.put("clipping_type", "none");
-            data_transformation_params.put("clip_min", Float.toString(Float.NEGATIVE_INFINITY));
-            data_transformation_params.put("clip_max", Float.toString(Float.POSITIVE_INFINITY));
-            data_transformation_params.put("log_transform", Boolean.toString(false));
-            data_transformation_params.put("column_normalization", Integer.toString(column_normalization));
-            data_transformation_params.put("row_normalization", Integer.toString(row_normalization));
-            data_transformation_params.put("group_by", groupBy);
-            analysis.setDataTransformationParams(data_transformation_params);
-
-            HashMap <String, String> clustering_params = new HashMap <String, String> ();
-            clustering_params.put("linkage", "");
-            clustering_params.put("distance_func", "");
-            clustering_params.put("do_clustering", "false");
-            clustering_params.put("use_cached", "false");
-            analysis.setClusteringParams(clustering_params);
-            
-            HashMap <String, String> visualization_params = new HashMap <String, String> ();
-            visualization_params.put("leaf_ordering_strategy", "0");   // largest cluster first
-            visualization_params.put("heatmap_color_scheme", "blue_red");
-            visualization_params.put("nBins", "21");
-            visualization_params.put("bin_range_type", "data_bins");
-            visualization_params.put("bin_range_start", "-1");
-            visualization_params.put("bin_range_end", "-1");
-            analysis.setVisualizationParams(visualization_params);
-            */
-            
             analysis.setDataTransformationParams(new TransformationParams());
             analysis.setClusteringParams(new ClusteringParams());
             analysis.setVisualizationParams(new VisualizationParams());
-            
-            /*
-            HashMap <String, Double> state_variables = new HashMap <String, Double> ();
-            state_variables.put("detailed_view_start", 0.0);
-            state_variables.put("detailed_view_end", 37.0);
-            analysis.setStateVariables(state_variables);
-            */
+            if(isDemo != null && isDemo.equalsIgnoreCase("yes")) {
+                analysis.visualization_params.bin_range_type = "start_end_bins";
+                analysis.visualization_params.bin_range_start = -3;
+                analysis.visualization_params.bin_range_end = 3;
+            }
+            analysis.visualization_params.setRowLabelType(database.identifier_name);
             
             ArrayList <ArrayList<CompactSearchResultContainer>> search_results = 
                                     new ArrayList <ArrayList<CompactSearchResultContainer>> ();
@@ -285,7 +275,11 @@ public class AnalysisInitializer extends HttpServlet {
             session.setAttribute(analysis.analysis_name, analysis);
             
             // and send to display home
-            getServletContext().getRequestDispatcher("/displayHome.jsp?analysis_name=" + analysis.analysis_name).forward(request, response);
+            if (isDemo != null && isDemo.equalsIgnoreCase("yes")) {
+                getServletContext().getRequestDispatcher("/displayHome.jsp?analysis_name=" + analysis.analysis_name + "&isDemo=yes").forward(request, response);
+            } else {
+                getServletContext().getRequestDispatcher("/displayHome.jsp?analysis_name=" + analysis.analysis_name).forward(request, response);
+            }
             
         } catch (Exception e) {
             

@@ -81,7 +81,7 @@ try {
     double BORDER_STROKE_WIDTH = 0.5;
     
     int end = start + 37;
-    end = Math.min(end, analysis.database.features.size()-1);
+    end = Math.min(end, analysis.database.metadata.nFeatures-1);
     
     String imagename = heatmap.buildMapImage(start, end, "get_heatmap_data_jsp", HeatmapData.TYPE_ARRAY);
     short[][][] rgb = heatmap.getRasterAsArray(imagename);
