@@ -1,7 +1,7 @@
 ### [Systems-Level Interactive Data Exploration](http://137.132.97.109/VTBox/)([SLIDE](http://137.132.97.109/VTBox/))
 #### User-driven Visualization of Large-scale -omics Data on a Web-browser with Flexible Customized Graphics
 
-SLIDE is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. It can be used for intuitive and fast visualization as well as real-time exploration of the data with direct user input.
+SLIDE is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. It can be used for intuitive and fast visualization as well as real-time exploration of the data.
 
 #### **Availability**
 
