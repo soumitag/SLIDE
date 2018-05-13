@@ -1,0 +1,8 @@
+Pre-infection_1	Pre_infection
+Pre-infection_2	Pre_infection
+Pre-infection_3	Pre_infection
+Pre-infection_4	Pre_infection
+Post-infection_1	Post_infection
+Post-infection_2	Post_infection
+Post-infection_3	Post_infection
+Post-infection_4	Post_infection
