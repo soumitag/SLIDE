@@ -290,13 +290,15 @@ try {
         //alert(x);
         
         var hasReps = document.getElementById('hasReplicates').value;
-        var isTS = document.getElementById('isTimeSeries').value;
-        if (hasReps === 'yes' || isTS === 'yes') {
+        if (hasReps === 'yes') {
             if (!mapping_data_uploaded) {
                 x = 0;
                 alert("Please Select and Upload a sample mapping file.");
             }
+        } else {
+            document.getElementById('isTimeSeries').value = "no";
         }
+        
         
         if(x === 1) {
             document.getElementById('metacolnames').value = selected_metacol_names;
@@ -314,16 +316,11 @@ try {
 	win.focus();
     }
 			
-    function giveDemoDataFile() {
-        var win = window.open("https://github.com/soumitag/SLIDE/blob/master/data/GSE42641_data_formatted_final_small_114.txt", '_blank');
+    function takeToData() {
+        var win = window.open("https://github.com/soumitag/SLIDE/tree/master/data", '_blank');
 	win.focus();
     }
-			
-    function giveDemoMAppingFile() {
-        var win = window.open("https://github.com/soumitag/SLIDE/blob/master/data/GSE42638_SampleMappings.txt", '_blank');
-        win.focus();
-    }
-			
+		
     function takeToIssues() {
         var win = window.open("https://github.com/soumitag/SLIDE/issues", '_blank');
 	win.focus();
@@ -350,8 +347,7 @@ try {
                 <div class="dropdown-content" style="z-index: 10">
                     <a href="#" onclick="giveManual()" > Download User Manual </a>
                     <a href="#" onclick="takeToIssues()" > Report An Issue </a>
-                    <a href="#" onclick="giveDemoDataFile()" > Download Example Data File </a>
-                    <a href="#" onclick="giveDemoMAppingFile()" > Download Example Sample Information File </a>
+                    <a href="#" onclick="takeToData()" > Download Example Data and Sample Information Files </a>
                 </div>
             </div>
         </div>
@@ -429,6 +425,7 @@ try {
                 <input type="hidden" name="col_names" id="col_names" value="" />
                 <input type="hidden" name="metacolnames" id="metacolnames" value="" />
                 <input type="hidden" name="identifier_mappings" id="identifier_mappings" value="" />
+                <input type="hidden" name="isTimeSeries" id="isTimeSeries" value="no"/>
 
                 <table id="input_table" class="input">
 
@@ -548,9 +545,8 @@ try {
                 <tr>
                     <td>
                         <b><label>Does the Data Contain Sample Groups?</label></b><br>
-                        Sample groups can be experimental conditions such as disease, control, time points, etc. 
-                        Sample groups are used for sample ordering (i.e. which samples appear together).
-                        SLIDE allows upto two sample groups.
+                        Samples can be grouped by up to two factors. For instance, the two factors can be 
+                        experimental conditions (such as Treatment vs Control) and time points. 
                     </td>
                     <td colspan="1">
                         <input type="radio" name="replicates" value="no" checked="checked" onclick="setReplicatesAs('no')"> No
@@ -558,18 +554,6 @@ try {
                         <input type="radio" name="replicates" value="yes" onclick="setReplicatesAs('yes')"> Yes
                     </td>
                     <input type="hidden" name="hasReplicates" id="hasReplicates" value="no"/>
-                </tr>
-                
-                <tr id="time_series_td" style="display: none">
-                    <td width="30%">
-                        <b><label>How many Sample Groups are there?</label></b>
-                    </td>
-                    <td colspan="1">
-                        <input type="radio" name="timeSeries" value="no" checked="checked" onclick="setTimeSeriesAs('no')"> 1
-                        &nbsp; 
-                        <input type="radio" name="timeSeries" value="yes" onclick="setTimeSeriesAs('yes')"> 2
-                    </td>
-                    <input type="hidden" name="isTimeSeries" id="isTimeSeries" value="no"/>
                 </tr>
 
                 </table>
@@ -590,6 +574,17 @@ try {
                     </th>
                 </tr>
 
+                <tr>
+                    <td width="30%">
+                        <b><label>How many Sample Grouping Factors are there?</label></b>
+                    </td>
+                    <td colspan="1">
+                        <input type="radio" name="timeSeries" value="no" checked="checked" onclick="setTimeSeriesAs('no')"> 1
+                        &nbsp; 
+                        <input type="radio" name="timeSeries" value="yes" onclick="setTimeSeriesAs('yes')"> 2
+                    </td>
+                </tr>
+                
                 <tr>
                     <td width="30%">
                         <b><label>Select a Sample Information File</label></b><br>

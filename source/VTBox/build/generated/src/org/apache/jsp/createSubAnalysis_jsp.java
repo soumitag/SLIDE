@@ -239,7 +239,7 @@ try {
 
       out.write('\n');
       out.write('\n');
- if (mode.equals("input") || mode.equals("name_error") || mode.equals("emptylist_error")) {  
+ if (mode.equals("input") || mode.equals("name_error") || mode.equals("emptylist_error") || mode.equals("fileupload_error")) {  
       out.write("\n");
       out.write("<html>\n");
       out.write("    <head>\n");
@@ -271,13 +271,14 @@ try {
       out.write("            }\n");
       out.write("        }\n");
       out.write("        \n");
+      out.write("        /*\n");
       out.write("        function submitSubAnalysisRequest_3(){\n");
       out.write("            \n");
       out.write("            var v1 = document.getElementById(\"list_name\").value;\n");
       out.write("            var v2 = document.getElementById(\"txtentrezfilename\").value; \n");
       out.write("            var e = document.getElementById(\"delimS\");\n");
       out.write("            var v3 = e.options[e.selectedIndex].value;\n");
-      out.write("            if(v1 == \"\" || v2 == \"\" || v3 == \"hyphenS\"){\n");
+      out.write("            if(v1 === \"\" || v2 === \"\" || v3 === \"hyphenS\"){\n");
       out.write("                alert('Please provide a name and list for the analysis.');\n");
       out.write("            } else {\n");
       out.write("                createNewList_File();\n");
@@ -289,6 +290,7 @@ try {
       out.write("            document.getElementById(\"mode\").value = \"file\";\n");
       out.write("            document.getElementById(\"createFilteredListForm\").submit();\n");
       out.write("        }\n");
+      out.write("        */\n");
       out.write("        \n");
       out.write("        function createNewList_Text() {\n");
       out.write("            document.getElementById(\"mode\").value = \"list\";\n");
@@ -317,6 +319,25 @@ try {
       out.write("            var optionDelim = d.options[d.selectedIndex].value;\n");
       out.write("            document.getElementById(\"delimval\").value = optionDelim;\n");
       out.write("            //alert(optionDelim); \n");
+      out.write("        }\n");
+      out.write("        \n");
+      out.write("        function submitSubAnalysisRequest_3() {\n");
+      out.write("            \n");
+      out.write("            var y = document.getElementById(\"txtentrezfilename\").value;\n");
+      out.write("            var d = document.getElementById(\"delimval\").value;\n");
+      out.write("            var n = document.getElementById(\"list_name\").value;\n");
+      out.write("\n");
+      out.write("            if (n === \"\") {\n");
+      out.write("                alert(\"Please specify a name for the sub-analysis.\");\n");
+      out.write("            } else if (y === \"\"){\n");
+      out.write("                alert(\"Please select a file to upload.\");\n");
+      out.write("            } else if (d === null || d === \"\" || d === \"hyphenS\") {\n");
+      out.write("                alert(\"Please select the delimiter used in the file.\");\n");
+      out.write("            } else {\n");
+      out.write("                var upform = document.getElementById(\"uploadEntrezListForm\");\n");
+      out.write("                upform.action = upform.action + \"&delimval=\" + d + \"&list_name=\" + n;\n");
+      out.write("                upform.submit();\n");
+      out.write("            }\n");
       out.write("        }\n");
       out.write("        \n");
       out.write("    </script>\n");
@@ -353,6 +374,18 @@ try {
       out.write("        <tr>\n");
       out.write("            <td class=\"error_msg\" align=\"center\" colspan=\"2\">\n");
       out.write("                <b><label>The selected feature list is empty.</label></b>\n");
+      out.write("            </td>\n");
+      out.write("        </tr>\n");
+      out.write("        ");
+ } 
+      out.write("\n");
+      out.write("        \n");
+      out.write("        ");
+ if (mode.equals("fileupload_error")) {  
+      out.write("\n");
+      out.write("        <tr>\n");
+      out.write("            <td class=\"error_msg\" align=\"center\" colspan=\"2\">\n");
+      out.write("                <b><label>The file could not be uploaded. Please try again.</label></b>\n");
       out.write("            </td>\n");
       out.write("        </tr>\n");
       out.write("        ");
@@ -421,6 +454,13 @@ try {
       out.write("            </td>\n");
       out.write("        </tr>\n");
       out.write("\n");
+      out.write("        <input type=\"hidden\" id=\"mode\" name=\"mode\" value=\"input\">\n");
+      out.write("        <input type=\"hidden\" id=\"analysis_name\" name=\"analysis_name\" value=\"");
+      out.print(analysis_name);
+      out.write("\">\n");
+      out.write("        \n");
+      out.write("    </form>\n");
+      out.write("        \n");
       out.write("        <tr height=\"5px\">\n");
       out.write("            <td height=\"5px\" colspan=\"2\" align=\"center\">\n");
       out.write("                OR\n");
@@ -432,18 +472,13 @@ try {
       out.write("                <b><label>In a Delimited File</label></b>\n");
       out.write("            </td>\n");
       out.write("            <td>\n");
-      out.write("                <input type=\"text\" id=\"txtentrezfilename\" name=\"txtentrezfilename\" size=\"50\" onchange=\"getinputfilenamefromtext();\"></input>\n");
-      out.write("                ");
- if (isChrome) { 
-      out.write("\n");
-      out.write("                <input type=\"file\" id=\"selectentrezfilename\" name=\"selectentrezfilename\" style= \"visibility: hidden;\"/>\n");
-      out.write("                ");
- } else { 
-      out.write("\n");
-      out.write("                <input type=\"file\" id=\"selectentrezfilename\" name=\"selectentrezfilename\" onchange=\"getfilepathfrombrowse();\"/>\n");
-      out.write("                ");
- }
-      out.write("\n");
+      out.write("                <form name=\"uploadEntrezListForm\" id=\"uploadEntrezListForm\" action=\"");
+      out.print(base_url);
+      out.write("DataUploader?analysis_name=");
+      out.print(analysis_name);
+      out.write("&upload_type=entrez_list\" method=\"post\" enctype=\"multipart/form-data\" target=\"\" >\n");
+      out.write("                    <input type=\"file\" id=\"txtentrezfilename\" name=\"txtentrezfilename\"/>\n");
+      out.write("                </form>\n");
       out.write("            </td>\n");
       out.write("        </tr>\n");
       out.write("\n");
@@ -460,19 +495,12 @@ try {
       out.write("                    <option id=\"spaceS\" value=\"spaceS\" >Space</option>\n");
       out.write("                    <option id=\"semiS\" value=\"semiS\">Semicolon</option>\n");
       out.write("                </select>\n");
+      out.write("                <input type=\"hidden\" name=\"delimval\" id=\"delimval\" />\n");
       out.write("                &nbsp;\n");
       out.write("                <button type=\"button\" class=\"dropbtn\" title=\"Create Sub-Analysis.\" onclick=\"submitSubAnalysisRequest_3();\">Create</button>\n");
-      out.write("                <input type=\"hidden\" id=\"file_name\" name=\"file_name\" value=\"\">\n");
       out.write("            </td>\n");
-      out.write("            <input type=\"hidden\" name=\"delimval\" id=\"delimval\" />\n");
       out.write("        </tr>\n");
       out.write("\n");
-      out.write("        <input type=\"hidden\" id=\"mode\" name=\"mode\" value=\"input\">\n");
-      out.write("        <input type=\"hidden\" id=\"analysis_name\" name=\"analysis_name\" value=\"");
-      out.print(analysis_name);
-      out.write("\">\n");
-      out.write("        \n");
-      out.write("        </form>\n");
       out.write("    </table>\n");
       out.write("</body>\n");
       out.write("\n");

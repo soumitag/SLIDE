@@ -64,15 +64,20 @@ try {
                 
                 var e1 = document.getElementById("list_name");
                 var v1 = e1.options[e1.selectedIndex].value;
-                var e3 = document.getElementById("delimS");
-                var v3 = e3.options[e3.selectedIndex].value;
+                //var e3 = document.getElementById("delimS");
+                //var v3 = e3.options[e3.selectedIndex].value;
+                var e2 = document.getElementById("selectedIdentifiers");
+                var v2 = e2.options[e2.selectedIndex].value;
                 
-                if(v1 == "" || v1 == "dashS" || v3 == "" || v3 == "hyphenS"){
-                    alert('Please select a list and delimiter to save.');
+                if (v1 === "" || v1 === "dashS"){
+                    alert('Please select a list to save.');
+                } else if (v2 === "" || v2 === "dashS") {
+                    alert('Please select identifiers to save.');
                 } else {
                     document.getElementById("mode").value = "save";
                     document.getElementById("filename").value = v1;
-                    document.getElementById("delimiter").value = v3;
+                    //document.getElementById("delimiter").value = v3;
+                    document.getElementById("identifier").value = v2;
                     document.getElementById("saveFeatureListForm").submit();
                 }
                 
@@ -100,8 +105,24 @@ try {
             </tr>
             
             <tr>
+                <td>
+                    <b><label>Select Identifiers To Save</label></b>
+                </td>
+                <td colspan="2">
+                    <select name="selectedIdentifiers" id="selectedIdentifiers">
+                        <option value="dashS" >-</option>
+                        <option id="identifier_only" value="identifier_only" >Row Identifiers Only</option>
+                        <option id="entrez_only" value="entrez_only" >Entrez IDs Only</option>
+                        <option id="both" value="both" >Both Row Identifiers and Entrez IDs</option>
+                    </select>
+                    <input type="hidden" name="identifier" id="identifier" />
+                </td>
+            </tr>
+            
+            <!--
+            <tr>
                 <td> 
-                    <b><label>Enter the File Delimiter</label></b>                    
+                    <b><label>Select File Delimiter</label></b>                    
                 </td>
                 <td>
                     <select id="delimS" name="delimS">
@@ -114,6 +135,8 @@ try {
                     <input type="hidden" name="delimiter" id="delimiter" />
                 </td>
             </tr>
+            -->
+            
             <tr>
                 <td colspan="2">
                     <input type="hidden" name="mode" id="mode" value="" />

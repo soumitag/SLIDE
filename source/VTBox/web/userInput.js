@@ -145,16 +145,16 @@ function setReplicatesAs(str) {
     if(str === 'yes'){
         document.getElementById('sample_attributes_div').style.display = "inline";
         document.getElementById('hasReplicates').value = 'yes';
-        document.getElementById('time_series_td').style.display = "table-row";
+        //document.getElementById('time_series_td').style.display = "table-row";
         //alert(document.getElementById('hasReplicates').value);
     } else if(str === 'no') {
         str1 = document.getElementById('isTimeSeries').value;
         document.getElementById('hasReplicates').value = 'no';
         document.getElementById('sample_attributes_div').style.display = "none";
-        document.getElementById('time_series_td').style.display = "none";
+        //document.getElementById('time_series_td').style.display = "none";
         if (str1 === 'no'){
             document.getElementById('sample_attributes_div').style.display = "none";
-            document.getElementById('time_series_td').style.display = "none";
+            //document.getElementById('time_series_td').style.display = "none";
         }
     }
 }

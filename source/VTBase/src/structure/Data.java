@@ -100,23 +100,31 @@ public final class Data implements Serializable {
                 HashMap <String, Integer> metacol_identifier_mappings, 
                 HashMap <String, Integer> unmapped_metacols, 
                 String species,
-                boolean isTimeSeries,
+                boolean hasTwoGroupingFactors,
                 boolean logTransformData,
                 int column_normalization_strategy,
                 int row_normalization_strategy,
-                boolean hasReplicates,
+                boolean hasGroupingFactor,
                 int replicate_handling,
                 int imputeK
     ) throws DataParsingException {
         
         this.species = species;
-        this.isTimeSeries = isTimeSeries;
+        this.isTimeSeries = hasTwoGroupingFactors;
 
         String[] colheaders = getColHeaders (hasHeader, filename, delimiter, data_height_width);
         //processSampleInfo(colheaders, datacols, exptype, ordcol, sample_info);
         
+        int nGroupFactors = 0;
+        if (hasGroupingFactor) {
+            if (hasTwoGroupingFactors) {
+                nGroupFactors = 2;
+            } else {
+                nGroupFactors = 1;
+            }
+        }
         createSampleSeriesMappings(sample_series_mapping_filename, sample_series_mapping_delimiter, 
-                                   isTimeSeries, hasReplicates, colheaders, metacolnames);
+                                   nGroupFactors, colheaders, metacolnames);
         processSampleInfo(colheaders);
         
         //String[][] genesymbol_entrez_ids = loadData(filename, start_row, end_row, data_height_width, delimiter, hasHeader, genesymbolcol, entrezcol, impute_type);
@@ -209,7 +217,7 @@ public final class Data implements Serializable {
                 count++;
             }
         }
-        this.identifier_name = "entrez_2021158607524066";
+        this.identifier_name = "go_pathway_term";
      
         processNonMetaCols(functional_group_mask, nonmasked_funcgrp_count);
         transformData(column_normalization_strategy, row_normalization_strategy);
@@ -910,15 +918,14 @@ public final class Data implements Serializable {
     
     private void createSampleSeriesMappings ( String metafilename, 
                                               String metafile_delimiter,
-                                              boolean isTimeSeries, 
-                                              boolean hasReplicates, 
+                                              int groupingFactors, 
                                               String[] colheaders, 
                                               String[] metacolnames
                                             ) throws DataParsingException {
         
         SampleMappings sm;
         
-        if (!isTimeSeries && !hasReplicates) {
+        if (groupingFactors == 0) {
         
             HashMap <String, Boolean> metacols = new HashMap <> ();
             for (int i = 0; i < metacolnames.length; i++) {
@@ -943,8 +950,7 @@ public final class Data implements Serializable {
         } else {
             sm = UserInputParser.parseSampleMappingsFile(metafilename, 
                                                          metafile_delimiter, 
-                                                         isTimeSeries, 
-                                                         hasReplicates, 
+                                                         groupingFactors, 
                                                          colheaders);
         }
         

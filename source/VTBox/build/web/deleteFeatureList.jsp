@@ -56,6 +56,11 @@ try {
              </tr>
         </table>
     </body>
+    
+    <script>
+        parent.updateFeatureLists('<%=feature_list_name%>', 0);
+    </script>
+    
 </html>
 
 <%

@@ -155,13 +155,13 @@ public class AnalysisInitializer extends HttpServlet {
             // the height in data_height_width includes header rows if any
             int[] data_height_width = FileHandler.getFileDimensions(filename, delimiter);
             
-            String istimeSeriesStr = request.getParameter("isTimeSeries");
-            boolean isTimeSeries;
-            isTimeSeries = istimeSeriesStr.equals("yes");
-            
             String hasReplicatesStr = request.getParameter("hasReplicates");
-            boolean hasReplicates;
-            hasReplicates = hasReplicatesStr.equals("yes");
+            boolean hasGroupingFactor;
+            hasGroupingFactor = hasReplicatesStr.equals("yes");
+            
+            String istimeSeriesStr = request.getParameter("isTimeSeries");
+            boolean hasTwoGroupingFactors;
+            hasTwoGroupingFactors = istimeSeriesStr.equals("yes");
             
             int rowLoading = Integer.parseInt(request.getParameter("rowLoading"));
             int start_row, end_row;
@@ -211,11 +211,11 @@ public class AnalysisInitializer extends HttpServlet {
                                     metacol_identifier_mappings, 
                                     unmapped_metacols,
                                     species,
-                                    isTimeSeries,
+                                    hasTwoGroupingFactors,
                                     false,                  // logTransformData - removed support for log transforming at start
                                     column_normalization,
                                     row_normalization,
-                                    hasReplicates,
+                                    hasGroupingFactor,
                                     replicate_handling,
                                     5
                 );

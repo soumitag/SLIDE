@@ -222,8 +222,8 @@ try {
       out.write("            <tr>\n");
       out.write("                <td colspan=\"4\" style=\"padding: 10px;\">\n");
       out.write("                    <b><label>Group Columns By: </label></b> <br>\n");
-      out.write("                    <input type=\"radio\" name=\"groupBy\" value=\"sample\" checked=\"checked\"> Sample &nbsp;\n");
-      out.write("                    <input type=\"radio\" name=\"groupBy\" value=\"time\"> Time<br>\n");
+      out.write("                    <input type=\"radio\" name=\"groupBy\" value=\"sample\" checked=\"checked\"> Factor 1 &nbsp;\n");
+      out.write("                    <input type=\"radio\" name=\"groupBy\" value=\"time\"> Factor 2<br>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            ");

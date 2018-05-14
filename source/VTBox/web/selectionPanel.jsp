@@ -170,8 +170,8 @@ try {
             <tr>
                 <td colspan="4" style="padding: 10px;">
                     <b><label>Group Columns By: </label></b> <br>
-                    <input type="radio" name="groupBy" value="sample" checked="checked"> Sample &nbsp;
-                    <input type="radio" name="groupBy" value="time"> Time<br>
+                    <input type="radio" name="groupBy" value="sample" checked="checked"> Factor 1 &nbsp;
+                    <input type="radio" name="groupBy" value="time"> Factor 2<br>
                 </td>
             </tr>
             <% } %>

@@ -43,9 +43,10 @@ public class TemplateSampleMapping extends HttpServlet {
             String analysis_name = request.getParameter("analysis_name");
             String colnames = request.getParameter("colnames");
             String metacolnames = request.getParameter("metacolnames");
-            String is_time_course = request.getParameter("is_time_course");
-            String has_replicates = request.getParameter("has_replicates");
-            String delimiter = Utils.getDelimiter(request.getParameter("delimiter"));
+            String has_group_1 = request.getParameter("has_replicates");
+            String has_group_2 = request.getParameter("is_time_course");
+            //String delimiter = Utils.getDelimiter(request.getParameter("delimiter"));
+            String delimiter = "\t";
             
             //String installPath = SessionManager.getInstallPath(getServletContext().getResourceAsStream("/WEB-INF/slide-web-config.txt"));
             //String mapping_filepath = SessionManager.getBasePath(installPath, request.getSession().getId(), analysis_name);
@@ -56,24 +57,25 @@ public class TemplateSampleMapping extends HttpServlet {
              
             String out_str = "#This is an auto generated sample mapping file for SLIDE\n";
             out_str += "#Edit the second and third columns (if any) of this file and upload it back in SLIDE\n";
+            out_str += "#To edit the file replace the GroupName_for_* values with the actual group names\n";
             
-            if(has_replicates.equalsIgnoreCase("yes") && is_time_course.equalsIgnoreCase("no")) {
+            if(has_group_1.equalsIgnoreCase("yes") && has_group_2.equalsIgnoreCase("no")) {
                 out_str += "#SampleName" + delimiter + "GroupName\n";
-            } else if(has_replicates.equalsIgnoreCase("yes") && is_time_course.equalsIgnoreCase("yes")) {
-                out_str += "#SampleName" + delimiter + "GroupName" + delimiter + "Timepoint\n";
-            } else if(has_replicates.equalsIgnoreCase("no") && is_time_course.equalsIgnoreCase("yes")) {
-                out_str += "#SampleName" + delimiter + "DisplayName" + delimiter + "Timepoint\n";
+            } else if(has_group_1.equalsIgnoreCase("yes") && has_group_2.equalsIgnoreCase("yes")) {
+                out_str += "#SampleName" + delimiter + "GroupName_1" + delimiter + "GroupName_2\n";
+            } else if(has_group_1.equalsIgnoreCase("no") && has_group_2.equalsIgnoreCase("yes")) {
+                out_str += "#SampleName" + delimiter + "GroupName\n";
             }
             
             for (int i=0; i<colnames_arr.length; i++) {
                 if (!metacolnames_arr.contains(colnames_arr[i])) {
                     
-                    if(has_replicates.equalsIgnoreCase("yes") && is_time_course.equalsIgnoreCase("no")) {
+                    if(has_group_1.equalsIgnoreCase("yes") && has_group_2.equalsIgnoreCase("no")) {
                         out_str += colnames_arr[i] + delimiter + "GroupName_for_" + colnames_arr[i] + "\n";
-                    } else if(has_replicates.equalsIgnoreCase("yes") && is_time_course.equalsIgnoreCase("yes")) {
-                        out_str += colnames_arr[i] + delimiter + "GroupName_for_" + colnames_arr[i] + delimiter + "Timepoint_for_" + colnames_arr[i] + "\n";
-                    } else if(has_replicates.equalsIgnoreCase("no") && is_time_course.equalsIgnoreCase("yes")) {
-                        out_str += colnames_arr[i] + delimiter + colnames_arr[i] + delimiter + "Timepoint_for_" + colnames_arr[i] + "\n";
+                    } else if(has_group_1.equalsIgnoreCase("yes") && has_group_2.equalsIgnoreCase("yes")) {
+                        out_str += colnames_arr[i] + delimiter + "GroupName_for_" + colnames_arr[i] + delimiter + "GroupName_for_" + colnames_arr[i] + "\n";
+                    } else if(has_group_1.equalsIgnoreCase("no") && has_group_2.equalsIgnoreCase("yes")) {
+                        out_str += colnames_arr[i] + delimiter + "GroupName_for_" + colnames_arr[i] + "\n";
                     }
                     
                 }

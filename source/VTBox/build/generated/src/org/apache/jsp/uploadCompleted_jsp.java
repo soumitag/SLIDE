@@ -113,8 +113,8 @@ try {
     } else if (type.equalsIgnoreCase("mapping") && status.equals("")) {
         
         try {
-            boolean isTimeSeries = request.getParameter("isTimeSeries").equalsIgnoreCase("yes");
-            boolean hasReplicates = request.getParameter("hasReplicates").equalsIgnoreCase("yes");
+            boolean hasGroupingFactor = request.getParameter("hasGroupingFactor").equalsIgnoreCase("yes");
+            boolean hasTwoGroupingFactors = request.getParameter("hasTwoGroupingFactors").equalsIgnoreCase("yes");
             String data_filename = request.getParameter("data_filename");
             String data_delimval = request.getParameter("data_fileDelimiter");
             
@@ -133,7 +133,15 @@ try {
                                request.getSession().getId() + File.separator + 
                                analysis_name + "_mapping_" + filename;
         
-            UserInputParser.parseSampleMappingsFile(qfilename, fileDelimiter, isTimeSeries, hasReplicates, column_names);
+            int nGroupFactors = 0;
+            if (hasGroupingFactor) {
+                if (hasTwoGroupingFactors) {
+                    nGroupFactors = 2;
+                } else {
+                    nGroupFactors = 1;
+                }
+            }
+            UserInputParser.parseSampleMappingsFile(qfilename, fileDelimiter, nGroupFactors, column_names);
             
         } catch (DataParsingException dpe) {
             

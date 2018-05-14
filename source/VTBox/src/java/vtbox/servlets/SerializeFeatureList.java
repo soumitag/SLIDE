@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import searcher.GeneObject;
 import structure.AnalysisContainer;
+import structure.Feature;
 import structure.MetaData;
 
 /**
@@ -39,9 +40,11 @@ public class SerializeFeatureList extends HttpServlet {
         HttpSession session = request.getSession(false);  
         String analysis_name = request.getParameter("analysis_name");
         String feature_list_name = request.getParameter("filename");
-        String delimval = request.getParameter("delimiter");
+        //String delimval = request.getParameter("delimiter");
+        String identifier = request.getParameter("identifier");
         String filename = feature_list_name + ".txt";
         
+        /*
         String delimiter = null;
         if (delimval.equals("lineS")) {
             delimiter = "\n";
@@ -56,6 +59,9 @@ public class SerializeFeatureList extends HttpServlet {
         } else if (delimval.equals("hyphenS")) {
             delimiter = "-";
         }
+        */
+        
+        String delimiter = "\t";
         
         response.setContentType("application/download");
 	response.setHeader("Content-Disposition", "attachment;filename=" + filename);
@@ -64,8 +70,32 @@ public class SerializeFeatureList extends HttpServlet {
         AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
         ArrayList <Integer> filterList = analysis.filterListMap.get(feature_list_name);
         
-        for (int i=0; i<filterList.size(); i++) {
-            str = str + analysis.database.features.get(filterList.get(i)).identifier + delimiter;
+        if (identifier.equals("both")) {
+            for (int i=0; i<filterList.size(); i++) {
+                Feature f = analysis.database.features.get(filterList.get(i));
+                String entrez_i;
+                if (f.hasBadEntrez) {
+                    entrez_i = "-";
+                } else {
+                    entrez_i = f.entrez;
+                }
+                str = str + f.identifier + delimiter + entrez_i + "\n";
+            }
+        } else if (identifier.equals("identifier_only")) {
+            for (int i=0; i<filterList.size(); i++) {
+                str = str + analysis.database.features.get(filterList.get(i)).identifier + "\n";
+            }
+        } else if (identifier.equals("entrez_only")) {
+            for (int i=0; i<filterList.size(); i++) {
+                Feature f = analysis.database.features.get(filterList.get(i));
+                String entrez_i;
+                if (f.hasBadEntrez) {
+                    entrez_i = "-";
+                } else {
+                    entrez_i = f.entrez;
+                }
+                str = str + entrez_i + "\n";
+            }
         }
         
         byte[] bytes = str.getBytes();

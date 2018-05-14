@@ -185,7 +185,7 @@ try {
     
 %>
 
-<% if (mode.equals("input") || mode.equals("name_error") || mode.equals("emptylist_error")) {  %>
+<% if (mode.equals("input") || mode.equals("name_error") || mode.equals("emptylist_error") || mode.equals("fileupload_error")) {  %>
 <html>
     <head>
         <link rel="stylesheet" href="vtbox-main.css">
@@ -216,13 +216,14 @@ try {
             }
         }
         
+        /*
         function submitSubAnalysisRequest_3(){
             
             var v1 = document.getElementById("list_name").value;
             var v2 = document.getElementById("txtentrezfilename").value; 
             var e = document.getElementById("delimS");
             var v3 = e.options[e.selectedIndex].value;
-            if(v1 == "" || v2 == "" || v3 == "hyphenS"){
+            if(v1 === "" || v2 === "" || v3 === "hyphenS"){
                 alert('Please provide a name and list for the analysis.');
             } else {
                 createNewList_File();
@@ -234,6 +235,7 @@ try {
             document.getElementById("mode").value = "file";
             document.getElementById("createFilteredListForm").submit();
         }
+        */
         
         function createNewList_Text() {
             document.getElementById("mode").value = "list";
@@ -264,6 +266,25 @@ try {
             //alert(optionDelim); 
         }
         
+        function submitSubAnalysisRequest_3() {
+            
+            var y = document.getElementById("txtentrezfilename").value;
+            var d = document.getElementById("delimval").value;
+            var n = document.getElementById("list_name").value;
+
+            if (n === "") {
+                alert("Please specify a name for the sub-analysis.");
+            } else if (y === ""){
+                alert("Please select a file to upload.");
+            } else if (d === null || d === "" || d === "hyphenS") {
+                alert("Please select the delimiter used in the file.");
+            } else {
+                var upform = document.getElementById("uploadEntrezListForm");
+                upform.action = upform.action + "&delimval=" + d + "&list_name=" + n;
+                upform.submit();
+            }
+        }
+        
     </script>
     </head>
     
@@ -290,6 +311,14 @@ try {
         <tr>
             <td class="error_msg" align="center" colspan="2">
                 <b><label>The selected feature list is empty.</label></b>
+            </td>
+        </tr>
+        <% } %>
+        
+        <% if (mode.equals("fileupload_error")) {  %>
+        <tr>
+            <td class="error_msg" align="center" colspan="2">
+                <b><label>The file could not be uploaded. Please try again.</label></b>
             </td>
         </tr>
         <% } %>
@@ -344,6 +373,11 @@ try {
             </td>
         </tr>
 
+        <input type="hidden" id="mode" name="mode" value="input">
+        <input type="hidden" id="analysis_name" name="analysis_name" value="<%=analysis_name%>">
+        
+    </form>
+        
         <tr height="5px">
             <td height="5px" colspan="2" align="center">
                 OR
@@ -355,12 +389,9 @@ try {
                 <b><label>In a Delimited File</label></b>
             </td>
             <td>
-                <input type="text" id="txtentrezfilename" name="txtentrezfilename" size="50" onchange="getinputfilenamefromtext();"></input>
-                <% if (isChrome) { %>
-                <input type="file" id="selectentrezfilename" name="selectentrezfilename" style= "visibility: hidden;"/>
-                <% } else { %>
-                <input type="file" id="selectentrezfilename" name="selectentrezfilename" onchange="getfilepathfrombrowse();"/>
-                <% }%>
+                <form name="uploadEntrezListForm" id="uploadEntrezListForm" action="<%=base_url%>DataUploader?analysis_name=<%=analysis_name%>&upload_type=entrez_list" method="post" enctype="multipart/form-data" target="" >
+                    <input type="file" id="txtentrezfilename" name="txtentrezfilename"/>
+                </form>
             </td>
         </tr>
 
@@ -377,17 +408,12 @@ try {
                     <option id="spaceS" value="spaceS" >Space</option>
                     <option id="semiS" value="semiS">Semicolon</option>
                 </select>
+                <input type="hidden" name="delimval" id="delimval" />
                 &nbsp;
                 <button type="button" class="dropbtn" title="Create Sub-Analysis." onclick="submitSubAnalysisRequest_3();">Create</button>
-                <input type="hidden" id="file_name" name="file_name" value="">
             </td>
-            <input type="hidden" name="delimval" id="delimval" />
         </tr>
 
-        <input type="hidden" id="mode" name="mode" value="input">
-        <input type="hidden" id="analysis_name" name="analysis_name" value="<%=analysis_name%>">
-        
-        </form>
     </table>
 </body>
 

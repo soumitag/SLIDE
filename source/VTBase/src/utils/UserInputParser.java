@@ -23,8 +23,7 @@ public class UserInputParser {
  
     public static SampleMappings parseSampleMappingsFile ( String metafilename, 
                                                            String delimiter,
-                                                           boolean isTimeSeries, 
-                                                           boolean hasReplicates,
+                                                           int groupingFactors, 
                                                            String[] datacol_headers
                                                          ) throws DataParsingException {
         
@@ -53,12 +52,12 @@ public class UserInputParser {
                         lineData = line.split("\\" + delimiter);
                     }
                     
-                    if (isTimeSeries && hasReplicates) {
+                    if (groupingFactors == 2) {
                         
                         if (lineData.length < 3) {
                             
                             br.close();
-                            String msg = "Error while parsing sample information file. Time-series experiments with sample groups must have three columns in the sample information file.";
+                            String msg = "Error while parsing sample information file. Experiments with two sample grouping factors must have three columns in the sample information file.";
                             throw new DataParsingException(msg);
                             
                         } else {
@@ -125,11 +124,11 @@ public class UserInputParser {
                             
                         }
                         
-                    } else if (!isTimeSeries && hasReplicates) {
+                    } else if (groupingFactors == 1) {
                         
                         if (lineData.length < 2) {
                             br.close();
-                            String msg = "Error while parsing sample information file. Experiments without timepoints must have two columns in the sample information file.";
+                            String msg = "Error while parsing sample information file. Experiments with a single sample grouping factor must have two columns in the sample information file.";
                             throw new DataParsingException(msg);
                             
                         } else {
@@ -166,25 +165,26 @@ public class UserInputParser {
                             }
                             
                         }
-                    } else if (isTimeSeries && !hasReplicates) {
+                    } else if (groupingFactors == -2) {  // this condition will never happen
                         
                         if (lineData.length < 3) {
                             br.close();
-                            String msg = "Error while parsing sample mapping file. Time-series experiments must have three columns in the sample information file.";
+                            String msg = "Error while parsing sample mapping file. Experiments with a single sample grouping factor must have two columns in the sample information file.";
                             throw new DataParsingException(msg);
                             
                         } else {
                             
-                            /*
+                            
                             String datacol_header = lineData[0].trim();
                             String sample_name = datacol_header;
                             String timestamp = lineData[1].trim();
-                            */
                             
+                            /*
                             String datacol_header = lineData[0].trim();
                             String sample_name = lineData[1].trim();
                             String timestamp = lineData[2].trim();
-                            
+                            */
+
                             String unique_sample_name = sample_name + ", " + timestamp;
                             
                             if (!sampleMappings.sampleNames.contains(unique_sample_name)) {

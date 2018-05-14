@@ -310,7 +310,7 @@ try {
     }
     
     function createNewExp_1(){
-        document.getElementById('EnterNewExperiment').innerHTML = 'Creating...';
+        document.getElementById('EnterNewExperiment').innerHTML = 'Creating Analysis...';
         document.getElementById("EnterNewExperiment").disabled = true;
         document.fileInputFormDemo.setAttribute("action","AnalysisInitializer");
         document.fileInputFormDemo.submit();
@@ -365,7 +365,7 @@ try {
         </div>
         
         <label style="height: 40px;font-family: verdana;font-size: 20px;font-weight: normal;text-align: center;background-color: #ffff80;" >
-                    This is a demo of SLIDE's input interface with the inputs preset. Simply click 'Create Analysis' to explore the whole lung mouse transcriptome data.
+            This is a demo of SLIDE's input interface with the inputs preset. Simply click 'Create Analysis' to explore Brandes et al. whole lung mouse transcriptome data. The data can be downloaded <a href="https://github.com/soumitag/SLIDE/tree/master/data" target="_blank">here</a>.
         </label>
         
     
@@ -390,7 +390,7 @@ try {
             	</td>
                 
                 <td>
-                    <input type="text" id="selectmrnafilename" name="selectmrnafilename" size="70" value="GSE42638_quantiled_log_transformed.txt" disabled/>
+                    <input type="text" id="selectmrnafilename" name="selectmrnafilename" size="70" value="Brandes_et_al_GSE42638_Quantiled_Log_Transformed_Data.txt" disabled/>
                     <iframe id="upload_target" name="upload_target" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>
                     <div id="notice_board" class="notes" name="notice_board" style="display:none"></div>
                 </td>
@@ -569,7 +569,8 @@ try {
                 <tr>
                     <td>
                         <b><label>Does the Data Contain Sample Groups?</label></b><br>
-                        Sample groups can be experimental conditions
+                        Samples can be grouped by up to two factors. For instance, the two factors can be 
+                        experimental conditions (such as Treatment vs Control) and time points. 
                     </td>
                     <td colspan="1">
                         <input type="radio" name="replicates" value="no" onclick="setReplicatesAs('no')" disabled> No
@@ -577,18 +578,6 @@ try {
                         <input type="radio" name="replicates" value="yes" checked="checked" onclick="setReplicatesAs('yes')" disabled> Yes
                     </td>
                     <input type="hidden" name="hasReplicates" id="hasReplicates" value="yes"/>
-                </tr>
-                
-                <tr>
-                    <td>
-                        <b><label>Is this a Time Course Data?</label></b>
-                    </td>
-                    <td colspan="1">
-                        <input type="radio" name="timeSeries" value="no" onclick="setTimeSeriesAs('no')" disabled> No
-                        &nbsp; 
-                        <input type="radio" name="timeSeries" value="yes" checked="checked" onclick="setTimeSeriesAs('yes')" disabled> Yes
-                    </td>
-                    <input type="hidden" name="isTimeSeries" id="isTimeSeries" value="yes"/>
                 </tr>
 
                 </table>
@@ -608,6 +597,17 @@ try {
                         Sample Attributes
                     </th>
                 </tr>
+                
+                <tr>
+                    <td width="30%">
+                        <b><label>How many Sample Grouping Factors are there?</label></b>
+                    </td>
+                    <td colspan="1">
+                        <input type="radio" name="timeSeries" value="no" onclick="setTimeSeriesAs('no')" disabled> 1
+                        &nbsp; 
+                        <input type="radio" name="timeSeries" value="yes" onclick="setTimeSeriesAs('yes')" checked="checked" disabled> 2
+                    </td>
+                </tr>
 
                 <tr>
                     <td width="30%">
@@ -616,7 +616,7 @@ try {
                         Click "Help" for further information.
                     </td>
                     <td>
-                        <input type="text" id="select_map_filename" name="select_map_filename" size="70" value="GSE42638_SampleMappings.txt" disabled />
+                        <input type="text" id="select_map_filename" name="select_map_filename" size="70" value="Brandes_et_al_GSE42638_Sample_Information.txt" disabled />
                         &nbsp;&nbsp;&nbsp;
                         <div id="mapping_notice_board" class="notes" name="mapping_notice_board" style="display:none"></div>
                     </td>
@@ -664,8 +664,8 @@ try {
                 
     <form name="fileInputFormDemo" method ="get" action="">
     <input type="hidden" name="newexperimentname" id="newexperimentname" value="demo" />           
-    <input type="hidden" name="fileinputname" id="fileinputname" value="GSE42638_quantiled_log_transformed.txt" />
-    <input type="hidden" name="mapfilename" id="mapfilename" value="GSE42638_SampleMappings.txt" />
+    <input type="hidden" name="fileinputname" id="fileinputname" value="Brandes_et_al_GSE42638_Quantiled_Log_Transformed_Data.txt" />
+    <input type="hidden" name="mapfilename" id="mapfilename" value="Brandes_et_al_GSE42638_Sample_Information.txt" />
     <!--<input type="hidden" name="headerflag" id="headerflag" value="on" />-->
     <input type="hidden" name="imputeval" id="imputeval" value="0" />
     <input type="hidden" name="delimval" id="delimval" value="tabS" />
@@ -680,8 +680,8 @@ try {
     <input type="hidden" name="txtFromRow" id="txtFromRow" value="" />
     <input type="hidden" name="txtToRow" id="txtToRow" value="" />
     <input type="hidden" name="isDemo" id="isDemo" value="yes" />
-    <input type="hidden" name="fileinput_fullpath" id="fileinputname" value="<%=installPath%>\\demo_data\\GSE42638_quantiled_log_transformed.txt" />
-    <input type="hidden" name="mapfile_fullpath" id="mapfilename" value="<%=installPath%>\\demo_data\\GSE42638_SampleMappings.txt" />
+    <input type="hidden" name="fileinput_fullpath" id="fileinputname" value="<%=installPath%>\\demo_data\\Brandes_et_al_GSE42638_Quantiled_Log_Transformed_Data.txt" />
+    <input type="hidden" name="mapfile_fullpath" id="mapfilename" value="<%=installPath%>\\demo_data\\Brandes_et_al_GSE42638_Sample_Information.txt" />
     
     
 

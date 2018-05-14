@@ -109,6 +109,13 @@ try {
       out.write("             </tr>\n");
       out.write("        </table>\n");
       out.write("    </body>\n");
+      out.write("    \n");
+      out.write("    <script>\n");
+      out.write("        parent.updateFeatureLists('");
+      out.print(feature_list_name);
+      out.write("', 0);\n");
+      out.write("    </script>\n");
+      out.write("    \n");
       out.write("</html>\n");
       out.write("\n");
 

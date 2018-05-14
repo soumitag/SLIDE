@@ -84,6 +84,13 @@ public class DataUploader extends HttpServlet {
         String analysis_name = request.getParameter("analysis_name");
         String delimval = request.getParameter("delimval");
         
+        
+        if (type.equals("entrez_list")) {
+            handleEntrezListUpload(request, response, analysis_name, delimval, upload, uploadFolder);
+            return;
+        }
+        
+        
         String filePath = "";
         String fileName = "";
         
@@ -118,16 +125,16 @@ public class DataUploader extends HttpServlet {
             
             // displays uploadCompleted.jsp page after upload finished
             if (type.equals("mapping")) {
-                String isTimeSeries = request.getParameter("is_time_course");
-                String hasReplicates = request.getParameter("has_replicates");
+                String hasTwoGroupingFactors = request.getParameter("is_time_course");
+                String hasGroupingFactor = request.getParameter("has_replicates");
                 String data_filename = request.getParameter("data_filename");
                 String data_fileDelimiter = request.getParameter("data_fileDelimiter");
                 getServletContext().getRequestDispatcher("/uploadCompleted.jsp?status=&filename=" + fileName + 
                                                          "&analysis_name=" + analysis_name + 
                                                          "&delimval=" + delimval + 
                                                          "&type=" + type +
-                                                         "&isTimeSeries=" + isTimeSeries + 
-                                                         "&hasReplicates=" + hasReplicates + 
+                                                         "&hasTwoGroupingFactors=" + hasTwoGroupingFactors + 
+                                                         "&hasGroupingFactor=" + hasGroupingFactor + 
                                                          "&data_filename=" + data_filename +
                                                          "&data_fileDelimiter=" + data_fileDelimiter
                 ).forward(request, response);
@@ -190,4 +197,50 @@ public class DataUploader extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    
+    private void handleEntrezListUpload(HttpServletRequest request, 
+                                        HttpServletResponse response,
+                                        String analysis_name,
+                                        String delimval,
+                                        ServletFileUpload upload,
+                                        String sessionFolder) 
+    throws ServletException, IOException {
+        
+        String list_name = request.getParameter("list_name");
+        
+        String fileName = "";
+        String filePath = "";
+        
+        try {
+            
+            // Parse the request
+            List items = upload.parseRequest(request);
+            Iterator iter = items.iterator();
+            while (iter.hasNext()) {
+                FileItem item = (FileItem) iter.next();
+
+                if (!item.isFormField()) {
+                    fileName = new File(item.getName()).getName();
+                    
+                    filePath = sessionFolder + File.separator + analysis_name + File.separator + fileName;
+                    File uploadedFile = new File(filePath);
+                    System.out.println(filePath);
+                    // saves the file to upload directory
+                    item.write(uploadedFile);
+                    item.delete();
+                    
+                }
+            }
+            
+            getServletContext().getRequestDispatcher("/createSubAnalysis.jsp?mode=file&analysis_name=" + analysis_name + "&list_name=" + list_name + "&file_name=" + filePath + "&delimval=" + delimval).forward(request, response);
+            
+        } catch (Exception e) {
+
+            System.out.println(e);
+            getServletContext().getRequestDispatcher("/createSubAnalysis.jsp?mode=fileupload_error&analysis_name=" + analysis_name + "&list_name=" + list_name).forward(request, response);
+            
+        }
+        
+    }
+    
 }
