@@ -115,9 +115,10 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            }\n");
       out.write("            \n");
       out.write("            function loadDemo(){\n");
+      out.write("                var t = new Date().getTime();\n");
       out.write("                window.location.href = \"");
       out.print(base_url);
-      out.write("newExperimentWizardDemo.jsp?newexperimentname=demo\";\n");
+      out.write("newExperimentWizardDemo.jsp?newexperimentname=demo&timestamp=\" + t;\n");
       out.write("                return false;\n");
       out.write("            }\n");
       out.write("                \n");
@@ -311,6 +312,7 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                            <input type=\"text\" id=\"txtnewexperiment\" name=\"txtnewexperiment\" onkeypress=\"keyEnter()\" />\n");
       out.write("                            &nbsp;&nbsp;\n");
       out.write("                            <button class=\"dropbtn\" id=\"NewExperiment\" title=\"New Experiment\" onclick=\"submitform_1();\">Create</button>\n");
+      out.write("                            <input type =\"hidden\" id=\"timestamp\" name=\"timestamp\" value=\"\" />\n");
       out.write("                        </td>\n");
       out.write("                        </form>\n");
       out.write("                    </tr>\n");

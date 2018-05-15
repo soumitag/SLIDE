@@ -70,7 +70,8 @@
             }
             
             function loadDemo(){
-                window.location.href = "<%=base_url%>newExperimentWizardDemo.jsp?newexperimentname=demo";
+                var t = new Date().getTime();
+                window.location.href = "<%=base_url%>newExperimentWizardDemo.jsp?newexperimentname=demo&timestamp=" + t;
                 return false;
             }
                 
@@ -254,6 +255,7 @@
                             <input type="text" id="txtnewexperiment" name="txtnewexperiment" onkeypress="keyEnter()" />
                             &nbsp;&nbsp;
                             <button class="dropbtn" id="NewExperiment" title="New Experiment" onclick="submitform_1();">Create</button>
+                            <input type ="hidden" id="timestamp" name="timestamp" value="" />
                         </td>
                         </form>
                     </tr>

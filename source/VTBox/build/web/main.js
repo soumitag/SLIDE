@@ -43,6 +43,7 @@ function keyEnter(){
 function submitform_1(){
     var formname = "homePage";
     var value1 = document.getElementById("txtnewexperiment").value;
+    //var t = new Date().getTime();
     //alert(value1);
     if (formname == "homePage") {
         if(value1 == ""){
@@ -51,6 +52,7 @@ function submitform_1(){
             //document.homePage.submit();   
         } else{
             document.homePage.setAttribute("action","newExperimentWizard.jsp");
+            document.getElementById('timestamp').value = new Date().getTime();
             document.homePage.submit();        
         }
         

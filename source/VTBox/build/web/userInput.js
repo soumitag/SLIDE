@@ -75,8 +75,8 @@ function filePreview(analysis_name, upload_type){
         var col_header_str = "";
 
         //var url_text = "inputPreview.jsp?file=" +filestr + "&delim=" + filedelim + "&analysis_name=" + analysis_name + "&head=" + fileheader + "&col_header=" + col_header_str;
-
-        var url_text = "inputPreview.jsp?file=" +filestr + "&delim=" + filedelim + "&analysis_name=" + analysis_name + "&head=" + fileheader + "&upload_type=" + upload_type + "&col_header=" + col_header_str;
+        var t = new Date().getTime();
+        var url_text = "inputPreview.jsp?file=" +filestr + "&delim=" + filedelim + "&analysis_name=" + analysis_name + "&head=" + fileheader + "&upload_type=" + upload_type + "&col_header=" + col_header_str + "&timestamp=" + t;
 
         document.getElementById('previewFrame').contentWindow.location.replace(url_text);
         document.getElementById('previewFrame').style.display = "inline";
