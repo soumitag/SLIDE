@@ -1,4 +1,4 @@
-This folder contains example input data files and sample information files for `**SLIDE**`.
+This folder contains example input data files and sample information files for **`SLIDE`**.
 
 
 GSE42638_quantiled_log_transformed.txt:
