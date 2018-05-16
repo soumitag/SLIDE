@@ -29,25 +29,10 @@ To configure **SLIDE** on your local computer please
 ## License  
 
 Systems-Level Interactive Data Exploration (SLIDE) is a user-driven interactive visualization tool for large-scale –omics data. This document describes the step-by-step guideline for using SLIDE’s functionalities. SLIDE is distributed under the BSD license. See the LICENSE.txt in the source
-distribution or [here](https://opensource.org/licenses/BSD-2-Clause).
-
-   
+distribution or [here](https://opensource.org/licenses/BSD-2-Clause).  
 
 
 
-#### **Repository Structure**
-The respository contains the following three folders:
-<dl>
 
-<dt>application</dt> 
-<dd>The entire content of this folder needs to be downloaded to install SLIDE locally on your PC.</dd>
-
-<dt>data</dt>
-<dd>This folder contains example datasets and sample mapping files.</dd>
-
-<dt>source</dt> 
-<dd>This folder contains the source code for SLIDE.</dd>
-
-</dl>
 
 
