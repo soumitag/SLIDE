@@ -28,7 +28,7 @@ Before you can configure **SLIDE** to run in your local environment, please inst
 * Scipy (Python Package)
 * fastcluster (Python Package)  
 
-Please refer to the installation guide for more details
+Please refer to the installation guide ([Windows](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf) / [macOS](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_macOS_Installation_Guide.pdf) for more details
 
 ## Inputs to **SLIDE**
 
