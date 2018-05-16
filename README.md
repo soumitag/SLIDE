@@ -1,6 +1,8 @@
 # Systems-Level Interactive Data Exploration (SLIDE)  
 ## User-driven Visualization of Large-scale -omics Data on a Web-browser  
 
+**SLIDE** is available at: http://137.132.97.109/VTBox/ 
+
 **SLIDE** is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. SLIDE can organize and visualize quantitative -omics data in expression based heatmaps on a standard web browser. It allows users to interactively navigate through the heatmaps 
 and create sub-analyses of selected feature sets. It can be used to visualize the data at different levels of granularity through multiple simultaneous views.
 
@@ -28,7 +30,7 @@ Before you can configure **SLIDE** to run in your local environment, please inst
 * Scipy (Python Package)
 * fastcluster (Python Package)  
 
-Please refer to the installation guide ([Windows](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf) / [macOS](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_macOS_Installation_Guide.pdf)) for more details
+Please refer to the installation guide ([Windows](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf) / [macOS](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_macOS_Installation_Guide.pdf)) for more details.
 
 ## Inputs to **SLIDE**
 
@@ -42,7 +44,7 @@ symbols, Ensemble IDs (gene or transcript), RefSeq Accession ID or Uniprot ID. I
 visualize the data without any standard identifiers, although search and tagging of genes will not be
 available in this case.
 
-Sample input data files can be found [here](https://github.com/soumitag/SLIDE/tree/master/data)
+Sample input data files can be found [here](https://github.com/soumitag/SLIDE/tree/master/data).
 
 ### Sample Information File  
 
@@ -53,7 +55,7 @@ information, which determines column ordering during visualization.
 
 If sample grouping or replicate information is not available, no sample information file is required in that case.
 
-Example sample information files can be found [here](https://github.com/soumitag/SLIDE/tree/master/data)
+Example sample information files can be found [here](https://github.com/soumitag/SLIDE/tree/master/data).
 
 Please refer to the [User Manual](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Users_Manual.pdf) for more details on the input data file and sample information file formats. 
 
