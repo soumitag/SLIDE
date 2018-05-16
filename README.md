@@ -16,7 +16,46 @@ and create sub-analyses of selected feature sets. It can be used to visualize th
 
 **SLIDE** is available both as an [online version](http://137.132.97.109/VTBox/) as well as a stand-alone version (for installation on user's computer).  
 
-To configure **SLIDE** on your local computer please 
+### Prerequisites (for local installation)  
+
+Before you can configure **SLIDE** to run in your local environment, please install the following softwares:  
+
+* Java Development Kit (JDK)
+* GlassFish Server
+* MongoDB  
+* Python
+* Numpy (Python Package) 
+* Scipy (Python Package)
+* fastcluster (Python Package)  
+
+Please refer to the installation guide for more details
+
+## Inputs to **SLIDE**
+
+### Input Data
+
+**SLIDE** takes an input data file containing the matrix of expression values in a text delimited format
+(comma, tab, space, semi-colon, pipe). The data file should not contain single or double quotes. For
+querying and tagging of features (genes), the input data file must have at least one column containing
+the following identifiers (referred to as meta data column in SLIDE): Entrez ID, official gene
+symbols, Ensemble IDs (gene or transcript), RefSeq Accession ID or Uniprot ID. It is still possible to
+visualize the data without any standard identifiers, although search and tagging of genes will not be
+available in this case.
+
+Sample input data files can be found [here](https://github.com/soumitag/SLIDE/tree/master/data)
+
+### Sample Information File  
+
+Sample information file should be prepared in a text file with a specific delimiter (comma, tab,
+space, semi-colon, pipe), where each line contains the meta data for a sample, whose quantitative
+molecular data is in a column in the input data. The file is used to infer replicate and sample group
+information, which determines column ordering during visualization.  
+
+If sample grouping or replicate information is not available, no sample information file is required in that case.
+
+Example sample information files can be found [here](https://github.com/soumitag/SLIDE/tree/master/data)
+
+Please refer to the [User Manual](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Users_Manual.pdf) for more details on the input data file and sample information file formats. 
 
 ## Organization of **SLIDE** Repository
 
