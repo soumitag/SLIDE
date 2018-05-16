@@ -1,13 +1,15 @@
-This folder contains example input data files and sample information files for **`SLIDE`**.  
+## Introduction
 
-##Dataset 1  (Brandes _et_ _al._ )
+This folder contains example input data files and sample information files for **SLIDE**.  
+
+## Sample Dataset 1  (Brandes _et_ _al._ )
 
 * **Input Data File** Brandes_et_al_GSE42638_Quantiled_Log_Transformed_Data.txt
 * **Sample Information File** Brandes_et_al_GSE42638_Sample_Information.txt
 
 The input data has been quantile normalized and log base 2 transformed.
 
-##Dataset 2  (Tan _et_ _al._ )
+## Sample Dataset 2  (Tan _et_ _al._ )
 
 * **Input Data File** Tan_et_al_Post_Pre_Mouse_Infection_Data.txt
 * **Sample Information File** Tan_et_al_Post_Pre_Mouse_Infection_Sample_Information.txt
