@@ -7,7 +7,7 @@
 
 * [Online Version](http://137.132.97.109/VTBox/) 
 * [User Manual](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Users_Manual.pdf)
-* [Stand-alone Version](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip)(for installation on user's computer) 
+* [Stand-alone Version](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip) (for installation on user's computer) 
 * [Windows Installation Guide](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf)  
 * [macOS Installation Guide](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_macOS_Installation_Guide.pdf)
 
