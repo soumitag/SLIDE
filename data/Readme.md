@@ -2,7 +2,7 @@
 
 This folder contains example input data files and sample information files for **SLIDE**.  
 
-## Sample Dataset 1  (Brandes _et_ _al._ )
+### Sample Dataset 1  (Brandes _et_ _al._ )
 
 * **Input Data File** Brandes_et_al_GSE42638_Quantiled_Log_Transformed_Data.txt
 * **Sample Information File** Brandes_et_al_GSE42638_Sample_Information.txt
