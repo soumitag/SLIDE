@@ -243,12 +243,24 @@ public final class Data implements Serializable {
         processNonMetaCols(selectedSampleNames, logTransformData, replicate_handling, groupBy);
         transformData(column_normalization_strategy, row_normalization_strategy);
         
-        if (!this.identifier_name.equals(identifier_name)) {
-            //this.entrezIdentifierMap = metadata.mapFeatureIdentifiers(species, identifier_name, features);
+        // set dummy identifier for the case when no metadata columns are available
+        if (this.identifier_name == null) {
             metadata.mapFeatureIdentifiers(species, identifier_name, features);
-            this.identifier_name = identifier_name;
-        }
+            this.identifier_name = "entrez_2021158607524066";
+        } else {
         
+            if (!this.identifier_name.equals(identifier_name)) {
+                //this.entrezIdentifierMap = metadata.mapFeatureIdentifiers(species, identifier_name, features);
+                metadata.mapFeatureIdentifiers(species, identifier_name, features);
+                this.identifier_name = identifier_name;
+                
+                if (this.identifier_name == null) {
+                    this.identifier_name = "entrez_2021158607524066";
+                }
+                
+            }
+        
+        }
         this.DATA_MIN_MAX = computeDataRange();
     }
     
@@ -847,9 +859,11 @@ public final class Data implements Serializable {
             if (metacol_identifier_mappings.size() > 0) {
                 List <String> mapped_metacols = new ArrayList <>(metacol_identifier_mappings.keySet());
                 this.identifier_name = mapped_metacols.get(0);
-            } else {
+            } else if (unmapped_metacol_map.size() > 0) {
                 List <String> unmapped_metacols = new ArrayList <>(unmapped_metacol_map.keySet());
                 this.identifier_name = unmapped_metacols.get(0);
+            } else {
+                this.identifier_name = "entrez_2021158607524066";
             }
             metadata.mapFeatureEntrezs(species, features);
             //this.entrezIdentifierMap = metadata.mapFeatureIdentifiers(species, this.identifier_name, features);

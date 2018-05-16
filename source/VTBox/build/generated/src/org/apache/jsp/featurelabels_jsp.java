@@ -135,28 +135,7 @@ try {
             
             for (int i=(int)start; i<=(int)end; i++) {
                 int index = linkage_tree.leaf_ordering.get(i);
-                /*
-                String entrez_i = db.features.get(index).entrez;
-                if (db.features.get(index).hasBadEntrez) {
-                    entrez_i = "-";
-                }
-                ArrayList <String> genesymbols = db.entrezIdentifierMap.get(entrez_i);
-                String genes;
-                if(db.identifier_name.equals("entrez_2021158607524066")) {
-                    genes = (genesymbols.get(0)).toUpperCase();
-                } else {
-                    if (db.metadata.hasStandardMetaData()) {
-                        genes = (genesymbols.get(0) + " (" + entrez_i + ")").toUpperCase();
-                    } else {
-                        genes = genesymbols.get(0).toUpperCase();
-                    }
-                }
                 
-                if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
-                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
-                    genes = Utils.checkAndRemoveHtml(genes);
-                }
-                */
                 String genes = db.features.get(index).getFormattedFeatureName(analysis);
                 
                 double mid = feature_height*(i - start) + feature_height*0.60;
