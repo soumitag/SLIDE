@@ -39,7 +39,7 @@ Please refer to the installation guide ([Windows](https://github.com/soumitag/SL
 **SLIDE** takes an input data file containing the matrix of expression values in a text delimited format
 (comma, tab, space, semi-colon, pipe). The data file should not contain single or double quotes. For
 querying and tagging of features (genes), the input data file must have at least one column containing
-the following identifiers (referred to as meta data column in SLIDE): Entrez ID, official gene
+the following identifiers (referred to as meta data column in **SLIDE**): Entrez ID, official gene
 symbols, Ensemble IDs (gene or transcript), RefSeq Accession ID or Uniprot ID. It is still possible to
 visualize the data without any standard identifiers, although search and tagging of genes will not be
 available in this case.
