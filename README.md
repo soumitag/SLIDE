@@ -1,7 +1,8 @@
 # Systems-Level Interactive Data Exploration (SLIDE)  
 ## User-driven Visualization of Large-scale -omics Data on a Web-browser  
 
-**SLIDE** is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. It can be used for intuitive and fast visualization as well as real-time exploration of the data. 
+**SLIDE** is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. SLIDE can organize and visualize quantitative -omics data in expression based heatmaps on a standard web browser. It allows users to interactively navigate through the heatmaps 
+and create sub-analyses of selected feature sets. It can be used to visualize the data at different levels of granularity through multiple simultaneous views.
 
 ## Resources
 
@@ -12,6 +13,12 @@
 * [macOS Installation Guide](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_macOS_Installation_Guide.pdf)
 
 ## Setup
+
+
+## License  
+
+Systems-Level Interactive Data Exploration (SLIDE) is a user-driven interactive visualization tool for large-scale –omics data. This document describes the step-by-step guideline for using SLIDE’s functionalities. SLIDE is distributed under the BSD license. See the LICENSE.txt in the source
+distribution or [here](https://opensource.org/licenses/BSD-2-Clause).
 
 
 #### **Availability**
