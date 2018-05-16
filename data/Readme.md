@@ -9,7 +9,7 @@ This folder contains example input data files and sample information files for *
 
 The input data has been quantile normalized and log base 2 transformed.
 
-## Sample Dataset 2  (Tan _et_ _al._ )
+### Sample Dataset 2  (Tan _et_ _al._ )
 
 * **Input Data File** Tan_et_al_Post_Pre_Mouse_Infection_Data.txt
 * **Sample Information File** Tan_et_al_Post_Pre_Mouse_Infection_Sample_Information.txt
