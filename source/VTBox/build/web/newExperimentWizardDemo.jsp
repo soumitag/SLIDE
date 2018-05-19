@@ -322,14 +322,9 @@ try {
 	win.focus();
     }
 			
-    function giveDemoDataFile() {
-        var win = window.open("https://github.com/soumitag/SLIDE/blob/master/data/GSE42641_data_formatted_final_small_114.txt", '_blank');
+    function takeToData() {
+        var win = window.open("https://github.com/soumitag/SLIDE/tree/master/data", '_blank');
 	win.focus();
-    }
-			
-    function giveDemoMAppingFile() {
-        var win = window.open("https://github.com/soumitag/SLIDE/blob/master/data/GSE42638_SampleMappings.txt", '_blank');
-        win.focus();
     }
 			
     function takeToIssues() {
@@ -358,8 +353,7 @@ try {
                 <div class="dropdown-content" style="z-index: 10">
                     <a href="#" onclick="giveManual()" > Download User Manual </a>
                     <a href="#" onclick="takeToIssues()" > Report An Issue </a>
-                    <a href="#" onclick="giveDemoDataFile()" > Download Example Data File </a>
-                    <a href="#" onclick="giveDemoMAppingFile()" > Download Example Sample Information File </a>
+                    <a href="#" onclick="takeToData()" > Download Example Data and Sample Information Files </a>
                 </div>
             </div>
         </div>

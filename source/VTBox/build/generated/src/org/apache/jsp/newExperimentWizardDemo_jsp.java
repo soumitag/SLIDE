@@ -372,14 +372,9 @@ try {
       out.write("\twin.focus();\n");
       out.write("    }\n");
       out.write("\t\t\t\n");
-      out.write("    function giveDemoDataFile() {\n");
-      out.write("        var win = window.open(\"https://github.com/soumitag/SLIDE/blob/master/data/GSE42641_data_formatted_final_small_114.txt\", '_blank');\n");
+      out.write("    function takeToData() {\n");
+      out.write("        var win = window.open(\"https://github.com/soumitag/SLIDE/tree/master/data\", '_blank');\n");
       out.write("\twin.focus();\n");
-      out.write("    }\n");
-      out.write("\t\t\t\n");
-      out.write("    function giveDemoMAppingFile() {\n");
-      out.write("        var win = window.open(\"https://github.com/soumitag/SLIDE/blob/master/data/GSE42638_SampleMappings.txt\", '_blank');\n");
-      out.write("        win.focus();\n");
       out.write("    }\n");
       out.write("\t\t\t\n");
       out.write("    function takeToIssues() {\n");
@@ -408,8 +403,7 @@ try {
       out.write("                <div class=\"dropdown-content\" style=\"z-index: 10\">\n");
       out.write("                    <a href=\"#\" onclick=\"giveManual()\" > Download User Manual </a>\n");
       out.write("                    <a href=\"#\" onclick=\"takeToIssues()\" > Report An Issue </a>\n");
-      out.write("                    <a href=\"#\" onclick=\"giveDemoDataFile()\" > Download Example Data File </a>\n");
-      out.write("                    <a href=\"#\" onclick=\"giveDemoMAppingFile()\" > Download Example Sample Information File </a>\n");
+      out.write("                    <a href=\"#\" onclick=\"takeToData()\" > Download Example Data and Sample Information Files </a>\n");
       out.write("                </div>\n");
       out.write("            </div>\n");
       out.write("        </div>\n");
