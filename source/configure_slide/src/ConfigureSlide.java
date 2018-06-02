@@ -11,6 +11,7 @@ import com.mongodb.MongoException;
 import com.mongodb.ServerAddress;
 import com.mongodb.util.JSON;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class ConfigureSlide {
     
@@ -580,6 +583,7 @@ public class ConfigureSlide {
             DB db_hs = null;
             
             boolean mongoHasStarted = false;
+            boolean unzip_flag = false;
             int wait_seconds = 0;
             while (!mongoHasStarted) {
                 TimeUnit.MILLISECONDS.sleep(1000);
@@ -604,6 +608,7 @@ public class ConfigureSlide {
             DBObject obj;
             for (int i=0; i<collection_names.length; i++) {
                 
+                String unzipPath = install_dir + File.separator + "db";
                 print("\tImporting collection " + (i+1) + " of 13...");
                 
                 // Process MM
@@ -613,6 +618,10 @@ public class ConfigureSlide {
                 collection.drop();
                 
                 collection = db_mm.getCollection(collection_name);
+                unzip_flag = unzipJSON (collection_name, unzipPath);
+                if(unzip_flag){
+                    print("\n\tUnzipped collection " + collection_name);
+                }
                 ArrayList <String> JSONs = readJSONFile(
                         install_dir + File.separator + "db" + File.separator + collection_name + ".json");
                 for (String entry : JSONs) {
@@ -627,6 +636,10 @@ public class ConfigureSlide {
                 collection.drop();
                 
                 collection = db_hs.getCollection(collection_name);
+                unzip_flag = unzipJSON (collection_name, unzipPath);
+                if(unzip_flag){
+                    print("\n\tUnzipped collection " + collection_name);
+                }
                 JSONs = readJSONFile(
                         install_dir + File.separator + "db" + File.separator + collection_name + ".json");
                 for (String entry : JSONs) {
@@ -634,7 +647,7 @@ public class ConfigureSlide {
                     collection.insert(obj);
                 }
                 
-                println("done");
+                println("\tdone");
             }
             
             mongoClient.close();
@@ -662,6 +675,37 @@ public class ConfigureSlide {
     
     private void print(Object o) {
         System.out.print(o.toString());
+    }
+    
+    private boolean unzipJSON(String zipJSONFile, String outputPath){
+        byte[] buffer = new byte[1024];
+        String absoluteFilePath = outputPath + File.separator + zipJSONFile + ".zip";
+        try {
+            ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(absoluteFilePath));
+            ZipEntry entry = zipInputStream.getNextEntry();
+            
+            while(entry != null){
+                String zipFileName = entry.getName();
+                File unZipFileName = new File (outputPath + File.separator + zipFileName);
+               
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(unZipFileName)); 
+                int read;
+                while((read = zipInputStream.read(buffer))!= -1) {
+                    bos.write(buffer, 0, read);
+                }
+                
+                zipInputStream.closeEntry();
+                entry = zipInputStream.getNextEntry();
+                bos.flush();
+                bos.close();                 
+            }
+            
+        } catch (Exception e){
+            System.out.println(e);
+        } finally {
+            
+        }
+        return true;
     }
     
     private ArrayList <String> readJSONFile(String filename) throws IOException {
