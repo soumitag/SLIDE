@@ -674,8 +674,8 @@ try {
     <input type="hidden" name="txtFromRow" id="txtFromRow" value="" />
     <input type="hidden" name="txtToRow" id="txtToRow" value="" />
     <input type="hidden" name="isDemo" id="isDemo" value="yes" />
-    <input type="hidden" name="fileinput_fullpath" id="fileinputname" value="<%=installPath%>\\demo_data\\Brandes_et_al_GSE42638_Quantiled_Log_Transformed_Data.txt" />
-    <input type="hidden" name="mapfile_fullpath" id="mapfilename" value="<%=installPath%>\\demo_data\\Brandes_et_al_GSE42638_Sample_Information.txt" />
+    <input type="hidden" name="fileinput_fullpath" id="fileinputname" value="<%=installPath + File.separator%>demo_data<%=File.separator%>Brandes_et_al_GSE42638_Quantiled_Log_Transformed_Data.txt" />
+    <input type="hidden" name="mapfile_fullpath" id="mapfilename" value="<%=installPath + File.separator%>demo_data<%=File.separator%>Brandes_et_al_GSE42638_Sample_Information.txt" />
     
     
 
