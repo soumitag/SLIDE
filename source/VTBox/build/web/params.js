@@ -16,6 +16,7 @@ function columnScaling(num){
 }
 
 function rowScaling(num){
+    //alert("row scale option" +num);
     var rowscale = document.getElementsByName("normRule_Row");
     rowscale[num].checked = true;
 }

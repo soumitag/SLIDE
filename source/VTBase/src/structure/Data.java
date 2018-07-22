@@ -26,6 +26,7 @@ import vtbase.DataParsingException;
 
 import data.transforms.Imputer;
 import data.transforms.Normalizer;
+import params.TransformationParams;
 import utils.FileHandler;
 import vtbase.SlideException;
 
@@ -1000,7 +1001,7 @@ public final class Data implements Serializable {
     
     
     
-    public Data cloneDB (ArrayList <Integer> filtered_row_indices) 
+    public Data cloneDB (ArrayList <Integer> filtered_row_indices, TransformationParams tp) 
     throws DataParsingException, SlideException {
         
         Data cloneData = new Data();
@@ -1031,7 +1032,8 @@ public final class Data implements Serializable {
         float[][] filtered_raw_data = new float[filtered_row_indices.size()][datacells.width];
         ArrayList <Feature> filtered_features = new ArrayList <> ();
         for (int i=0; i<filtered_row_indices.size(); i++) {
-            filtered_raw_data[i] = datacells.dataval[filtered_row_indices.get(i)];
+            //filtered_raw_data[i] = datacells.dataval[filtered_row_indices.get(i)];
+            filtered_raw_data[i] = raw_data[filtered_row_indices.get(i)];
             filtered_features.add(features.get(filtered_row_indices.get(i)));
         }
         cloneData.raw_data = filtered_raw_data;
@@ -1043,9 +1045,11 @@ public final class Data implements Serializable {
         //cloneData.entrezIdentifierMap = metadata.mapFeatureIdentifiers(cloneData.species, cloneData.identifier_name, cloneData.features);
         cloneData.metadata.mapFeatureIdentifiers(cloneData.species, cloneData.identifier_name, cloneData.features);
         
-        cloneData.processNonMetaCols(false);
-        transformData(Normalizer.COL_NORMALIZATION_NONE, Normalizer.ROW_NORMALIZATION_NONE);
-        cloneData.setClippingRange("none", Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
+        //cloneData.processNonMetaCols(false);
+        //cloneData.setClippingRange("none", Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
+        cloneData.setClippingRange(tp.clipping_type, tp.clip_min, tp.clip_max);
+        cloneData.processNonMetaCols (cloneData.sampleNames, tp.log_transform, tp.replicate_handling, tp.group_by);
+        cloneData.transformData(Normalizer.COL_NORMALIZATION_NONE, tp.row_normalization);
         cloneData.DATA_MIN_MAX = cloneData.computeDataRange();
         
         return cloneData;

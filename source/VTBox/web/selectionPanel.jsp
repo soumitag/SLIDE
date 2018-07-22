@@ -398,6 +398,11 @@ try {
         <script>
             
             replicateHandling(<%=analysis.data_transformation_params.replicate_handling%>);
+            
+            checkDataClipMinMax(<%=analysis.data_transformation_params.getClippingType()%>, <%=analysis.data_transformation_params.clip_min%>, <%=analysis.data_transformation_params.clip_max%>);
+            checkLogTransform(<%=analysis.data_transformation_params.log_transform%>);
+            rowScaling(<%=analysis.data_transformation_params.row_normalization%>);
+            
             groupBy(<%=analysis.data_transformation_params.getGroupByIndex()%>);
             colorBins(<%=analysis.visualization_params.nBins%>);
             binRange(<%=analysis.visualization_params.getBinRangeTypeIndex()%>);

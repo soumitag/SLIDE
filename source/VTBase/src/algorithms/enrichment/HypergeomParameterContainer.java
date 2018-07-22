@@ -133,11 +133,18 @@ public class HypergeomParameterContainer implements Serializable {
                 if (Double.isNaN(p_value) || Double.isInfinite(p_value)) {
                     p_value = 0.99;
                 }
-
-                //System.out.println("P: " + Math.log10(p_value));
+                
+                double p_value_before_log = p_value;
                 p_value = (float) -Math.log10(p_value);
                 funcgrp_featlist_pvalue_map.put(makeKey(funcgrp_names.get(i), featlist_names.get(j)), p_value);
 
+                /*
+                System.out.println( featlist_names.get(j) + "\t" + 
+                                    funcgrp_names.get(i) + "\t" + 
+                                    n_k_N_K[0] + "\t" + n_k_N_K[1] + "\t" + n_k_N_K[2] + "\t" + n_k_N_K[3] + "\t" + 
+                                    p_value_before_log + "\t" + p_value
+                                );
+                */
             }
         }
         

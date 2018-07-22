@@ -191,12 +191,17 @@ public class AnalysisContainer implements Serializable {
         }
         
         sub_analysis.isMasterAnalysis = false;
-        sub_analysis.setDatabase(database.cloneDB(filtered_entrez_ids));
+        sub_analysis.setDatabase(database.cloneDB(filtered_entrez_ids, this.data_transformation_params));
         
         // initialize following variables as in init.jsp
         TransformationParams tp = new TransformationParams();
         tp.setReplicateHandling(this.data_transformation_params.replicate_handling);
         tp.setGroupBy(this.data_transformation_params.group_by);
+        tp.setRowNormalization(this.data_transformation_params.row_normalization);
+        tp.setClippingType(this.data_transformation_params.clipping_type);
+        tp.setClipMax(this.data_transformation_params.clip_max);
+        tp.setClipMin(this.data_transformation_params.clip_min);
+        tp.setLogTransform(this.data_transformation_params.log_transform);
         sub_analysis.setDataTransformationParams(tp);
         
         sub_analysis.setClusteringParams(new ClusteringParams());

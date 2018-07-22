@@ -343,10 +343,7 @@ try {
       out.write("                                ");
  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) { 
       out.write("\n");
-      out.write("                                Raw Value: ");
-      out.print( analysis.database.raw_data[original_row_id][i] );
-      out.write(",\n");
-      out.write("                                Transformed Value: ");
+      out.write("                                Value: ");
       out.print( analysis.database.datacells.dataval[original_row_id][i] );
       out.write("\n");
       out.write("                                ");
