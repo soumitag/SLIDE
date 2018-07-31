@@ -11,8 +11,11 @@ import com.mongodb.DBObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import searcher.GeneObject;
 import searcher.Searcher;
 import vtbase.DataParsingException;
@@ -133,7 +136,8 @@ public class MetaData implements Serializable {
         for (int i=0; i<this.nFeatures; i++) {
             
             usesBadEntrez = false;
-            ArrayList <String> db_entrezs = new ArrayList <> ();
+            //ArrayList <String> db_entrezs = new ArrayList <> ();
+            HashSet <String> db_entrezs = new HashSet <String> ();
             
             String entrez_in = "";
             if (hasEntrezData) {
@@ -303,21 +307,25 @@ public class MetaData implements Serializable {
         query = query.trim().toUpperCase();
         
         String[] metacol_values = this.metadata_in.get(qualified_metacol_name);
-        for (int i=0; i<metacol_values.length; i++) {
-            Feature f = features.get(i);
-            if (f.hasBadEntrez) {
-                if (metacol_values[i] != null && metacol_values[i].contains(query)) {
-                    CompactSearchResultContainer csrc = new CompactSearchResultContainer();
-                    csrc.createGeneSearchResult(f.entrez, metacol_values[i]);
-                    current_search_results.add(csrc);
+        if (metacol_values != null) {
+            for (int i=0; i<metacol_values.length; i++) {
+                Feature f = features.get(i);
+                if (f.hasBadEntrez) {
+                    if (metacol_values[i] != null && metacol_values[i].contains(query)) {
+                        CompactSearchResultContainer csrc = new CompactSearchResultContainer();
+                        csrc.createGeneSearchResult(f.entrez, metacol_values[i]);
+                        current_search_results.add(csrc);
+                    }
                 }
             }
         }
         return current_search_results;
     }
     
-    private String getConsensusValue (ArrayList <String> values) {
-        return values.get(0);
+    private String getConsensusValue (HashSet <String> values) {
+        //return values.get(0);
+        Iterator iter = values.iterator();
+        return (String) iter.next();
     }
     
 }

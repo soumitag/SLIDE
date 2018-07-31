@@ -7,6 +7,7 @@ package structure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import utils.Utils;
 
 /**
@@ -43,13 +44,14 @@ public class Feature implements Serializable {
         }
     }
     
-    public void setEntrezs (String entrez, boolean isBadEntrez, ArrayList<String> entrez_ids){
+    public void setEntrezs (String entrez, boolean isBadEntrez, HashSet <String> entrez_ids){
         this.entrez = entrez;
         this.hasBadEntrez = isBadEntrez;
         if (!isBadEntrez) {
             if (entrez_ids != null && entrez_ids.size() > 0) {
                 // entrez_ids must contain entrez
-                this.entrez_ids = entrez_ids;
+                this.entrez_ids = new ArrayList <String> (entrez_ids);
+                
             } else {
                 this.entrez_ids = new ArrayList <> ();
                 this.entrez_ids.add(entrez);

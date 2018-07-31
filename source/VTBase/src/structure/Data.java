@@ -28,6 +28,7 @@ import data.transforms.Imputer;
 import data.transforms.Normalizer;
 import params.TransformationParams;
 import utils.FileHandler;
+import utils.Sorter;
 import vtbase.SlideException;
 
 /**
@@ -1084,7 +1085,8 @@ public final class Data implements Serializable {
                     false, 
                     Normalizer.COL_NORMALIZATION_NONE,
                     Normalizer.ROW_NORMALIZATION_NONE, 
-                    Data.REPLICATE_HANDLING_NONE);
+                    Data.REPLICATE_HANDLING_NONE
+            );
         } catch (Exception e) {
             return null;
         }

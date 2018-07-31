@@ -129,7 +129,7 @@ public class EnrichmentAnalysis implements Serializable {
         
     }
     
-    public void run () {
+    public void run (HashMap <Integer, String> list_order_map) {
         
         try {
             
@@ -139,7 +139,7 @@ public class EnrichmentAnalysis implements Serializable {
             compute_K(geneMap2);
             compute_k(geneMap2);
 
-            testParams.computeHyperGeom();
+            testParams.computeHyperGeom(list_order_map);
             testParams.filterFunctionalGroupList(MIN_BIG_K, MIN_SMALL_k, SIGNIFICANCE_LEVEL);
 
             mongoClient.close();

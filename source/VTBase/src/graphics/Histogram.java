@@ -69,14 +69,15 @@ public class Histogram implements Serializable {
     
     public byte getBinNum_Int(double val){
         
-        byte binnum = (byte)Math.floor((val - MIN_VAL)/binsize);
+        //byte binnum = (byte)Math.floor((val - MIN_VAL)/binsize);
+        int binnum = (int)Math.floor((val - MIN_VAL)/binsize);
         
         if (binnum < 0) {
             return (byte)(0);
         } else if (binnum >= nBins) {
             return (byte)(nBins-1);
         } else {
-            return binnum;
+            return (byte)binnum;
         }
     }
     

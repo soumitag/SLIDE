@@ -251,7 +251,7 @@ try {
                         <option id="genesymbol" value="genesymbol_2021158607524066" >Gene Symbol</option>
                         <option id="refseq" value="refseq_2021158607524066" >RefSeq Gene</option>
                         <option id="ensembl_gene_id" value="ensembl_gene_id_2021158607524066" >Ensembl Gene Id</option>
-                        <option id="ensembl_transcript_id" value="ensembl_transcript_id_2021158607524066" >Ensembl Gene Id</option>
+                        <option id="ensembl_transcript_id" value="ensembl_transcript_id_2021158607524066" >Ensembl Transcript Id</option>
                         <option id="ensembl_protein_id" value="ensembl_protein_id_2021158607524066" >Ensembl Protein Id</option>
                         <option id="uniprot_id" value="uniprot_id_2021158607524066" >Uniprot Id</option>
                     <%  }   %>

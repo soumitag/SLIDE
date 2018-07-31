@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
+import utils.Sorter;
 
 /**
  *
@@ -112,7 +113,7 @@ public class HypergeomParameterContainer implements Serializable {
         return n_k_N_K;
     }
     
-    public HashMap <List <String>, Double> computeHyperGeom() {
+    public HashMap <List <String>, Double> computeHyperGeom(HashMap <Integer, String> list_order_map) {
 
         funcgrp_featlist_pvalue_map = new HashMap <List <String>, Double> ();
         
@@ -147,6 +148,29 @@ public class HypergeomParameterContainer implements Serializable {
                 */
             }
         }
+
+        float[] p_values = new float[funcgrp_names.size()];
+        for (int i = 0; i < funcgrp_names.size(); i++) {
+            List<String> key = HypergeomParameterContainer.makeKey(funcgrp_names.get(i), list_order_map.get(0));
+            p_values[i] = funcgrp_featlist_pvalue_map.get(key).floatValue();
+        }
+
+        //sort
+        Sorter sorter = new Sorter(p_values);
+        int row_order[] = sorter.getSortOrder();
+        
+        ArrayList <String> sorted_funcgrp_names = new ArrayList <String> ();
+        for (int i = 0; i < funcgrp_names.size(); i++) {
+            sorted_funcgrp_names.add(funcgrp_names.get(row_order[i]));
+        }
+        
+        ArrayList <String> sorted_featlist_names = new ArrayList <String> ();
+        for (int j = 0; j < featlist_names.size(); j++) {
+            sorted_featlist_names.add(list_order_map.get(j));
+        }
+        
+        this.funcgrp_names = sorted_funcgrp_names;
+        this.featlist_names = sorted_featlist_names;
         
         return funcgrp_featlist_pvalue_map;
     }

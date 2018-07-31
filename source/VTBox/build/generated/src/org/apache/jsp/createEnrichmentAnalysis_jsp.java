@@ -118,9 +118,13 @@ try {
             String feature_list_names = request.getParameter("feature_list_names");
             
             ArrayList <String> specified_feature_list_names = new ArrayList <String> ();
+            HashMap <Integer, String> list_order_map = new HashMap <Integer, String> ();
             StringTokenizer st = new StringTokenizer (feature_list_names, ",");
+            int lcount = 0;
             while (st.hasMoreTokens()) {
-                specified_feature_list_names.add(st.nextToken().trim());
+                String list_name = st.nextToken().trim();
+                specified_feature_list_names.add(list_name);
+                list_order_map.put(lcount++, list_name);
             }
             
             HashMap <String, ArrayList <Integer>> selected_filter_list_maps = 
@@ -187,7 +191,7 @@ try {
                     analysis.database.features, analysis.entrezPosMap, selected_filter_list_maps,
                     analysis.database.species, enrichment_type, big_K, small_k, significance_level, 
                     ontologies);
-            ea.run();
+            ea.run(list_order_map);
             //ea.closeDBconn();
             
             if (ea.testParams.nonmasked_funcgrp_count > 0) {
