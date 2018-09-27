@@ -4,8 +4,11 @@
 **SLIDE** is available at: http://137.132.97.109/VTBox/ 
 
 **SLIDE** is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. SLIDE can organize and visualize quantitative -omics data in expression based heatmaps on a standard web browser. It allows users to interactively navigate through the heatmaps 
-and create sub-analyses of selected feature sets. It can be used to visualize the data at different levels of granularity through multiple simultaneous views.
+and create sub-analyses of selected feature sets. It can be used to visualize the data at different levels of granularity through multiple simultaneous views.  
 
+If you use this tool, please cite:  
+
+Soumita Ghosh, Abhik Datta, Kaisen Tan, Hyungwon Choi; SLIDE – a web-based tool for interactive visualization of large-scale – omics data, *Bioinformatics*, , bty534, https://doi.org/10.1093/bioinformatics/bty534
 ## Resources
 
 * [Online Version](http://137.132.97.109/VTBox/) 
