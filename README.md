@@ -8,7 +8,9 @@ and create sub-analyses of selected feature sets. It can be used to visualize th
 
 If you use this tool, please cite the following work:  
 
-Soumita Ghosh, Abhik Datta, Kaisen Tan, Hyungwon Choi; __SLIDE – a web-based tool for interactive visualization of large-scale – omics data__, *Bioinformatics*, , bty534, https://doi.org/10.1093/bioinformatics/bty534
+Soumita Ghosh, Abhik Datta, Kaisen Tan, Hyungwon Choi; __SLIDE – a web-based tool for interactive visualization of large-scale – omics data__, *Bioinformatics*, , bty534, https://doi.org/10.1093/bioinformatics/bty534  
+
+![Feature-level visualization](bty534f1.png)
 ## Resources
 
 * [Online Version](http://137.132.97.109/VTBox/) 
