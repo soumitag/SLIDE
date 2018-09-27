@@ -3,6 +3,8 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import algorithms.clustering.BinaryTree;
+import graphics.layouts.ScrollViewLayout;
 import vtbox.SessionUtils;
 import java.util.ArrayList;
 import structure.CompactSearchResultContainer;
@@ -55,6 +57,8 @@ public final class mapView_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
+      out.write("\n");
 
 
 try {
@@ -68,40 +72,18 @@ try {
     String[] headers = database.current_sample_names;
     
     Heatmap heatmap = analysis.heatmap;
-    
-    int TABLE_HEIGHT = 760;
-    int CELL_HEIGHT = 20;
-    
-    double BORDER_STROKE_WIDTH = 0.5;
-    
     short[][][] rgb = heatmap.getRasterAsArray(imagename);
     
-    int MIN_TABLE_WIDTH = 500;
-    int CELL_WIDTH = (int)Math.max(20.0, Math.floor(MIN_TABLE_WIDTH/rgb.length));
-    int TABLE_WIDTH = (int)Math.max(MIN_TABLE_WIDTH, CELL_WIDTH*rgb.length);
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
     
-    String show_search_tags = "yes";     // default is always Yes; No is only used in print mode
-    String show_histogram = "no";       // default is always No; Yes is only used in print mode
-    
-    String print_mode = request.getParameter("print_mode");
-    if (print_mode == null) {
-        print_mode = "no";
-    } else if (print_mode.equalsIgnoreCase("yes")) {
-        show_search_tags = request.getParameter("detailed_view_incl_search_tags");
-        show_histogram = request.getParameter("detailed_view_incl_hist");
-        //int start = Integer.parseInt(request.getParameter("print_start"));
-        //int end = Integer.parseInt(request.getParameter("print_end"));
-        //heatmap.buildMapImage(start, end);
-        //rgb = heatmap.getRaster();
-    }
-    
-    
-    // used only in print mode
-    double left_buffer = 10.0;
-    double column_width = 20.0;
-    double gap = 5.0;
-    ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
-    double search_result_width = left_buffer + search_results.size()*column_width + (search_results.size()-1)*gap;
+    int TABLE_HEIGHT = (int)layout.MAP_HEIGHT;
+    int CELL_HEIGHT = (int)layout.CELL_HEIGHT;
+    double BORDER_STROKE_WIDTH = layout.BORDER_STROKE_WIDTH;
+    int CELL_WIDTH = (int)layout.CELL_WIDTH;
+    int TABLE_WIDTH = (int)layout.MAP_WIDTH;
+    int HEADER_LABEL_SIZE = (int)layout.SAMPLE_LABEL_FONT_SIZE;
+    int HEADER_HEIGHT = (int)ScrollViewLayout.COLUMN_HEADER_HEIGHT;
+
 
       out.write("\n");
       out.write("<html>\n");
@@ -109,12 +91,26 @@ try {
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
       out.write("        <style>\n");
       out.write("        \n");
-      out.write("            .container{\n");
+      out.write("            .map_container{\n");
       out.write("                position: absolute;\n");
       out.write("                border: 0px solid black;\n");
       out.write("                left: 2px; \n");
-      out.write("                top: 100px;\n");
-      out.write("                width: 250px;\n");
+      out.write("                top: ");
+      out.print(HEADER_HEIGHT);
+      out.write("px;\n");
+      out.write("                width: ");
+      out.print(TABLE_WIDTH);
+      out.write("px;\n");
+      out.write("            }\n");
+      out.write("            \n");
+      out.write("            .header_container{\n");
+      out.write("                position: absolute;\n");
+      out.write("                border: 0px solid black;\n");
+      out.write("                left: 2px; \n");
+      out.write("                top: 0px;\n");
+      out.write("                width: ");
+      out.print(TABLE_WIDTH);
+      out.write("px;\n");
       out.write("            }\n");
       out.write("            \n");
       out.write("        </style>\n");
@@ -128,60 +124,6 @@ try {
       out.write("            \n");
       out.write("            function selectGene(i, j, entrez, genesymbol) {\n");
       out.write("                alert('Entrez: ' + entrez + ', Genesymbol: ' + genesymbol);\n");
-      out.write("            }\n");
-      out.write("            \n");
-      out.write("            function copyElementsForPrint() {\n");
-      out.write("                \n");
-      out.write("                // copy the feature labels\n");
-      out.write("                var scrollPanel = opener.parent.document.getElementById('scrollPanel');\n");
-      out.write("                var scrollView = scrollPanel.contentDocument || scrollPanel.contentWindow.document;\n");
-      out.write("                \n");
-      out.write("                var featureLabelsPanel = scrollView.getElementById('featureLabelsPanel');\n");
-      out.write("                var featureLabels = featureLabelsPanel.contentDocument || featureLabelsPanel.contentWindow.document;\n");
-      out.write("                \n");
-      out.write("                var feature_labels_g = featureLabels.getElementById('feature_labels_g');\n");
-      out.write("                var feature_labels_g_1 = cloneToDoc(feature_labels_g);\n");
-      out.write("        \n");
-      out.write("                ");
- if (show_search_tags.equals("yes")) { 
-      out.write("\n");
-      out.write("                    // copy the search tags\n");
-      out.write("                    var detailSearchPanel = scrollView.getElementById('detailSearchPanel');\n");
-      out.write("                    var detailSearchView = detailSearchPanel.contentDocument || detailSearchPanel.contentWindow.document;\n");
-      out.write("\n");
-      out.write("                    var search_g = detailSearchView.getElementById('search_g');\n");
-      out.write("                    var search_g_1 = cloneToDoc(search_g);\n");
-      out.write("                    //alert(\"1\");\n");
-      out.write("                    // transform and place elements\n");
-      out.write("                    //feature_labels_g_1.transform.baseVal.getItem(0).setTranslate(");
-      out.print(TABLE_WIDTH);
-      out.write(",0);\n");
-      out.write("                    search_g_1.setAttribute('transform','translate(");
-      out.print(TABLE_WIDTH);
-      out.write(",0)');\n");
-      out.write("                ");
- } else {
-                    search_result_width = 0;
-                } 
-      out.write("\n");
-      out.write("                \n");
-      out.write("                ");
- if (show_histogram.equals("yes")) { 
-      out.write("\n");
-      out.write("                    \n");
-      out.write("                ");
- } 
-      out.write("\n");
-      out.write("                \n");
-      out.write("                feature_labels_g_1.setAttribute('transform','translate(");
-      out.print(TABLE_WIDTH+search_result_width+3);
-      out.write(",0)');\n");
-      out.write("                \n");
-      out.write("                var chart = document.getElementById('svg_heat_map');\n");
-      out.write("                chart.appendChild(feature_labels_g_1);\n");
-      out.write("                chart.appendChild(search_g_1);\n");
-      out.write("                \n");
-      out.write("                //alert('Done');\n");
       out.write("            }\n");
       out.write("            \n");
       out.write("            function loadHistogram() {\n");
@@ -224,62 +166,52 @@ try {
       out.write("        </script>\n");
       out.write("        \n");
       out.write("    </head>\n");
-      out.write("    <body style=\"overflow-y: hidden\">\n");
+      out.write("    <body style=\"overflow-y: hidden; margin: 0px\">\n");
+      out.write("        <div class=\"header_container\" id='headerDiv' border=\"0\">\n");
       out.write("        <svg id='svg_header' \n");
       out.write("             xmlns:svg=\"http://www.w3.org/2000/svg\"\n");
       out.write("             xmlns=\"http://www.w3.org/2000/svg\"\n");
       out.write("             version=\"1.1\"\n");
       out.write("             width=\"");
-      out.print(TABLE_WIDTH+80);
+      out.print(TABLE_WIDTH);
       out.write("\"\n");
       out.write("             height=\"");
-      out.print(TABLE_HEIGHT);
+      out.print(HEADER_HEIGHT);
       out.write("\">\n");
       out.write("        \n");
       out.write("        <g id=\"heatmap_header\">\n");
       out.write("            ");
- double hy = 95; 
+ double hy = HEADER_HEIGHT-5; 
       out.write("\n");
       out.write("            ");
  for(int i = 0; i < headers.length; i++) { 
       out.write("\n");
       out.write("                ");
- 
-                    double hx_line = (int)((i+0.5)*CELL_WIDTH);
-                    double hx_text = (int)(i*CELL_WIDTH); //(heatmap.CELL_WIDTH)/2.0 + j*heatmap.CELL_WIDTH - 5.0;
+
+                    double hx_text = (int)((i+0.5)*CELL_WIDTH) + HEADER_LABEL_SIZE/2.0;
                 
       out.write("\n");
       out.write("                <text x='");
       out.print(hx_text);
       out.write("' y='");
       out.print(hy);
-      out.write("' font-family=\"Verdana\" font-size=\"10\" fill=\"black\" transform=\"translate(4 -6) rotate(-45 ");
+      out.write("' font-family=\"Verdana\" font-size=\"");
+      out.print(HEADER_LABEL_SIZE);
+      out.write("\" fill=\"black\" transform=\"rotate(-90 ");
       out.print(hx_text);
       out.write(' ');
       out.print(hy);
       out.write(")\"> ");
       out.print(headers[i]);
       out.write(" </text>\n");
-      out.write("                <line x1='");
-      out.print(hx_line);
-      out.write("' y1='");
-      out.print(hy);
-      out.write("' x2='");
-      out.print(hx_line+100);
-      out.write("' y2='");
-      out.print(hy);
-      out.write("' style=\"stroke:rgb(100,100,155); stroke-width:1\" transform=\"translate(0 -6) rotate(-45 ");
-      out.print(hx_line);
-      out.write(' ');
-      out.print(hy);
-      out.write(")\"/>\n");
       out.write("            ");
  } 
       out.write("\n");
       out.write("        </g>\n");
-      out.write("        \n");
       out.write("        </svg>\n");
-      out.write("        <div class=\"container\" id='containerDiv' border=\"0\">\n");
+      out.write("        </div>\n");
+      out.write("        \n");
+      out.write("        <div class=\"map_container\" id='containerDiv' border=\"0\">\n");
       out.write("        <svg id='svg_heat_map' \n");
       out.write("             xmlns:svg=\"http://www.w3.org/2000/svg\"\n");
       out.write("             xmlns=\"http://www.w3.org/2000/svg\"\n");
@@ -368,16 +300,9 @@ try {
       out.write("            </g>\n");
       out.write("        </svg>\n");
       out.write("        </div>\n");
+      out.write("        \n");
       out.write("    </body>\n");
-      out.write("    <script>\n");
-      out.write("        ");
- if (print_mode.equals("yes"))  {    
-      out.write("\n");
-      out.write("            copyElementsForPrint();\n");
-      out.write("        ");
- } 
-      out.write("\n");
-      out.write("    </script>\n");
+      out.write("    \n");
       out.write("</html>\n");
       out.write("\n");
 

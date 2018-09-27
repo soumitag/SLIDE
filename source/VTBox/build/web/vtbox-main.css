@@ -177,6 +177,15 @@ button:disabled {
     text-align: center;
 }
 
+.count_msg {
+    text-align: center;
+    font-family: verdana;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: italic;
+    color: #444;
+}
+
 .sys_msg {
     text-align: center;
     font-family: verdana;

@@ -53,58 +53,61 @@ public class DoSearch extends HttpServlet {
 
             ArrayList <CompactSearchResultContainer> current_search_results = new ArrayList <CompactSearchResultContainer> ();
 
-            if (queryType != null && queryType.equals("pathid") || queryType.equals("pathname")) {
+            StringTokenizer st = new StringTokenizer(searchString, ",");
+            if (queryType != null) {
+                if (queryType.equals("pathid") || queryType.equals("pathname")) {
 
-                StringTokenizer st = new StringTokenizer(searchString, ",");
-
-                while(st.hasMoreTokens()) {
-                    ArrayList <PathwayObject> part_paths = searcher.processPathQuery(st.nextToken(), searchType, queryType);
-                    for(int i = 0; i < part_paths.size(); i++) {
-                        PathwayObject path = part_paths.get(i);
-                        for (int j = 0; j < path.entrez_ids.size(); j++) {
-                            CompactSearchResultContainer csrc = new CompactSearchResultContainer();
-                            csrc.createPathwaySearchResult(path.entrez_ids.get(j), path._id, path.pathway);
-                            current_search_results.add(csrc);
+                    while(st.hasMoreTokens()) {
+                        ArrayList <PathwayObject> part_paths = searcher.processPathQuery(st.nextToken(), searchType, queryType);
+                        for(int i = 0; i < part_paths.size(); i++) {
+                            PathwayObject path = part_paths.get(i);
+                            for (int j = 0; j < path.entrez_ids.size(); j++) {
+                                CompactSearchResultContainer csrc = new CompactSearchResultContainer();
+                                csrc.createPathwaySearchResult(path.entrez_ids.get(j), path._id, path.pathway);
+                                current_search_results.add(csrc);
+                            }
                         }
                     }
-                }
 
-            } else if (queryType != null && queryType.equals("goid") || queryType.equals("goterm")) {
+                } else if (queryType.equals("goid") || queryType.equals("goterm")) {
 
-                StringTokenizer st = new StringTokenizer(searchString, ",");
-
-                while(st.hasMoreTokens()) {
-                    ArrayList <GoObject> part_go_terms = searcher.processGOQuery(st.nextToken(), searchType, queryType);
-                    for(int i = 0; i < part_go_terms.size(); i++){
-                        GoObject go = part_go_terms.get(i);
-                        for (int j = 0; j < go.entrez_ids.size(); j++) {
-                            CompactSearchResultContainer csrc = new CompactSearchResultContainer();
-                            csrc.createGOSearchResult(go.entrez_ids.get(j), go.goID, go.goTerm);
-                            current_search_results.add(csrc);
+                    while(st.hasMoreTokens()) {
+                        ArrayList <GoObject> part_go_terms = searcher.processGOQuery(st.nextToken(), searchType, queryType);
+                        for(int i = 0; i < part_go_terms.size(); i++){
+                            GoObject go = part_go_terms.get(i);
+                            for (int j = 0; j < go.entrez_ids.size(); j++) {
+                                CompactSearchResultContainer csrc = new CompactSearchResultContainer();
+                                csrc.createGOSearchResult(go.entrez_ids.get(j), go.goID, go.goTerm);
+                                current_search_results.add(csrc);
+                            }
                         }
                     }
-                }
 
-            } else if (queryType != null && queryType.equals("entrez") || queryType.equals("genesymbol") || queryType.equals("refseq")
-                        || queryType.equals("ensembl_gene_id") || queryType.equals("ensembl_transcript_id") || queryType.equals("ensembl_protein_id")
-                        || queryType.equals("uniprot_id")) {
+                } else if (queryType.equals("entrez") || queryType.equals("genesymbol") || queryType.equals("refseq")
+                            || queryType.equals("ensembl_gene_id") || queryType.equals("ensembl_transcript_id") || queryType.equals("ensembl_protein_id")
+                            || queryType.equals("uniprot_id")) {
 
-                StringTokenizer st = new StringTokenizer(searchString, ",");
-
-                while(st.hasMoreTokens()) {
-                    String qString = st.nextToken();
-                    ArrayList <GeneObject> part_genes = searcher.processGeneQuery(qString, searchType, queryType);
-                    for(int i = 0; i < part_genes.size(); i++){
-                        GeneObject gene = part_genes.get(i);
-                        CompactSearchResultContainer csrc = new CompactSearchResultContainer();
-                        csrc.createGeneSearchResult(gene.entrez_id, gene.gene_identifier);
-                        current_search_results.add(csrc);
+                    while(st.hasMoreTokens()) {
+                        String qString = st.nextToken();
+                        ArrayList <GeneObject> part_genes = searcher.processGeneQuery(qString, searchType, queryType);
+                        for(int i = 0; i < part_genes.size(); i++){
+                            GeneObject gene = part_genes.get(i);
+                            CompactSearchResultContainer csrc = new CompactSearchResultContainer();
+                            csrc.createGeneSearchResult(gene.entrez_id, gene.gene_identifier);
+                            current_search_results.add(csrc);
+                        }
+                        current_search_results.addAll(
+                                analysis.database.metadata.searchMetadata(analysis.database.features, queryType, qString)
+                        );
                     }
-                    current_search_results.addAll(
-                            analysis.database.metadata.searchMetadata(analysis.database.features, queryType, qString)
-                    );
+
+                } else if (queryType.startsWith("_")) {
+                    while(st.hasMoreTokens()) {
+                        current_search_results.addAll(
+                            analysis.database.metadata.searchNonStandardMetadata(analysis.database.features, queryType, st.nextToken())
+                        );
+                    }
                 }
-                
             }
 
             ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;

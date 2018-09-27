@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.DrillDownPanelLayout;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
 import java.util.Set;
@@ -53,6 +54,7 @@ public final class dendrogram_jsp extends org.apache.jasper.runtime.HttpJspBase
       _jspx_out = out;
       _jspx_resourceInjector = (org.glassfish.jsp.api.ResourceInjector) application.getAttribute("com.sun.appserv.jsp.resource.injector");
 
+      out.write("\n");
       out.write("\n");
       out.write("\n");
       out.write("\n");
@@ -143,9 +145,9 @@ try {
       out.write("                    dend_lines[i].style.stroke = \"rgb(0,0,0)\";\n");
       out.write("                }\n");
       out.write("                //alert(node_id);\n");
-      out.write("                var tag_div = document.getElementById('tag_' + node_id);\n");
+      out.write("                //var tag_div = document.getElementById('tag_' + node_id);\n");
       out.write("                //alert(tag_div);\n");
-      out.write("                tag_div.style.display = \"inline\";\n");
+      out.write("                //tag_div.style.display = \"inline\";\n");
       out.write("                //alert(tag_div);\n");
       out.write("                \n");
       out.write("                //alert(descendant_ids);\n");
@@ -172,9 +174,9 @@ try {
       out.write("                    dend_lines[i].style.stroke = \"rgb(192,192,192)\";\n");
       out.write("                }\n");
       out.write("                //alert(node_id);\n");
-      out.write("                var tag_div = document.getElementById('tag_' + node_id);\n");
+      out.write("                //var tag_div = document.getElementById('tag_' + node_id);\n");
       out.write("                //alert(tag_div);\n");
-      out.write("                tag_div.style.display = \"none\";\n");
+      out.write("                //tag_div.style.display = \"none\";\n");
       out.write("                //alert(tag_div);\n");
       out.write("                \n");
       out.write("                //alert(descendant_ids);\n");
@@ -244,7 +246,9 @@ try {
             btree.computeEdgeCoordinatesPostOrder (treeMap, treeMap.get(root_node_id));
             
             int imgWidth = 300;
-            int imgHeight = 750;
+            //int imgHeight = 750;
+            DrillDownPanelLayout layout = analysis.visualization_params.drill_down_layout;
+            int imgHeight = (int)layout.DENDROGRAM_VIEW_FIG_HEIGHT;
 
             btree.rescaleEdgeCoordinates(treeMap, imgHeight, imgWidth);
         
@@ -450,6 +454,7 @@ try {
   }   
       out.write("\n");
       out.write("        \n");
+      out.write("        <!--\n");
       out.write("        <text id=\"tag_");
       out.print(node_id);
       out.write("\" x=\"");
@@ -465,7 +470,7 @@ try {
       out.write(' ');
       out.print(N.end);
       out.write("</text>\n");
-      out.write("        \n");
+      out.write("        -->\n");
       out.write("        ");
   
                 }

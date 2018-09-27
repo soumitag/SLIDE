@@ -3,6 +3,8 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.VizualizationHomeLayout;
+import graphics.layouts.ScrollViewLayout;
 import vtbox.SessionUtils;
 import structure.CompactSearchResultContainer;
 import java.util.ArrayList;
@@ -54,6 +56,8 @@ public final class visualizationHome_jsp extends org.apache.jasper.runtime.HttpJ
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
     
@@ -75,19 +79,14 @@ try {
         hdiFrame_width = 285 + (search_results.size()*32) + "";
     }
     
-    String scrollPanel_width = "730";
-    if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
-        if (search_results.size() == 0) {
-            scrollPanel_width = "730";
-        } else {
-            scrollPanel_width = 730 + (search_results.size()*32) + "";
-        }
-    }  else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
-            analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
-        scrollPanel_width = "880";
-    }
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    int scrollPanel_width = (int)(layout.DETAILED_VIEW_IFRAME_WIDTH + layout.getFeatureLabelWidth(analysis.visualizationType) + (search_results.size()*32) + 5);
+    int scrollPanel_height = (int)(analysis.visualization_params.viz_layout.getAvailableDetailedViewLength());
+    int drilldownPanel_height = (int)(analysis.visualization_params.viz_layout.getAvailableDrillDownPanelLength());
     
     String searchKeysFrame_width = "250";
+
+    VizualizationHomeLayout viz_layout = analysis.visualization_params.viz_layout;
 
 
       out.write("\n");
@@ -189,7 +188,9 @@ try {
       out.write("            win.focus();\n");
       out.write("        }\n");
       out.write("    \n");
-      out.write("        \n");
+      out.write("        function scrollGlobalTo(next_start) {\n");
+      out.write("            document.getElementById(\"hdiFrame\").contentWindow.scrollGlobalTo(next_start);\n");
+      out.write("        }\n");
       out.write("    </script>\n");
       out.write("    <head>\n");
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
@@ -269,10 +270,12 @@ try {
       out.write("            Testing\n");
       out.write("        </div>\n");
       out.write("        \n");
-      out.write("        <table class=\"maintable\" height=\"99%\" width=\"1970px\" cellspacing=\"0\" cellpadding=\"0\"> \n");
+      out.write("        <table class=\"maintable\" height=\"");
+      out.print(viz_layout.VISUALIZATION_PANE_LENGTH-5);
+      out.write("\" cellspacing=\"0\" cellpadding=\"0\"> \n");
       out.write("\n");
       out.write("            <tr>\n");
-      out.write("                <td colspan=\"5\" name=\"ribbonPanel\" id=\"ribbonPanel\" height=\"5%\">\n");
+      out.write("                <td colspan=\"5\" name=\"ribbonPanel\" id=\"ribbonPanel\" height=\"50px\">\n");
       out.write("\n");
       out.write("                    <table width=\"100%\">\n");
       out.write("                        <tr>\n");
@@ -367,7 +370,7 @@ try {
       out.print(analysis_name);
       out.write("\" marginwidth=\"0\" height=\"100%\" width=\"");
       out.print(hdiFrame_width);
-      out.write("\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px; visibility: hidden\"></iframe>\n");
+      out.write("\" frameBorder=\"0\" style=\"position: relative; top: -20px; left: 0px; visibility: hidden\"></iframe>\n");
       out.write("                    <iframe name=\"invisible_Download_Frame\" id=\"invisible_Download_Frame\" src=\"\" marginwidth=\"0\" height=\"0\" width=\"0\" frameBorder=\"0\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                \n");
@@ -383,23 +386,29 @@ try {
   if (do_clustering) { 
       out.write("\n");
       out.write("                \n");
-      out.write("                <td rowspan=\"2\" height=\"100%\"> \n");
+      out.write("                <td rowspan=\"2\" height=\"100%\" width=\"");
+      out.print(scrollPanel_width+10);
+      out.write("\" align=\"top\" valign=\"top\"> \n");
       out.write("                    <iframe name=\"scrollPanel\" id=\"scrollPanel\" src=\"\" marginwidth=\"0\" height=\"100%\" width=\"");
       out.print(scrollPanel_width);
       out.write("\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                \n");
-      out.write("                <td rowspan=\"2\" height=\"100%\"> \n");
-      out.write("                    <iframe name=\"drillDownPanel\" id=\"drillDownPanel\" src=\"\" marginwidth=\"0\" height=\"100%\" width=\"800\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px\"></iframe>\n");
+      out.write("                <td rowspan=\"2\" height=\"100%\" align=\"top\" valign=\"top\"> \n");
+      out.write("                    <iframe name=\"drillDownPanel\" id=\"drillDownPanel\" src=\"\" marginwidth=\"0\" height=\"");
+      out.print(drilldownPanel_height);
+      out.write("\" width=\"800\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                \n");
       out.write("                ");
   } else {    
       out.write("\n");
       out.write("                \n");
-      out.write("                <td rowspan=\"2\" colspan=\"2\" height=\"100%\"> \n");
+      out.write("                <td rowspan=\"2\" colspan=\"2\" height=\"100%\" width=\"");
+      out.print(scrollPanel_width+10);
+      out.write("\" align=\"top\" valign=\"top\"> \n");
       out.write("                    <iframe name=\"scrollPanel\" id=\"scrollPanel\" src=\"\" marginwidth=\"0\" height=\"100%\" width=\"");
-      out.print(scrollPanel_width);
+      out.print(scrollPanel_width+10);
       out.write("\" frameBorder=\"0\" style=\"position: relative; top: 0px; left: 0px\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                \n");

@@ -3,6 +3,7 @@
     Created on : 15 Mar, 2017, 11:29:53 AM
     Author     : soumitag
 --%>
+<%@page import="graphics.layouts.DrillDownPanelLayout"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.AnalysisContainer"%>
 <%@page import="java.util.Set"%>
@@ -91,9 +92,9 @@ try {
                     dend_lines[i].style.stroke = "rgb(0,0,0)";
                 }
                 //alert(node_id);
-                var tag_div = document.getElementById('tag_' + node_id);
+                //var tag_div = document.getElementById('tag_' + node_id);
                 //alert(tag_div);
-                tag_div.style.display = "inline";
+                //tag_div.style.display = "inline";
                 //alert(tag_div);
                 
                 //alert(descendant_ids);
@@ -120,9 +121,9 @@ try {
                     dend_lines[i].style.stroke = "rgb(192,192,192)";
                 }
                 //alert(node_id);
-                var tag_div = document.getElementById('tag_' + node_id);
+                //var tag_div = document.getElementById('tag_' + node_id);
                 //alert(tag_div);
-                tag_div.style.display = "none";
+                //tag_div.style.display = "none";
                 //alert(tag_div);
                 
                 //alert(descendant_ids);
@@ -191,7 +192,9 @@ try {
             btree.computeEdgeCoordinatesPostOrder (treeMap, treeMap.get(root_node_id));
             
             int imgWidth = 300;
-            int imgHeight = 750;
+            //int imgHeight = 750;
+            DrillDownPanelLayout layout = analysis.visualization_params.drill_down_layout;
+            int imgHeight = (int)layout.DENDROGRAM_VIEW_FIG_HEIGHT;
 
             btree.rescaleEdgeCoordinates(treeMap, imgHeight, imgWidth);
         %>
@@ -256,8 +259,9 @@ try {
             <line id="<%=node_id%>_3" name="clust_<%=node_id%>" x1="<%=p2_x%>" y1="<%=p2_y%>" x2="<%=p3_x%>" y2="<%=p3_y%>" style="stroke:rgb(192,192,192);stroke-width:2" />
         <%  }   %>
         
+        <!--
         <text id="tag_<%=node_id%>" x="<%=(p2_x+5)%>" y="<%=(p2_y + p1_y)/2-5%>" font-family="Verdana" font-size="10" fill="blue" style="display: none"><%=node_id%>, <%=N.start%>, <%=N.end%></text>
-        
+        -->
         <%  
                 }
             }

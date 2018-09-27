@@ -4,6 +4,7 @@
     Author     : soumita
 --%>
 
+<%@page import="graphics.layouts.DrillDownPanelLayout"%>
 <%@page import="searcher.GeneObject"%>
 <%@page import="structure.MetaData"%>
 <%@page import="utils.Utils"%>
@@ -43,17 +44,12 @@ try {
         end = num_features;
     }
     
-    double image_height = 750.0;
+    //double image_height = 750.0;
+    DrillDownPanelLayout drill_down_layout = analysis.visualization_params.drill_down_layout;
+    int image_height = (int)drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT;
     num_features = end - start + 1;
     double feature_height = image_height/num_features;
     
-    ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
-    
-    double left_buffer = 10.0;
-    double column_width = 20.0;
-    double gap = 5.0;
-    
-    //double image_width = left_buffer + search_results.size()*column_width + (search_results.size()-1)*gap;
     double image_width = 200.0;
     if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
         image_width = 200.0;

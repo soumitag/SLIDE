@@ -92,7 +92,6 @@ public class AnalysisContainer implements Serializable {
     
     public void setDatabase (Data database) {
         this.database = database;
-        state_variables.init(database.metadata.nFeatures);
     }
     
     public void setClusteringParams (ClusteringParams clustering_params) {
@@ -101,6 +100,11 @@ public class AnalysisContainer implements Serializable {
     
     public void setVisualizationParams (VisualizationParams visualization_params) {
         this.visualization_params = visualization_params;
+        this.state_variables.setDetailedViewStart(0);
+        this.state_variables.setDetailedViewEnd(
+                Math.min(this.visualization_params.detailed_view_map_layout.NUM_DISPLAY_FEATURES, 
+                        this.database.metadata.nFeatures-1)
+        );
     }
     
     public void setEnrichmentParams (EnrichmentParams enrichment_params) {
@@ -206,7 +210,7 @@ public class AnalysisContainer implements Serializable {
         
         sub_analysis.setClusteringParams(new ClusteringParams());
         
-        VisualizationParams vp = new VisualizationParams();
+        VisualizationParams vp = new VisualizationParams(sub_analysis.database.datacells.width, sub_analysis.visualizationType);
         vp.setNBins(this.visualization_params.nBins);
         vp.setBinRangeType(this.visualization_params.bin_range_type);
         vp.setBinRangeStart(this.visualization_params.bin_range_start);
@@ -214,14 +218,7 @@ public class AnalysisContainer implements Serializable {
         vp.setRowLabelType(this.visualization_params.row_label_type);
         vp.setHeatmapColorScheme(this.visualization_params.heatmap_color_scheme);
         sub_analysis.setVisualizationParams(vp);
-        
-        /*
-        state_variables = new HashMap <String, Double> ();
-        state_variables.put("detailed_view_start", 0.0);
-        state_variables.put("detailed_view_end", 37.0);
-        sub_analysis.setStateVariables(state_variables);
-        */
-        
+
         ArrayList<ArrayList<CompactSearchResultContainer>> search_results
                                     = new ArrayList<ArrayList<CompactSearchResultContainer>>();
 
@@ -268,47 +265,17 @@ public class AnalysisContainer implements Serializable {
         } else if (ea.enrichmentType == EnrichmentAnalysis.TYPE_PATHWAY) {
             sub_analysis.visualizationType = AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION;
         } 
-        //sub_analysis.visualizationType = AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION;
         sub_analysis.setDatabase(database.cloneDBForEnrichment(ea));
         
-        // initialize following variables as in init.jsp
-        /*
-        HashMap <String, String> clustering_params = new HashMap<String, String>();
-        clustering_params.put("linkage", "");
-        clustering_params.put("distance_func", "");
-        clustering_params.put("do_clustering", "false");
-        clustering_params.put("use_cached", "false");
-        sub_analysis.setClusteringParams(clustering_params);
-        */
         sub_analysis.setClusteringParams(new ClusteringParams());
-
-        /*
-        HashMap <String, String> visualization_params = new HashMap<String, String>();
-        visualization_params.put("leaf_ordering_strategy", "0");   // largest cluster first
-        visualization_params.put("heatmap_color_scheme", "blue_red");
-        visualization_params.put("nBins", "21");
-        //visualization_params.put("bin_range_type", "data_bins");
-        //visualization_params.put("bin_range_start", "-1");
-        //visualization_params.put("bin_range_end", "1");
-        visualization_params.put("bin_range_type", "symmetric_bins");
-        visualization_params.put("bin_range_start", (-sub_analysis.database.DATA_MIN_MAX[1])+"");
-        visualization_params.put("bin_range_end", sub_analysis.database.DATA_MIN_MAX[1]+"");
-        sub_analysis.setVisualizationParams(visualization_params);
-        */
         
-        VisualizationParams visualization_params = new VisualizationParams();
+        VisualizationParams visualization_params = new VisualizationParams(sub_analysis.database.datacells.width, sub_analysis.visualizationType);
         visualization_params.setBinRangeType("symmetric_bins");
         visualization_params.setBinRangeStart(-(float)sub_analysis.database.DATA_MIN_MAX[1]);
         visualization_params.setBinRangeEnd((float)sub_analysis.database.DATA_MIN_MAX[1]);
         visualization_params.setNBins(51);
         sub_analysis.setVisualizationParams(visualization_params);
         
-        /*
-        HashMap <String, Double> enrichment_params = new HashMap <String, Double> ();
-        enrichment_params.put("significance_level", 0.05);
-        enrichment_params.put("small_k", 4.0);
-        enrichment_params.put("big_K", 5.0);
-        */
         sub_analysis.setEnrichmentParams(new EnrichmentParams());
         
         ArrayList<ArrayList<CompactSearchResultContainer>> search_results

@@ -230,7 +230,7 @@ public class AnalysisInitializer extends HttpServlet {
             
             analysis.setDataTransformationParams(new TransformationParams());
             analysis.setClusteringParams(new ClusteringParams());
-            analysis.setVisualizationParams(new VisualizationParams());
+            analysis.setVisualizationParams(new VisualizationParams(database.datacells.width, analysis.visualizationType));
             if(isDemo != null && isDemo.equalsIgnoreCase("yes")) {
                 analysis.visualization_params.bin_range_type = "start_end_bins";
                 analysis.visualization_params.bin_range_start = -3;

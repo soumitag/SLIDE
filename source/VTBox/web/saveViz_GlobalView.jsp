@@ -3,6 +3,7 @@
     Created on : Aug 30, 2017, 9:50:30 AM
     Author     : abhik
 --%>
+<%@page import="graphics.layouts.DrillDownPanelLayout"%>
 <%@page import="structure.Data"%>
 <%@page import="searcher.GeneObject"%>
 <%@page import="structure.MetaData"%>
@@ -36,7 +37,9 @@ try {
     String showHistogram = request.getParameter("show_hist");
     String showSearchTags = request.getParameter("show_search_tags");
     
-    int imgHeight = 750;
+    //int imgHeight = 750;
+    DrillDownPanelLayout drill_down_layout = analysis.visualization_params.drill_down_layout;
+    int imgHeight = (int)drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT;
     int histHeight = 200;
     double search_result_header_height = 40.0;
     double svg_height = imgHeight + search_result_header_height + 30.0 + histHeight + 100;
@@ -155,7 +158,7 @@ try {
                 </g>
 
                 <g id="heatmap_g">
-                    <image xlink:href="<%=base_url%>HeatmapImageServer?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" x="<%=left_offset%>px" y="40px" height="750px" width="250px" />
+                    <image xlink:href="<%=base_url%>HeatmapImageServer?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" x="<%=left_offset%>px" y="40px" height="<%=imgHeight%>px" width="250px" />
                 </g>
             <% 
                 left_offset = left_offset + globalHeatmapWidth + 10.0; 

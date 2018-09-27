@@ -21,14 +21,9 @@ public class StateVariables implements Serializable {
     
     public StateVariables() {
         sv_map = new HashMap <String, Object> ();
-    }
-    
-    public void init(int nFeatures) {
         Stack dendrogram_history = new Stack();
         dendrogram_history.push(new Integer[]{null,null,null});
         sv_map.put("dendrogram_history", dendrogram_history);
-        sv_map.put("detailed_view_start", 0);
-        sv_map.put("detailed_view_end", Math.min(37, nFeatures-1));
     }
     
     public int getDetailedViewStart() {

@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.DrillDownPanelLayout;
 import structure.Data;
 import searcher.GeneObject;
 import structure.MetaData;
@@ -71,6 +72,7 @@ public final class saveViz_005fGlobalView_jsp extends org.apache.jasper.runtime.
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("\n");
 
@@ -89,7 +91,9 @@ try {
     String showHistogram = request.getParameter("show_hist");
     String showSearchTags = request.getParameter("show_search_tags");
     
-    int imgHeight = 750;
+    //int imgHeight = 750;
+    DrillDownPanelLayout drill_down_layout = analysis.visualization_params.drill_down_layout;
+    int imgHeight = (int)drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT;
     int histHeight = 200;
     double search_result_header_height = 40.0;
     double svg_height = imgHeight + search_result_header_height + 30.0 + histHeight + 100;
@@ -299,7 +303,9 @@ try {
       out.print(imagename);
       out.write("\" x=\"");
       out.print(left_offset);
-      out.write("px\" y=\"40px\" height=\"750px\" width=\"250px\" />\n");
+      out.write("px\" y=\"40px\" height=\"");
+      out.print(imgHeight);
+      out.write("px\" width=\"250px\" />\n");
       out.write("                </g>\n");
       out.write("            ");
  

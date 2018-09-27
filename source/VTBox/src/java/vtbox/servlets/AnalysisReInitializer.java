@@ -6,6 +6,9 @@
 package vtbox.servlets;
 
 import data.transforms.Normalizer;
+import graphics.layouts.DrillDownPanelLayout;
+import graphics.layouts.ScrollViewLayout;
+import graphics.layouts.VizualizationHomeLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -65,6 +68,26 @@ public class AnalysisReInitializer extends HttpServlet {
             String binRangeType = "";
             String identifierType = "";
 
+            int detailed_view_res = ScrollViewLayout.RESOLUTION_PROFILE_20;
+            String detailed_view_sz = request.getParameter("detailed_view_sz");
+            if (detailed_view_sz != null && !detailed_view_sz.equals("")){
+                detailed_view_res = Integer.parseInt(detailed_view_sz);
+            }
+            
+            boolean use_square_cells;
+            String square_cell_flag = request.getParameter("square_cell_flag");
+            if(square_cell_flag == null || !square_cell_flag.equals("on")){
+                use_square_cells = false;
+            } else {
+                use_square_cells = true;
+            }
+            
+            int panel_lengths = VizualizationHomeLayout.VISUALIZATION_PANE_LENGTH_0;
+            String panel_sz = request.getParameter("panel_lengths");
+            if (panel_sz != null && !panel_sz.equals("")){
+                panel_lengths = Integer.parseInt(panel_sz);
+            }
+            
             // enrichment parameters' not used for gene level visualizations
             double significance_level = 0.0;
             int big_K = 0;
@@ -191,18 +214,6 @@ public class AnalysisReInitializer extends HttpServlet {
                 
             }
             
-            /*
-            HashMap <String, String> data_transformation_params = new HashMap <String, String> ();
-            data_transformation_params.put("replicate_handling", Integer.toString(replicate_handling));
-            data_transformation_params.put("clipping_type", clippingType);
-            data_transformation_params.put("clip_min", Float.toString(clip_min));
-            data_transformation_params.put("clip_max", Float.toString(clip_max));
-            data_transformation_params.put("log_transform", Boolean.toString(logTransformData));
-            data_transformation_params.put("column_normalization", Integer.toString(column_normalization));
-            data_transformation_params.put("row_normalization", Integer.toString(row_normalization));
-            data_transformation_params.put("group_by", groupBy);
-            */
-            
             TransformationParams data_transformation_params = new TransformationParams();
             data_transformation_params.setReplicateHandling(replicate_handling);
             data_transformation_params.setClippingType(clippingType);
@@ -213,39 +224,12 @@ public class AnalysisReInitializer extends HttpServlet {
             data_transformation_params.setRowNormalization(row_normalization);
             data_transformation_params.setGroupBy(groupBy);
             
-            /*
-            HashMap <String, String> clustering_params = new HashMap <String, String> ();
-            clustering_params.put("do_clustering", Boolean.toString(doCluster));
-            clustering_params.put("linkage", linkage);
-            clustering_params.put("distance_func", distance_func);
-            */
-            
             ClusteringParams clustering_params = new ClusteringParams();
             clustering_params.setDistanceFunc(distance_func);
             clustering_params.setLinkage(linkage);
             clustering_params.setDoClustering(doCluster);
             
-            /*
-            if (analysis.equalsClusteringParam(clustering_params) && analysis.equalsDataTransformationParam(data_transformation_params)) {
-                //clustering_params.put("use_cached", "true");
-                clustering_params.setUseCached(true);
-            } else {
-                //clustering_params.put("use_cached", "false");
-                clustering_params.setUseCached(false);
-            }
-            */
-
-            /*
-            HashMap <String, String> visualization_params = new HashMap <String, String> ();
-            visualization_params.put("leaf_ordering_strategy", leaf_ordering_strategy);
-            visualization_params.put("heatmap_color_scheme", heatmap_color_scheme);
-            visualization_params.put("nBins", nBins);
-            visualization_params.put("bin_range_type", binRangeType);
-            visualization_params.put("bin_range_start", rangeStart + "");
-            visualization_params.put("bin_range_end", rangeEnd + "");
-            */
-            
-            VisualizationParams visualization_params = new VisualizationParams();
+            VisualizationParams visualization_params = new VisualizationParams(database.datacells.width, analysis.visualizationType);
             visualization_params.setLeafOrderingStrategy(leaf_ordering_strategy);
             visualization_params.setNBins(Integer.parseInt(nBins));
             visualization_params.setBinRangeType(binRangeType);
@@ -253,20 +237,20 @@ public class AnalysisReInitializer extends HttpServlet {
             visualization_params.setBinRangeEnd((float)rangeEnd);
             visualization_params.setHeatmapColorScheme(heatmap_color_scheme);
             visualization_params.setRowLabelType(identifierType);
+            visualization_params.setViewLayout(new VizualizationHomeLayout(panel_lengths));
+            visualization_params.setDetailedViewMapLayout(new ScrollViewLayout(
+                    detailed_view_res, visualization_params.viz_layout.getAvailableDetailedViewLength(), 
+                    use_square_cells, database.datacells.width, analysis.visualizationType));
+            visualization_params.setDrillDownPanelLayout(new DrillDownPanelLayout(visualization_params.viz_layout));
             
             analysis.setDataTransformationParams(data_transformation_params);
             analysis.setClusteringParams(clustering_params);
             analysis.setVisualizationParams(visualization_params);
             
-            /*
-            HashMap <String, Double> state_variables = new HashMap <String, Double> ();
-            state_variables.put("detailed_view_start", 0.0);
-            state_variables.put("detailed_view_end", 37.0);
-            analysis.setStateVariables(state_variables);
-            */
             analysis.state_variables.setDetailedViewStart(0);
-            //analysis.state_variables.setDetailedViewEnd(Math.min(37, analysis.database.features.size()-1));
-            analysis.state_variables.setDetailedViewEnd(Math.min(37, analysis.database.metadata.nFeatures));
+            analysis.state_variables.setDetailedViewEnd(
+                    Math.min(visualization_params.detailed_view_map_layout.NUM_DISPLAY_FEATURES, 
+                    analysis.database.metadata.nFeatures));
             
             getServletContext().getRequestDispatcher("/visualizationHome.jsp?analysis_name=" + analysis_name).forward(request, response);
             

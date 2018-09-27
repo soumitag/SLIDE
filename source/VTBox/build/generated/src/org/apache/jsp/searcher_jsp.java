@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import java.util.ArrayList;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
 
@@ -48,6 +49,7 @@ public final class searcher_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
     
@@ -55,12 +57,23 @@ try {
     
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
+    ArrayList <String> nonstandard_metacolnames = analysis.database.metadata.getNonStandardMetaColNames();
+    
     boolean isSearchable = false;
-    if ((analysis.database.species.equalsIgnoreCase("human") || analysis.database.species.equalsIgnoreCase("mouse")) &&
-            (analysis.database.metadata.hasStandardMetaData() || (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
-                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION))) {
-        isSearchable = true;
+    
+    if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+        if (analysis.database.species.equalsIgnoreCase("human") || analysis.database.species.equalsIgnoreCase("mouse")) {
+            isSearchable = true;
+        }
+    } else {
+        if ((analysis.database.metadata.hasStandardMetaData() || nonstandard_metacolnames.size() > 0)) {
+            isSearchable = true;
+        } else {
+            isSearchable = false;
+        }
     }
+    
 
       out.write("\n");
       out.write("<html>\n");
@@ -87,7 +100,6 @@ try {
       out.write("            }\n");
       out.write("    \n");
       out.write("            var http = createRequestObject();\n");
-      out.write("           \n");
       out.write("\n");
       out.write("            function makeGetRequest (theGetText) {\n");
       out.write("                //make a connection to the server ... specifying that you intend to make a GET request \n");
@@ -170,39 +182,63 @@ try {
       out.write("                <tr style=\"vertical-align: middle\">\n");
       out.write("                             \n");
       out.write("                    <td valign=\"middle\">\n");
-      out.write("                        ");
-  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
-      out.write("\n");
       out.write("                        <select name=\"queryType\" id=\"queryType\" form=\"SearchForm\">\n");
-      out.write("                            <option value=\"entrez\">Entrez ID</option>\n");
-      out.write("                            <option value=\"genesymbol\">Gene Symbol</option>\n");
-      out.write("                            <option value=\"refseq\" >RefSeq ID</option>\n");
-      out.write("                            <option value=\"ensembl_gene_id\" >Ensembl gene ID</option>\n");
-      out.write("                            <option value=\"ensembl_transcript_id\" >Ensembl transcript ID</option>\n");
-      out.write("                            <option value=\"ensembl_protein_id\" >Ensembl protein ID</option>\n");
-      out.write("                            <option value=\"uniprot_id\" >UniProt ID</option>\n");
-      out.write("                            <option value=\"goid\">GO ID</option>\n");
-      out.write("                            <option value=\"goterm\">GO Term</option>\n");
+      out.write("                        ");
+  
+                        if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
+                            if (analysis.database.species.equalsIgnoreCase("human") || analysis.database.species.equalsIgnoreCase("mouse")) {
+                        
+      out.write("\n");
+      out.write("                                <option value=\"entrez\">Entrez ID</option>\n");
+      out.write("                                <option value=\"genesymbol\">Gene Symbol</option>\n");
+      out.write("                                <option value=\"refseq\" >RefSeq ID</option>\n");
+      out.write("                                <option value=\"ensembl_gene_id\" >Ensembl gene ID</option>\n");
+      out.write("                                <option value=\"ensembl_transcript_id\" >Ensembl transcript ID</option>\n");
+      out.write("                                <option value=\"ensembl_protein_id\" >Ensembl protein ID</option>\n");
+      out.write("                                <option value=\"uniprot_id\" >UniProt ID</option>\n");
+      out.write("                                <option value=\"goid\">GO ID</option>\n");
+      out.write("                                <option value=\"goterm\">GO Term</option>\n");
+      out.write("                                <option value=\"pathid\">Path ID</option>\n");
+      out.write("                                <option value=\"pathname\">Pathway</option>\n");
+      out.write("                        ");
+  }    
+      out.write("\n");
+      out.write("                        \n");
+      out.write("                        ");
+
+                                for (int i=0; i<nonstandard_metacolnames.size(); i++) {
+                                    String name = nonstandard_metacolnames.get(i);
+                        
+      out.write("\n");
+      out.write("                                    <option id=\"");
+      out.print(name);
+      out.write("\" value=\"_");
+      out.print(name);
+      out.write("\" >");
+      out.print(name);
+      out.write("</option>\n");
+      out.write("                        ");
+      }   
+      out.write("\n");
+      out.write("                        \n");
+      out.write("                        ");
+  } else if(analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION)  {   
+      out.write("\n");
+      out.write("                        \n");
       out.write("                            <option value=\"pathid\">Path ID</option>\n");
       out.write("                            <option value=\"pathname\">Pathway</option>\n");
-      out.write("                        </select>\n");
+      out.write("                        \n");
       out.write("                        ");
-  } else if(analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION)  {       
+  } else if(analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {  
       out.write("\n");
-      out.write("                        <select name=\"queryType\" id=\"queryType\" form=\"SearchForm\">\n");
-      out.write("                            <option value=\"pathid\">Path ID</option>\n");
-      out.write("                            <option value=\"pathname\">Pathway</option>\n");
-      out.write("                        </select>\n");
-      out.write("                        ");
-  } else if(analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION)  {       
-      out.write("\n");
-      out.write("                        <select name=\"queryType\" id=\"queryType\" form=\"SearchForm\">\n");
+      out.write("                        \n");
       out.write("                            <option value=\"goid\">GO ID</option>\n");
       out.write("                            <option value=\"goterm\">GO Term</option>\n");
-      out.write("                        </select>\n");
+      out.write("                        \n");
       out.write("                        ");
   }   
       out.write("\n");
+      out.write("                        </select>\n");
       out.write("                    </td>\n");
       out.write("                    <td valign=\"middle\">\n");
       out.write("                        <select name=\"searchType\" id=\"searchType\" form=\"SearchForm\">\n");

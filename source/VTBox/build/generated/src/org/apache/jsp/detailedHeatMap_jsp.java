@@ -3,6 +3,8 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.DrillDownPanelLayout;
+import graphics.layouts.ScrollViewLayout;
 import graphics.HeatmapData;
 import vtbox.SessionUtils;
 import java.util.Arrays;
@@ -58,6 +60,8 @@ public final class detailedHeatMap_jsp extends org.apache.jasper.runtime.HttpJsp
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("\n");
 
@@ -94,20 +98,22 @@ try {
         end = num_features - 1;
     }
     
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    DrillDownPanelLayout drill_down_layout = analysis.visualization_params.drill_down_layout;
+    
     Heatmap heatmap = analysis.heatmap;
-    int imgHeight = 750;
+    int imgHeight = (int)drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT;
     String imagename = heatmap.buildMapImage(
             start, end, 250, imgHeight, "detailed_heatmap_jsp", HeatmapData.TYPE_IMAGE);
-    //String imagewebpath = session.getAttribute("base_url") + "/temp/images/" + imagename;
-    //String imagewebpath = "http://localhost:8080/VTBox/images/" + imagename;
     
-    double scrollbox_height = (38.0/num_features)*(imgHeight*1.0);
+    
+    double scrollbox_height = ((layout.NUM_DISPLAY_FEATURES*1.0)/(num_features*1.0))*(imgHeight*1.0);
     scrollbox_height = Math.min(scrollbox_height, imgHeight);
     
-    double scrollbar_height = Math.max(scrollbox_height, 5.0);
+    double scrollbar_height = Math.max(scrollbox_height, 30.0);
     
     boolean show_scrollbar = true;
-    if (num_features<=38.0) {
+    if (num_features <= layout.NUM_DISPLAY_FEATURES) {
         show_scrollbar = false;
     }
     
@@ -132,7 +138,9 @@ try {
       out.write("                    border: 0px solid black;\n");
       out.write("                    left: 20px; \n");
       out.write("                    top: 2px;\n");
-      out.write("                    height: 750px;\n");
+      out.write("                    height: ");
+      out.print(drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT);
+      out.write("px;\n");
       out.write("                    width: 250px;\n");
       out.write("                }\n");
       out.write("\n");
@@ -141,7 +149,9 @@ try {
       out.write("                    border: 0px solid black;\n");
       out.write("                    left: 20px; \n");
       out.write("                    top: 2px;\n");
-      out.write("                    height: 750px;\n");
+      out.write("                    height: ");
+      out.print(drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT);
+      out.write("px;\n");
       out.write("                    width: 270px;\n");
       out.write("                }\n");
       out.write("                \n");
@@ -154,7 +164,9 @@ try {
       out.write("                    border: 0px solid black;\n");
       out.write("                    left: 2px; \n");
       out.write("                    top: 20px;\n");
-      out.write("                    height: 750px;\n");
+      out.write("                    height: ");
+      out.print(drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT);
+      out.write("px;\n");
       out.write("                    width: 250px;\n");
       out.write("                }\n");
       out.write("\n");
@@ -163,8 +175,10 @@ try {
       out.write("                    border: 0px solid black;\n");
       out.write("                    left: 2px; \n");
       out.write("                    top: 0px;\n");
-      out.write("                    height: 780px;\n");
-      out.write("                    width: 270px;\n");
+      out.write("                    height: ");
+      out.print(drill_down_layout.DDOWN_HEATMAP_PANEL_HEIGHT);
+      out.write("px;\n");
+      out.write("                    width: 250px;\n");
       out.write("                }\n");
       out.write("            \n");
       out.write("            ");
@@ -182,6 +196,7 @@ try {
       out.write("                color: red;\n");
       out.write("                border: 1px solid black;\n");
       out.write("                cursor: all-scroll;\n");
+      out.write("                background-color: rgb(180,180,180);\n");
       out.write("            }\n");
       out.write("            \n");
       out.write("            .slider_marker {\n");
@@ -259,13 +274,26 @@ try {
       out.write("                \n");
       out.write("                //var marker_height = document.getElementById('scrollerDiv').style.height;\n");
       out.write("                var marker_top = document.getElementById('scrollerDiv').style.top;\n");
-      out.write("                var imgH = 750.0;\n");
+      out.write("                var imgH = ");
+      out.print(drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT);
+      out.write(";\n");
       out.write("                //var marker_height_num = parseFloat(marker_height.substring(0,marker_height.length-2));\n");
       out.write("                var marker_top_num = parseFloat(marker_top.substring(0,marker_top.length-2));\n");
       out.write("                var start = Math.round( (marker_top_num/imgH)*num_rows );\n");
       out.write("                //var end = Math.floor( ((marker_top_num+marker_height_num)/imgH)*num_rows );\n");
       out.write("                                \n");
-      out.write("                parent.updateMap(start, start+49);\n");
+      out.write("                parent.updateMap(start, start+");
+      out.print(layout.NUM_DISPLAY_FEATURES);
+      out.write(");\n");
+      out.write("            }\n");
+      out.write("            \n");
+      out.write("            function scrollGlobalTo(next_start) {\n");
+      out.write("                var new_top = ((next_start*1.0)/(");
+      out.print(db.metadata.nFeatures);
+      out.write("*1.0))*");
+      out.print(drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT);
+      out.write("\n");
+      out.write("                document.getElementById('scrollerDiv').style.top = new_top + \"px\";\n");
       out.write("            }\n");
       out.write("            \n");
       out.write("            function showScrollerRect() {\n");
@@ -277,13 +305,6 @@ try {
       out.write("            }\n");
       out.write("            \n");
       out.write("            function showRect(start, end) {\n");
-      out.write("                //alert(\"Made it\");\n");
-      out.write("                //alert(start);\n");
-      out.write("                //alert(end);\n");
-      out.write("                //var y = (start - MAP_START)*SCALING_FACTOR;\n");
-      out.write("                //var h = (((end-start)+1)-MAP_START)*SCALING_FACTOR;\n");
-      out.write("                //alert(y);\n");
-      out.write("                //alert(h);\n");
       out.write("                \n");
       out.write("                var svgns = \"http://www.w3.org/2000/svg\";\n");
       out.write("                var rect = document.createElementNS(svgns, 'rect');\n");
@@ -333,13 +354,15 @@ try {
       out.write("                ");
   if (show_scrollbar) {   
       out.write("\n");
-      out.write("                <div class=\"slider\" id=\"scrollerDiv\" onmouseover=\"showScrollerRect()\" onmouseout=\"hideScrollerRect()\"></div>\n");
+      out.write("                <div class=\"slider\" id=\"scrollerDiv\" title=\"Drag to scroll detailed view\" onmouseover=\"showScrollerRect()\" onmouseout=\"hideScrollerRect()\"></div>\n");
       out.write("                <div class=\"slider_marker\" id=\"scrollerBox\"></div>\n");
       out.write("                ");
   }   
       out.write("\n");
       out.write("                \n");
-      out.write("                <svg width=\"250\" height=\"750\" id=\"heatmap_svg\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\" style=\"position: absolute; top: 0px; left: 0px\">\n");
+      out.write("                <svg width=\"250\" height=\"");
+      out.print(drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT);
+      out.write("\" id=\"heatmap_svg\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\" style=\"position: absolute; top: 0px; left: 0px\">\n");
       out.write("                <g id=\"heatmap_g\">\n");
       out.write("                    <image class=\"containerI\" id='heatImg' xlink:href=\"");
       out.print(base_url);
@@ -347,15 +370,21 @@ try {
       out.print(analysis_name);
       out.write("&imagename=");
       out.print(imagename);
-      out.write("\" x=\"0\" y=\"0\" height=\"750px\" width=\"250px\" />\n");
-      out.write("                    <rect x=\"0\" y=\"0\" height=\"750px\" width=\"250px\" style=\"fill: none; stroke: black; stroke-width: 1\" /> \n");
+      out.write("\" x=\"0\" y=\"0\" height=\"");
+      out.print(drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT);
+      out.write("px\" width=\"250px\" />\n");
+      out.write("                    <rect x=\"0\" y=\"0\" height=\"");
+      out.print(drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT);
+      out.write("px\" width=\"250px\" style=\"fill: none; stroke: black; stroke-width: 1\" /> \n");
       out.write("                </g>\n");
       out.write("               \n");
       out.write("                ");
       } else if (TYPE.equals("dendrogram_map"))   {   
       out.write("\n");
       out.write("                \n");
-      out.write("                <svg  width=\"250\" height=\"770\" id=\"heatmap_svg\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\" style=\"position: absolute; top: 0px; left: 0px\">\n");
+      out.write("                <svg  width=\"250\" height=\"");
+      out.print(drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT+20);
+      out.write("\" id=\"heatmap_svg\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\" style=\"position: absolute; top: 0px; left: 0px\">\n");
       out.write("                <g id=\"heatmap_g\">\n");
       out.write("                    <image class=\"containerI\" id='heatImg' xlink:href=\"");
       out.print(base_url);
@@ -363,8 +392,12 @@ try {
       out.print(analysis_name);
       out.write("&imagename=");
       out.print(imagename);
-      out.write("\" x=\"0\" y=\"20\" height=\"750px\" width=\"250px\" />\n");
-      out.write("                    <rect x=\"0\" y=\"20\" height=\"750px\" width=\"250px\" style=\"fill: none; stroke: black; stroke-width: 1\" /> \n");
+      out.write("\" x=\"0\" y=\"20\" height=\"");
+      out.print(drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT);
+      out.write("px\" width=\"250px\" />\n");
+      out.write("                    <rect x=\"0\" y=\"20\" height=\"");
+      out.print(drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT);
+      out.write("px\" width=\"250px\" style=\"fill: none; stroke: black; stroke-width: 1\" /> \n");
       out.write("                </g>\n");
       out.write("                \n");
       out.write("                <g>\n");

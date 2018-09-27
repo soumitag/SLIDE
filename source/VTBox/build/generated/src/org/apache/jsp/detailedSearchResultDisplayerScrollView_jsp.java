@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.ScrollViewLayout;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
 import algorithms.clustering.BinaryTree;
@@ -58,6 +59,7 @@ public final class detailedSearchResultDisplayerScrollView_jsp extends org.apach
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
 
@@ -70,11 +72,11 @@ try {
     
     HashMap <String, ArrayList <Integer>> entrezPosMap = analysis.entrezPosMap;
     
-    double num_features = 38;
+    //double num_features = 38;
     
     String refresh_type = request.getParameter("type");
     
-    double start, end;
+    double start;
     if (refresh_type != null && refresh_type.equals("search")) {
         start = analysis.state_variables.getDetailedViewStart();
     } else {
@@ -85,13 +87,23 @@ try {
             start = 0;
         }   
     }
+    start = (start < 0) ? 0 : start;
+    int current_start = analysis.state_variables.getDetailedViewStart();
+    start = (start >= analysis.database.metadata.nFeatures) ? current_start : start;
     
-    end = start + num_features - 1;
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    int end = layout.getEnd((int)start, analysis.database.metadata.nFeatures);
+    //end = start + num_features - 1;
+    //end = Math.min(end, analysis.database.metadata.nFeatures-1);
     
+    /*
     double image_height = 760.0;
-    
     double feature_height = 20.0;
+    */
     
+    double image_height = layout.MAP_HEIGHT;
+    double feature_height = layout.CELL_HEIGHT;
+
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
     
     double left_buffer = 10.0;
@@ -244,7 +256,7 @@ try {
       out.write("            <rect x=\"");
       out.print(left);
       out.write("\" y=\"0\" height=\"");
-      out.print(image_height);
+      out.print(layout.SEARCH_TAG_DIV_HEIGHT);
       out.write("px\" width=\"");
       out.print(column_width);
       out.write("px\" style=\"fill: #EEEEEE; z-index: 0\" />\n");

@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.ScrollViewLayout;
 import java.util.HashMap;
 import java.util.ArrayList;
 import structure.DataCells;
@@ -60,35 +61,45 @@ public final class getHeatmapData_jsp extends org.apache.jasper.runtime.HttpJspB
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("\n");
 
 
 try {
-    
+    String r = request.getParameter("rand");
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
     
     int start = Integer.parseInt(request.getParameter("start"));
+    int current_start = analysis.state_variables.getDetailedViewStart();
+    start = (start < 0) ? 0 : start;
+    start = (start >= analysis.database.metadata.nFeatures) ? current_start : start;
     
-    String r = request.getParameter("rand");
+    //int end = start + 37;
+    //end = Math.min(end, analysis.database.metadata.nFeatures-1);
+    
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    int end = layout.getEnd(start, analysis.database.metadata.nFeatures);
     
     Heatmap heatmap = analysis.heatmap;
-    
-    int TABLE_HEIGHT = 760;
-    int CELL_HEIGHT = 20;
-    
-    double BORDER_STROKE_WIDTH = 0.5;
-    
-    int end = start + 37;
-    end = Math.min(end, analysis.database.metadata.nFeatures-1);
-    
     String imagename = heatmap.buildMapImage(start, end, "get_heatmap_data_jsp", HeatmapData.TYPE_ARRAY);
     short[][][] rgb = heatmap.getRasterAsArray(imagename);
     
+    /*
+    int TABLE_HEIGHT = 760;
+    int CELL_HEIGHT = 20;
+    double BORDER_STROKE_WIDTH = 0.5;
     int MIN_TABLE_WIDTH = 500;
     int CELL_WIDTH = (int)Math.max(20.0, Math.floor(MIN_TABLE_WIDTH/rgb.length));
     int TABLE_WIDTH = (int)Math.max(MIN_TABLE_WIDTH, CELL_WIDTH*rgb.length);
+    */
+    
+    int TABLE_HEIGHT = (int)layout.MAP_HEIGHT;
+    int CELL_HEIGHT = (int)layout.CELL_HEIGHT;
+    double BORDER_STROKE_WIDTH = layout.BORDER_STROKE_WIDTH;
+    int CELL_WIDTH = (int)layout.CELL_WIDTH;
+    int TABLE_WIDTH = (int)layout.MAP_WIDTH;
     
     double x = 0;
     double y = 0;

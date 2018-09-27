@@ -4,6 +4,7 @@
     Author     : Soumita
 --%>
 
+<%@page import="graphics.layouts.VizualizationHomeLayout"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.AnalysisContainer"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -18,6 +19,9 @@ try {
         AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
         analysis.hac.clearCache();
     }
+    
+    AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
+    VizualizationHomeLayout viz_layout = analysis.visualization_params.viz_layout;
 %>
 <html>
     <head>
@@ -39,7 +43,7 @@ try {
     </head>
     <body>
         
-        <table width="100%" height="99%" cellspacing="0" cellpadding="0" border="0" style="position: absolute; top: 0px; left: 0px"> 
+        <table width="100%" height="99%" cellspacing="0" cellpadding="0" border="0" style="position: absolute; top: 0px; left: 0px;"> 
 
             <tr>
                 <td rowspan="3" align="top" valign="top" height="100%" style="border-style: solid; border-color: #E1E1E1">

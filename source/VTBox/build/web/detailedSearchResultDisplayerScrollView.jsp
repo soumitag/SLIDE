@@ -4,6 +4,7 @@
     Author     : Soumita
 --%>
 
+<%@page import="graphics.layouts.ScrollViewLayout"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.AnalysisContainer"%>
 <%@page import="algorithms.clustering.BinaryTree"%>
@@ -24,11 +25,11 @@ try {
     
     HashMap <String, ArrayList <Integer>> entrezPosMap = analysis.entrezPosMap;
     
-    double num_features = 38;
+    //double num_features = 38;
     
     String refresh_type = request.getParameter("type");
     
-    double start, end;
+    double start;
     if (refresh_type != null && refresh_type.equals("search")) {
         start = analysis.state_variables.getDetailedViewStart();
     } else {
@@ -39,13 +40,23 @@ try {
             start = 0;
         }   
     }
+    start = (start < 0) ? 0 : start;
+    int current_start = analysis.state_variables.getDetailedViewStart();
+    start = (start >= analysis.database.metadata.nFeatures) ? current_start : start;
     
-    end = start + num_features - 1;
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    int end = layout.getEnd((int)start, analysis.database.metadata.nFeatures);
+    //end = start + num_features - 1;
+    //end = Math.min(end, analysis.database.metadata.nFeatures-1);
     
+    /*
     double image_height = 760.0;
-    
     double feature_height = 20.0;
+    */
     
+    double image_height = layout.MAP_HEIGHT;
+    double feature_height = layout.CELL_HEIGHT;
+
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
     
     double left_buffer = 10.0;
@@ -184,7 +195,7 @@ try {
             String left = left_position + "px";
     %>
             
-            <rect x="<%=left%>" y="0" height="<%=image_height%>px" width="<%=column_width%>px" style="fill: #EEEEEE; z-index: 0" />
+            <rect x="<%=left%>" y="0" height="<%=layout.SEARCH_TAG_DIV_HEIGHT%>px" width="<%=column_width%>px" style="fill: #EEEEEE; z-index: 0" />
             
     <%        
             ArrayList <CompactSearchResultContainer> search_results_i = search_results.get(i);

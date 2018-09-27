@@ -273,6 +273,9 @@ public class MetaData implements Serializable {
         
     }
     
+    /*
+    Searches mapped metadata
+    */
     public ArrayList <CompactSearchResultContainer> searchMetadata(ArrayList <Feature> features, String metacol_name, String query) {
         
         ArrayList <CompactSearchResultContainer> current_search_results = new ArrayList <> ();
@@ -306,6 +309,28 @@ public class MetaData implements Serializable {
         
         query = query.trim().toUpperCase();
         
+        String[] metacol_values = this.metadata_in.get(qualified_metacol_name);
+        if (metacol_values != null) {
+            for (int i=0; i<metacol_values.length; i++) {
+                Feature f = features.get(i);
+                if (f.hasBadEntrez) {
+                    if (metacol_values[i] != null && metacol_values[i].contains(query)) {
+                        CompactSearchResultContainer csrc = new CompactSearchResultContainer();
+                        csrc.createGeneSearchResult(f.entrez, metacol_values[i]);
+                        current_search_results.add(csrc);
+                    }
+                }
+            }
+        }
+        return current_search_results;
+    }
+    
+    public ArrayList <CompactSearchResultContainer> searchNonStandardMetadata(ArrayList <Feature> features, String metacol_name, String query) {
+        
+        ArrayList <CompactSearchResultContainer> current_search_results = new ArrayList <> ();
+        
+        String qualified_metacol_name = metacol_name.substring(1);
+        query = query.trim().toUpperCase();
         String[] metacol_values = this.metadata_in.get(qualified_metacol_name);
         if (metacol_values != null) {
             for (int i=0; i<metacol_values.length; i++) {

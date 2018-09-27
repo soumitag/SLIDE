@@ -3,6 +3,7 @@
     Created on : 23 Apr, 2017, 1:35:27 PM
     Author     : Soumita
 --%>
+<%@page import="graphics.layouts.ScrollViewLayout"%>
 <%@page import="searcher.GeneObject"%>
 <%@page import="structure.MetaData"%>
 <%@page import="utils.Utils"%>
@@ -28,15 +29,22 @@ try {
     
     Heatmap heatmap = analysis.heatmap;
     
-    int TABLE_HEIGHT = 760;
-    int CELL_HEIGHT = 20;
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    double TABLE_WIDTH = layout.MAP_WIDTH;
+    double TABLE_HEIGHT = layout.MAP_HEIGHT;
+    double BORDER_STROKE_WIDTH = layout.BORDER_STROKE_WIDTH;
+    double CELL_WIDTH = layout.CELL_WIDTH;
+    double CELL_HEIGHT = layout.CELL_HEIGHT;
+    double HEADER_LABEL_FONTSIZE = layout.SAMPLE_LABEL_FONT_SIZE;
+    double FEATURE_LABEL_FONTSIZE = layout.FEATURE_LABEL_FONT_SIZE;
+    
+    ///int TABLE_HEIGHT = 760;
+    ///int CELL_HEIGHT = 20;
     // feature label params
-    double feature_height = 20.0;       // ideally, should be same as CELL_HEIGHT
-    double BORDER_STROKE_WIDTH = 0.5;
+    ///double feature_height = 20.0;       // ideally, should be same as CELL_HEIGHT
+    ///double BORDER_STROKE_WIDTH = 0.5;
     // search results params
-    double left_buffer = 10.0;
-    double column_width = 20.0;
-    double gap = 5.0;
+    
     
     int start = Integer.parseInt(request.getParameter("start"));
     int end = Integer.parseInt(request.getParameter("end"));
@@ -46,12 +54,15 @@ try {
     String imagename = heatmap.buildMapImage(start, end, "saveviz_mapview_jsp", HeatmapData.TYPE_ARRAY);
     short[][][] rgb = heatmap.getRasterAsArray(imagename);
     
-    int MIN_TABLE_WIDTH = 500;
-    int CELL_WIDTH = (int)Math.max(20.0, Math.floor(MIN_TABLE_WIDTH/rgb.length));
-    int TABLE_WIDTH = (int)Math.max(MIN_TABLE_WIDTH, CELL_WIDTH*rgb.length);
-    TABLE_HEIGHT = (int)CELL_HEIGHT*rgb[0].length;
+    ///int MIN_TABLE_WIDTH = 500;
+    ///int CELL_WIDTH = (int)Math.max(20.0, Math.floor(MIN_TABLE_WIDTH/rgb.length));
+    ///int TABLE_WIDTH = (int)Math.max(MIN_TABLE_WIDTH, CELL_WIDTH*rgb.length);
+    ///TABLE_HEIGHT = (int)CELL_HEIGHT*rgb[0].length;
     
     // used only in save viz, not in mapView.jsp
+    double left_buffer = 10.0;
+    double column_width = 20.0;
+    double gap = 5.0;
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
     double search_result_width = 0.0;
     if (show_search_tags.equalsIgnoreCase("yes")) {
@@ -65,11 +76,7 @@ try {
     try {
         feature_label_width = Double.parseDouble(feature_width);
     } catch (NumberFormatException e) {
-        if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
-            feature_label_width = 200.0;
-        } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
-            feature_label_width = 350.0;
-        }
+        feature_label_width = layout.getFeatureLabelWidth(analysis.visualizationType);
     }
     
     String sample_height = request.getParameter("sample_height").trim();
@@ -77,16 +84,17 @@ try {
     try {
         sample_name_height = Double.parseDouble(sample_height);
     } catch (NumberFormatException e) {
-        sample_name_height = 95.0;
+        sample_name_height = (int)ScrollViewLayout.COLUMN_HEADER_HEIGHT;
     }
     
     int histHeight = 200;
-    double svg_height = sample_name_height + TABLE_HEIGHT + 30.0 + histHeight + 100.0; // 30 is the gap between heatmap and histogram; 100 is for the histogram x-axis labels
+    int header_map_top_buffer = 10;
+    double svg_height = sample_name_height + header_map_top_buffer + TABLE_HEIGHT + 30.0 + histHeight + 100.0; // 30 is the gap between heatmap and histogram; 100 is for the histogram x-axis labels
     double svg_width = TABLE_WIDTH + search_result_width + 10 + feature_label_width;
     
     HashMap <String, ArrayList <Integer>> entrezPosMap = analysis.entrezPosMap;
     
-    int x, y = 0;
+    double x, y = 0;
 %>
 <html>
     <head>
@@ -122,11 +130,11 @@ try {
             <% double hy = sample_name_height; %>
             <% for(int i = 0; i < headers.length; i++) { %>
                 <% 
-                    double hx_line = (int)((i+1)*CELL_WIDTH);
-                    double hx_text = (int)((i+0.5)*CELL_WIDTH); //(heatmap.CELL_WIDTH)/2.0 + j*heatmap.CELL_WIDTH - 5.0;
+                    double hx_text = (int)((i+0.5)*CELL_WIDTH) + HEADER_LABEL_FONTSIZE/2.0;
                 %>
-                <text x='<%=hx_text%>' y='<%=hy%>' font-family="Verdana" font-size="10" fill="black" transform="translate(4 -6) rotate(-45 <%=hx_text%> <%=hy%>)"> <%=headers[i]%> </text>
-                <line x1='<%=hx_line%>' y1='<%=hy%>' x2='<%=hx_line+100%>' y2='<%=hy%>' style="stroke:rgb(100,100,155); stroke-width:1" transform="translate(0 -6) rotate(-45 <%=hx_line%> <%=hy%>)"/>
+                
+                <text x='<%=hx_text%>' y='<%=hy%>' font-family="Verdana" font-size="<%=HEADER_LABEL_FONTSIZE%>" fill="black" transform="rotate(-90 <%=hx_text%> <%=hy%>)"> <%=headers[i]%> </text>
+                
             <% } %>
         </g>
         
@@ -140,7 +148,7 @@ try {
                     String td_id = "td_" + i + "_" + j;
 
                     x = i * CELL_WIDTH;
-                    y = j * CELL_HEIGHT + ((int)sample_name_height - 5);
+                    y = j * CELL_HEIGHT + ((int)sample_name_height + header_map_top_buffer);
                 %>
                 <rect x='<%=x%>' y='<%=y%>' id='<%=td_id%>' width = '<%=CELL_WIDTH%>' height = '<%=CELL_HEIGHT%>' style="fill:<%=color_str%>; " stroke="black" stroke-width="<%=BORDER_STROKE_WIDTH%>" /> 
                 <% } %>
@@ -159,7 +167,7 @@ try {
                     String left = (int)left_position + "px";
                 %>
             
-                <rect x="<%=left%>" y="<%=(sample_name_height - 5.0)%>" height="<%=TABLE_HEIGHT%>px" width="<%=column_width%>px" style="fill: #EEEEEE; z-index: 0" />
+                <rect x="<%=left%>" y="<%=(sample_name_height+header_map_top_buffer)%>" height="<%=layout.SEARCH_TAG_DIV_HEIGHT%>px" width="<%=column_width%>px" style="fill: #EEEEEE; z-index: 0" />
             
                 <%        
                 ArrayList <CompactSearchResultContainer> search_results_i = search_results.get(i);
@@ -181,9 +189,9 @@ try {
                             
                             if (positions.get(k) >= start && positions.get(k) <= end) {
                                 
-                                double top = (sample_name_height - 5.0) + feature_height*(positions.get(k) - start);
-                                double feature_display_height = feature_height;
-                                if (feature_height < 2.0) {
+                                double top = (sample_name_height + header_map_top_buffer) + CELL_HEIGHT*(positions.get(k) - start);
+                                double feature_display_height = CELL_HEIGHT;
+                                if (CELL_HEIGHT < 2.0) {
                                     feature_display_height = 2.0;
                                 }
                 %>
@@ -205,15 +213,12 @@ try {
                 BinaryTree linkage_tree = analysis.linkage_tree;
 
                 for (int i=(int)start; i<=(int)end; i++) {
-                    
                     int index = linkage_tree.leaf_ordering.get(i);
-                    
                     String genes = database.features.get(index).getFormattedFeatureName(analysis);
-                    
-                    double mid = (feature_height*(i - start) + feature_height/2.0) + sample_name_height;
+                    double mid = sample_name_height + header_map_top_buffer + CELL_HEIGHT*(i-start) + CELL_HEIGHT/2.0 + FEATURE_LABEL_FONTSIZE/2.0;
             %>
-                
-                    <text id="label_<%=i%>" x="<%=TABLE_WIDTH+search_result_width+10%>" y="<%=mid%>" font-family="Verdana" font-size="12" fill="black" style="display: inline;">
+                    
+                    <text id="label_<%=i%>" x="<%=TABLE_WIDTH+search_result_width+10%>" y="<%=mid%>" font-family="Verdana" font-size="<%=FEATURE_LABEL_FONTSIZE%>" fill="black" style="display: inline;">
                         <%=genes%>
                     </text>
     
@@ -228,7 +233,7 @@ try {
         
             <jsp:include page="/WEB-INF/jspf/histogram_fragment.jspf" flush="true">
                 <jsp:param name="analysis_name" value="<%=analysis_name%>" />
-                <jsp:param name="y_offset" value="<%=(sample_name_height + TABLE_HEIGHT + 30.0)%>" />
+                <jsp:param name="y_offset" value="<%=(sample_name_height + header_map_top_buffer + TABLE_HEIGHT + 30.0)%>" />
             </jsp:include>
         
         <% } %>

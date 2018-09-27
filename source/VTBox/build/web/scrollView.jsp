@@ -4,6 +4,7 @@
     Author     : Soumita
 --%>
 
+<%@page import="graphics.layouts.ScrollViewLayout"%>
 <%@page import="graphics.HeatmapData"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="java.util.Iterator"%>
@@ -26,11 +27,11 @@ try {
     Heatmap heatmap = analysis.heatmap;
     
     int start = 0;
-    
-    double image_height = 760.0;
-    double feature_height = 20;
-    int num_features = (int)(image_height/feature_height);
-    num_features = Math.min(num_features, analysis.database.metadata.nFeatures);
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    int num_features = layout.NUM_DISPLAY_FEATURES;
+    int mapframe_width = (int)layout.DETAILED_VIEW_IFRAME_WIDTH + 3;
+    int map_height = (int)layout.MAP_HEIGHT;
+    int header_height = (int)ScrollViewLayout.COLUMN_HEADER_HEIGHT;
     
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
 
@@ -49,7 +50,8 @@ try {
         FEATURE_LABEL_FRAME_WIDTH = 350;
     }
     
-    String imagename = heatmap.buildMapImage(0, num_features-1, "scroll_view_jsp", HeatmapData.TYPE_ARRAY);
+    int end = layout.getEnd(start, analysis.database.metadata.nFeatures);
+    String imagename = heatmap.buildMapImage(0, end, "scroll_view_jsp", HeatmapData.TYPE_ARRAY);
     
     HashMap <String, ArrayList <Integer>> filterListMap = analysis.filterListMap;
     Set <String> keys = filterListMap.keySet();
@@ -160,12 +162,15 @@ try {
                 document.getElementById('mapViewPanel').contentWindow.updateMap(data);
             }
             
+            var current_start = 0;
             function loadMap (start, end) {
                 var labels_url = "featureLabelsScrollView.jsp?analysis_name=<%=analysis_name%>&start=" + start + "&rand=" + Math.random();
                 var search_url = "detailedSearchResultDisplayerScrollView.jsp?analysis_name=<%=analysis_name%>&start=" + start + "&rand=" + Math.random() + "&type=scroll";
                 document.getElementById('featureLabelsPanel').contentWindow.location.replace(labels_url);
                 document.getElementById('detailSearchPanel').contentWindow.location.replace(search_url);
                 makeGetRequest (start, end);
+                document.getElementById('dispString').innerHTML = 'Showing ' + (start+1) + ' to ' + (end+1) + ' of <%=analysis.database.metadata.nFeatures%>';
+                current_start = start;
             }
     
             function selectGene(i, j, entrez, genesymbol) {
@@ -228,17 +233,35 @@ try {
                 }
             }
             
+            function scrollBack() {
+                next_start = current_start-<%=num_features%>;
+                if (next_start < 0) {
+                    next_start = 0;
+                }
+                loadMap (next_start, next_start+<%=num_features%>);
+                parent.scrollGlobalTo(next_start);
+            }
+            
+            function scrollForward() {
+                next_start = current_start+<%=num_features%>;
+                if (next_start >= <%=analysis.database.metadata.nFeatures%>) {
+                    next_start = current_start;
+                }
+                loadMap (next_start, next_start+<%=num_features%>);
+                parent.scrollGlobalTo(next_start);
+            }
+            
         </script>
         
     </head>
-    <body>
-        <table border="0">
+    <body style="overflow-y: hidden; overflow-x: hidden">
+        <table border="0" height="<%=map_height+header_height+62%>" style="border-spacing: 0px; padding: 0px">
             <tr>
-                <td rowspan="3" width="500" valign="top">
-                    <iframe id="mapViewPanel" src="mapView.jsp?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" width="500" height="880" frameBorder="0px"></iframe>
+                <td rowspan="3" width="<%=mapframe_width%>" height="<%=map_height+header_height%>" valign="top">
+                    <iframe id="mapViewPanel" src="mapView.jsp?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" width="<%=mapframe_width%>" height="<%=map_height+header_height%>" frameBorder="0px"></iframe>
                 </td>
                 <td height="35">&nbsp;</td>
-                <td rowspan="2" height="35">
+                <td rowspan="2"  height="<%=header_height-3%>">
                     <div class="dropdown">
                     <button class="dropbtn" title="Add Selected Features to Feature Lists. Click Feature Name To Select. Click Feature Lists To Create New Feature Lists.">Add To List</button>
                         <div id="list_names_container" class="dropdown-content">
@@ -258,15 +281,25 @@ try {
                 </td>
             </tr>
             <tr>
-                <td>
-                    <iframe id="detailSearchPanel" src="detailedSearchResultDisplayerScrollView.jsp?start=<%=start%>&analysis_name=<%=analysis_name%>" width="<%=detailedSearchPanel_width%>" height="780" frameBorder="0"></iframe>
+                <td height="<%=map_height%>" width="<%=detailedSearchPanel_width%>">
+                    <iframe id="detailSearchPanel" src="detailedSearchResultDisplayerScrollView.jsp?start=<%=start%>&analysis_name=<%=analysis_name%>" width="<%=detailedSearchPanel_width%>" height="<%=map_height%>" frameBorder="0"></iframe>
                 </td>
-                <td>
-                    <iframe id="featureLabelsPanel" src="featureLabelsScrollView.jsp?start=<%=start%>&analysis_name=<%=analysis_name%>" width="<%=FEATURE_LABEL_FRAME_WIDTH%>" height="780" frameBorder="0"></iframe>
+                <td height="<%=map_height%>">
+                    <iframe id="featureLabelsPanel" src="featureLabelsScrollView.jsp?start=<%=start%>&analysis_name=<%=analysis_name%>" width="<%=FEATURE_LABEL_FRAME_WIDTH%>" height="<%=map_height%>" frameBorder="0"></iframe>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="height: 62px; align-content: center">
+                    <div style="display: inline-block; width: 350px; padding: 10px">
+                        <button type="button" name="prev" onclick="scrollBack()"> Prev </button>
+                        <div id="dispString" style="width: 170px; display: inline-block; text-align: center; font-family: verdana; font-size: 14px; font-weight: normal; font-style: italic; color: #444;">
+                        Showing 1 to <%=num_features%> of <%=analysis.database.metadata.nFeatures%>
+                        </div>
+                        <button type="button" name="next" onclick="scrollForward()"> Next </button>
+                    </div>
                 </td>
             </tr>
         </table>
-        
         
     </body>
 </html>

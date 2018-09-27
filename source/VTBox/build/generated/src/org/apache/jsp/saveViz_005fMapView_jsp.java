@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.ScrollViewLayout;
 import searcher.GeneObject;
 import structure.MetaData;
 import utils.Utils;
@@ -67,6 +68,7 @@ public final class saveViz_005fMapView_jsp extends org.apache.jasper.runtime.Htt
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
 
 
 try {
@@ -79,15 +81,22 @@ try {
     
     Heatmap heatmap = analysis.heatmap;
     
-    int TABLE_HEIGHT = 760;
-    int CELL_HEIGHT = 20;
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    double TABLE_WIDTH = layout.MAP_WIDTH;
+    double TABLE_HEIGHT = layout.MAP_HEIGHT;
+    double BORDER_STROKE_WIDTH = layout.BORDER_STROKE_WIDTH;
+    double CELL_WIDTH = layout.CELL_WIDTH;
+    double CELL_HEIGHT = layout.CELL_HEIGHT;
+    double HEADER_LABEL_FONTSIZE = layout.SAMPLE_LABEL_FONT_SIZE;
+    double FEATURE_LABEL_FONTSIZE = layout.FEATURE_LABEL_FONT_SIZE;
+    
+    ///int TABLE_HEIGHT = 760;
+    ///int CELL_HEIGHT = 20;
     // feature label params
-    double feature_height = 20.0;       // ideally, should be same as CELL_HEIGHT
-    double BORDER_STROKE_WIDTH = 0.5;
+    ///double feature_height = 20.0;       // ideally, should be same as CELL_HEIGHT
+    ///double BORDER_STROKE_WIDTH = 0.5;
     // search results params
-    double left_buffer = 10.0;
-    double column_width = 20.0;
-    double gap = 5.0;
+    
     
     int start = Integer.parseInt(request.getParameter("start"));
     int end = Integer.parseInt(request.getParameter("end"));
@@ -97,12 +106,15 @@ try {
     String imagename = heatmap.buildMapImage(start, end, "saveviz_mapview_jsp", HeatmapData.TYPE_ARRAY);
     short[][][] rgb = heatmap.getRasterAsArray(imagename);
     
-    int MIN_TABLE_WIDTH = 500;
-    int CELL_WIDTH = (int)Math.max(20.0, Math.floor(MIN_TABLE_WIDTH/rgb.length));
-    int TABLE_WIDTH = (int)Math.max(MIN_TABLE_WIDTH, CELL_WIDTH*rgb.length);
-    TABLE_HEIGHT = (int)CELL_HEIGHT*rgb[0].length;
+    ///int MIN_TABLE_WIDTH = 500;
+    ///int CELL_WIDTH = (int)Math.max(20.0, Math.floor(MIN_TABLE_WIDTH/rgb.length));
+    ///int TABLE_WIDTH = (int)Math.max(MIN_TABLE_WIDTH, CELL_WIDTH*rgb.length);
+    ///TABLE_HEIGHT = (int)CELL_HEIGHT*rgb[0].length;
     
     // used only in save viz, not in mapView.jsp
+    double left_buffer = 10.0;
+    double column_width = 20.0;
+    double gap = 5.0;
     ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
     double search_result_width = 0.0;
     if (show_search_tags.equalsIgnoreCase("yes")) {
@@ -116,11 +128,7 @@ try {
     try {
         feature_label_width = Double.parseDouble(feature_width);
     } catch (NumberFormatException e) {
-        if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
-            feature_label_width = 200.0;
-        } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION) {
-            feature_label_width = 350.0;
-        }
+        feature_label_width = layout.getFeatureLabelWidth(analysis.visualizationType);
     }
     
     String sample_height = request.getParameter("sample_height").trim();
@@ -128,16 +136,17 @@ try {
     try {
         sample_name_height = Double.parseDouble(sample_height);
     } catch (NumberFormatException e) {
-        sample_name_height = 95.0;
+        sample_name_height = (int)ScrollViewLayout.COLUMN_HEADER_HEIGHT;
     }
     
     int histHeight = 200;
-    double svg_height = sample_name_height + TABLE_HEIGHT + 30.0 + histHeight + 100.0; // 30 is the gap between heatmap and histogram; 100 is for the histogram x-axis labels
+    int header_map_top_buffer = 10;
+    double svg_height = sample_name_height + header_map_top_buffer + TABLE_HEIGHT + 30.0 + histHeight + 100.0; // 30 is the gap between heatmap and histogram; 100 is for the histogram x-axis labels
     double svg_width = TABLE_WIDTH + search_result_width + 10 + feature_label_width;
     
     HashMap <String, ArrayList <Integer>> entrezPosMap = analysis.entrezPosMap;
     
-    int x, y = 0;
+    double x, y = 0;
 
       out.write("\n");
       out.write("<html>\n");
@@ -187,34 +196,24 @@ try {
       out.write("\n");
       out.write("                ");
  
-                    double hx_line = (int)((i+1)*CELL_WIDTH);
-                    double hx_text = (int)((i+0.5)*CELL_WIDTH); //(heatmap.CELL_WIDTH)/2.0 + j*heatmap.CELL_WIDTH - 5.0;
+                    double hx_text = (int)((i+0.5)*CELL_WIDTH) + HEADER_LABEL_FONTSIZE/2.0;
                 
       out.write("\n");
+      out.write("                \n");
       out.write("                <text x='");
       out.print(hx_text);
       out.write("' y='");
       out.print(hy);
-      out.write("' font-family=\"Verdana\" font-size=\"10\" fill=\"black\" transform=\"translate(4 -6) rotate(-45 ");
+      out.write("' font-family=\"Verdana\" font-size=\"");
+      out.print(HEADER_LABEL_FONTSIZE);
+      out.write("\" fill=\"black\" transform=\"rotate(-90 ");
       out.print(hx_text);
       out.write(' ');
       out.print(hy);
       out.write(")\"> ");
       out.print(headers[i]);
       out.write(" </text>\n");
-      out.write("                <line x1='");
-      out.print(hx_line);
-      out.write("' y1='");
-      out.print(hy);
-      out.write("' x2='");
-      out.print(hx_line+100);
-      out.write("' y2='");
-      out.print(hy);
-      out.write("' style=\"stroke:rgb(100,100,155); stroke-width:1\" transform=\"translate(0 -6) rotate(-45 ");
-      out.print(hx_line);
-      out.write(' ');
-      out.print(hy);
-      out.write(")\"/>\n");
+      out.write("                \n");
       out.write("            ");
  } 
       out.write("\n");
@@ -241,7 +240,7 @@ try {
                     String td_id = "td_" + i + "_" + j;
 
                     x = i * CELL_WIDTH;
-                    y = j * CELL_HEIGHT + ((int)sample_name_height - 5);
+                    y = j * CELL_HEIGHT + ((int)sample_name_height + header_map_top_buffer);
                 
       out.write("\n");
       out.write("                <rect x='");
@@ -290,9 +289,9 @@ try {
       out.write("                <rect x=\"");
       out.print(left);
       out.write("\" y=\"");
-      out.print((sample_name_height - 5.0));
+      out.print((sample_name_height+header_map_top_buffer));
       out.write("\" height=\"");
-      out.print(TABLE_HEIGHT);
+      out.print(layout.SEARCH_TAG_DIV_HEIGHT);
       out.write("px\" width=\"");
       out.print(column_width);
       out.write("px\" style=\"fill: #EEEEEE; z-index: 0\" />\n");
@@ -318,9 +317,9 @@ try {
                             
                             if (positions.get(k) >= start && positions.get(k) <= end) {
                                 
-                                double top = (sample_name_height - 5.0) + feature_height*(positions.get(k) - start);
-                                double feature_display_height = feature_height;
-                                if (feature_height < 2.0) {
+                                double top = (sample_name_height + header_map_top_buffer) + CELL_HEIGHT*(positions.get(k) - start);
+                                double feature_display_height = CELL_HEIGHT;
+                                if (CELL_HEIGHT < 2.0) {
                                     feature_display_height = 2.0;
                                 }
                 
@@ -358,22 +357,21 @@ try {
                 BinaryTree linkage_tree = analysis.linkage_tree;
 
                 for (int i=(int)start; i<=(int)end; i++) {
-                    
                     int index = linkage_tree.leaf_ordering.get(i);
-                    
                     String genes = database.features.get(index).getFormattedFeatureName(analysis);
-                    
-                    double mid = (feature_height*(i - start) + feature_height/2.0) + sample_name_height;
+                    double mid = sample_name_height + header_map_top_buffer + CELL_HEIGHT*(i-start) + CELL_HEIGHT/2.0 + FEATURE_LABEL_FONTSIZE/2.0;
             
       out.write("\n");
-      out.write("                \n");
+      out.write("                    \n");
       out.write("                    <text id=\"label_");
       out.print(i);
       out.write("\" x=\"");
       out.print(TABLE_WIDTH+search_result_width+10);
       out.write("\" y=\"");
       out.print(mid);
-      out.write("\" font-family=\"Verdana\" font-size=\"12\" fill=\"black\" style=\"display: inline;\">\n");
+      out.write("\" font-family=\"Verdana\" font-size=\"");
+      out.print(FEATURE_LABEL_FONTSIZE);
+      out.write("\" fill=\"black\" style=\"display: inline;\">\n");
       out.write("                        ");
       out.print(genes);
       out.write("\n");
@@ -393,7 +391,7 @@ try {
       out.write("\n");
       out.write("        \n");
       out.write("            ");
-      org.apache.jasper.runtime.JspRuntimeLibrary.include(request, response, "/WEB-INF/jspf/histogram_fragment.jspf" + "?" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode("analysis_name", request.getCharacterEncoding())+ "=" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf(analysis_name), request.getCharacterEncoding()) + "&" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode("y_offset", request.getCharacterEncoding())+ "=" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf((sample_name_height + TABLE_HEIGHT + 30.0)), request.getCharacterEncoding()), out, true);
+      org.apache.jasper.runtime.JspRuntimeLibrary.include(request, response, "/WEB-INF/jspf/histogram_fragment.jspf" + "?" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode("analysis_name", request.getCharacterEncoding())+ "=" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf(analysis_name), request.getCharacterEncoding()) + "&" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode("y_offset", request.getCharacterEncoding())+ "=" + org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf((sample_name_height + header_map_top_buffer + TABLE_HEIGHT + 30.0)), request.getCharacterEncoding()), out, true);
       out.write("\n");
       out.write("        \n");
       out.write("        ");

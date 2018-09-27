@@ -98,6 +98,14 @@ try {
     }
     
     ArrayList <String> search_strings = analysis.search_strings;
+    ArrayList <String> style_classes = new ArrayList <String> ();
+    for (int i = 0; i < search_strings.size(); i++) {
+        if (search_strings.get(i).startsWith("_")){
+            style_classes.add(i, "e");
+        } else {
+            style_classes.add(i, "e");
+        }
+    }
     
     HashMap <String, ArrayList <Integer>> filterListMap = analysis.filterListMap;
     Set <String> keys = filterListMap.keySet();

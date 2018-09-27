@@ -4,6 +4,8 @@
     Author     : Soumita
 --%>
 
+<%@page import="graphics.layouts.VizualizationHomeLayout"%>
+<%@page import="graphics.layouts.ScrollViewLayout"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.CompactSearchResultContainer"%>
 <%@page import="java.util.ArrayList"%>
@@ -31,19 +33,14 @@ try {
         hdiFrame_width = 285 + (search_results.size()*32) + "";
     }
     
-    String scrollPanel_width = "730";
-    if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
-        if (search_results.size() == 0) {
-            scrollPanel_width = "730";
-        } else {
-            scrollPanel_width = 730 + (search_results.size()*32) + "";
-        }
-    }  else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
-            analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
-        scrollPanel_width = "880";
-    }
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    int scrollPanel_width = (int)(layout.DETAILED_VIEW_IFRAME_WIDTH + layout.getFeatureLabelWidth(analysis.visualizationType) + (search_results.size()*32) + 5);
+    int scrollPanel_height = (int)(analysis.visualization_params.viz_layout.getAvailableDetailedViewLength());
+    int drilldownPanel_height = (int)(analysis.visualization_params.viz_layout.getAvailableDrillDownPanelLength());
     
     String searchKeysFrame_width = "250";
+
+    VizualizationHomeLayout viz_layout = analysis.visualization_params.viz_layout;
 
 %>
 <html>
@@ -136,7 +133,9 @@ try {
             win.focus();
         }
     
-        
+        function scrollGlobalTo(next_start) {
+            document.getElementById("hdiFrame").contentWindow.scrollGlobalTo(next_start);
+        }
     </script>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -216,10 +215,10 @@ try {
             Testing
         </div>
         
-        <table class="maintable" height="99%" width="1970px" cellspacing="0" cellpadding="0"> 
+        <table class="maintable" height="<%=viz_layout.VISUALIZATION_PANE_LENGTH-5%>" cellspacing="0" cellpadding="0"> 
 
             <tr>
-                <td colspan="5" name="ribbonPanel" id="ribbonPanel" height="5%">
+                <td colspan="5" name="ribbonPanel" id="ribbonPanel" height="50px">
 
                     <table width="100%">
                         <tr>
@@ -280,7 +279,7 @@ try {
                     <% } else { %>
                         <iframe name="hdiFrameLoadingMsg" id="hdiFrameLoadingMsg" src="hierarchicalClusteringFeedback.jsp?is_clustering=false" marginwidth="0" height="100%" width="<%=hdiFrame_width%>" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
                     <% } %>
-                    <iframe name="hdiFrame" id="hdiFrame" src="HeatmapDendrogramGenerator?analysis_name=<%=analysis_name%>" marginwidth="0" height="100%" width="<%=hdiFrame_width%>" frameBorder="0" style="position: relative; top: 0px; left: 0px; visibility: hidden"></iframe>
+                    <iframe name="hdiFrame" id="hdiFrame" src="HeatmapDendrogramGenerator?analysis_name=<%=analysis_name%>" marginwidth="0" height="100%" width="<%=hdiFrame_width%>" frameBorder="0" style="position: relative; top: -20px; left: 0px; visibility: hidden"></iframe>
                     <iframe name="invisible_Download_Frame" id="invisible_Download_Frame" src="" marginwidth="0" height="0" width="0" frameBorder="0"></iframe>
                 </td>
                 
@@ -290,18 +289,18 @@ try {
                 
                 <%  if (do_clustering) { %>
                 
-                <td rowspan="2" height="100%"> 
+                <td rowspan="2" height="100%" width="<%=scrollPanel_width+10%>" align="top" valign="top"> 
                     <iframe name="scrollPanel" id="scrollPanel" src="" marginwidth="0" height="100%" width="<%=scrollPanel_width%>" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
                 </td>
                 
-                <td rowspan="2" height="100%"> 
-                    <iframe name="drillDownPanel" id="drillDownPanel" src="" marginwidth="0" height="100%" width="800" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
+                <td rowspan="2" height="100%" align="top" valign="top"> 
+                    <iframe name="drillDownPanel" id="drillDownPanel" src="" marginwidth="0" height="<%=drilldownPanel_height%>" width="800" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
                 </td>
                 
                 <%  } else {    %>
                 
-                <td rowspan="2" colspan="2" height="100%"> 
-                    <iframe name="scrollPanel" id="scrollPanel" src="" marginwidth="0" height="100%" width="<%=scrollPanel_width%>" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
+                <td rowspan="2" colspan="2" height="100%" width="<%=scrollPanel_width+10%>" align="top" valign="top"> 
+                    <iframe name="scrollPanel" id="scrollPanel" src="" marginwidth="0" height="100%" width="<%=scrollPanel_width+10%>" frameBorder="0" style="position: relative; top: 0px; left: 0px"></iframe>
                 </td>
                 
                 <%  }   %>

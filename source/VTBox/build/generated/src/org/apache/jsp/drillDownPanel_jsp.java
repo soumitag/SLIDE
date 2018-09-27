@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.DrillDownPanelLayout;
 import vtbox.SessionUtils;
 import java.util.Iterator;
 import java.util.Set;
@@ -49,6 +50,7 @@ public final class drillDownPanel_jsp extends org.apache.jasper.runtime.HttpJspB
       _jspx_out = out;
       _jspx_resourceInjector = (org.glassfish.jsp.api.ResourceInjector) application.getAttribute("com.sun.appserv.jsp.resource.injector");
 
+      out.write("\n");
       out.write("\n");
       out.write("\n");
       out.write("\n");
@@ -113,8 +115,12 @@ try {
             analysis.state_variables.pushDendrogramHistory(new Integer[]{root_node_id, start, end});
         }
     }
+    
+    DrillDownPanelLayout layout = analysis.visualization_params.drill_down_layout;
 
-    double image_height = 750.0;
+    //double image_height = 750.0;
+    double image_height = layout.GLOBAL_VIEW_FIG_HEIGHT;
+    layout.GLOBAL_VIEW_FIG_HEIGHT = layout.GLOBAL_VIEW_FIG_HEIGHT;
     num_features = end - start + 1;
     double feature_height = image_height/num_features;
     
@@ -348,23 +354,27 @@ try {
       out.write("                parent.showGlobal();\n");
       out.write("            }\n");
       out.write("            \n");
+      out.write("            function scrollGlobalTo(next_start) {\n");
+      out.write("                document.getElementById(\"detailHeatMapPanel\").contentWindow.scrollGlobalTo(next_start);\n");
+      out.write("            }\n");
+      out.write("            \n");
       out.write("        </script>\n");
       out.write("        \n");
       out.write("    </head>\n");
-      out.write("    <body onload=\"askParentToShowMe()\">\n");
+      out.write("    <body onload=\"askParentToShowMe()\" style=\"margin: 0px; overflow: hidden\">\n");
       out.write("        <div class=\"loader\"></div>\n");
-      out.write("        <table border=\"0\">\n");
+      out.write("        <table id=\"global_view_tab\" border=\"0\" height=\"");
+      out.print(layout.GLOBAL_VIEW_TAB_HEIGHT);
+      out.write("px\" style=\"padding: 0px; border-spacing: 0px\">\n");
       out.write("            \n");
       out.write("            ");
   if (showDendrogram.equalsIgnoreCase("yes")) {   
       out.write("\n");
       out.write("            \n");
       out.write("            <tr>\n");
-      out.write("                <td height=\"50px\">\n");
-      out.write("                    <!--\n");
-      out.write("                    &nbsp;<button name=\"histHandle\" id=\"histHandle\" onclick=\"toggleHistogramPanel()\"> Hide Histogram </button>\n");
-      out.write("                    &nbsp;<button name=\"saver\" id=\"saver\" onclick=\"saveAsPDF()\"> Save Image </button>\n");
-      out.write("                    -->\n");
+      out.write("                <td height=\"");
+      out.print(layout.SEARCH_HEADER_HEIGHT);
+      out.write("px\">\n");
       out.write("                    &nbsp;\n");
       out.write("                    <div class=\"dropdown\">\n");
       out.write("                    <button class=\"dropbtn\" title=\"Add All Features to Feature Lists. Click Feature Lists To Create New Feature Lists.\">Add To List</button>\n");
@@ -387,12 +397,14 @@ try {
       out.write("\n");
       out.write("                        </div>\n");
       out.write("                    </div>\n");
-      out.write("                        <button type=\"button\" onclick=\"loadPrevious();\"> Back </button>\n");
+      out.write("                    <button type=\"button\" onclick=\"loadPrevious();\"> Back </button>\n");
       out.write("                </td>\n");
       out.write("                <td id=\"column_header_td\" style=\"font-family: verdana; font-size: 10; color: black\">\n");
       out.write("                    \n");
       out.write("                </td>\n");
-      out.write("                <td>\n");
+      out.write("                <td height=\"");
+      out.print(layout.SEARCH_HEADER_HEIGHT);
+      out.write("\">\n");
       out.write("                    <iframe id=\"detailSearchHeaderPanel\" src=\"detailedSearchResultHeader.jsp?start=");
       out.print(start);
       out.write("&end=");
@@ -409,23 +421,33 @@ try {
       out.write("            </tr>\n");
       out.write("            \n");
       out.write("            <tr>\n");
-      out.write("                <td style=\"vertical-align: top\">\n");
+      out.write("                <td height=\"");
+      out.print(layout.DENDROGRAM_PANEL_HEIGHT);
+      out.write("\" style=\"vertical-align: top\">\n");
       out.write("                    <iframe id=\"dendrogramPanel\" src=\"dendrogram.jsp?start_node_id=");
       out.print(start_node_id);
       out.write("&analysis_name=");
       out.print(analysis_name);
-      out.write("\" width=\"320\" height=\"790\" frameBorder=\"0\"></iframe>\n");
+      out.write("\" width=\"305\"  height=\"");
+      out.print(layout.DENDROGRAM_PANEL_HEIGHT);
+      out.write("\" frameBorder=\"0\"></iframe>\n");
       out.write("                </td>\n");
-      out.write("                <td>\n");
+      out.write("                <td height=\"");
+      out.print(layout.DDOWN_HEATMAP_PANEL_HEIGHT);
+      out.write("\">\n");
       out.write("                    <iframe id=\"detailHeatMapPanel\" src=\"detailedHeatMap.jsp?start=");
       out.print(start);
       out.write("&end=");
       out.print(end);
       out.write("&analysis_name=");
       out.print(analysis_name);
-      out.write("&type=dendrogram_map\" width=\"260\" height=\"820\" frameBorder=\"0\"></iframe>\n");
+      out.write("&type=dendrogram_map\" width=\"260\"  height=\"");
+      out.print(layout.DDOWN_HEATMAP_PANEL_HEIGHT);
+      out.write("\" frameBorder=\"0\"></iframe>\n");
       out.write("                </td>\n");
-      out.write("                <td style=\"vertical-align: top\">\n");
+      out.write("                <td height=\"");
+      out.print(layout.DDOWN_SEARCH_RESULT_PANEL_HEIGHT);
+      out.write("\" style=\"vertical-align: top\">\n");
       out.write("                    <iframe id=\"detailSearchPanel\" src=\"detailedSearchResultDisplayer.jsp?start=");
       out.print(start);
       out.write("&end=");
@@ -434,9 +456,13 @@ try {
       out.print(analysis_name);
       out.write("&type=dendrogram_map\" width=\"");
       out.print(detailedSearchPanel_width);
-      out.write("\" height=\"790\" frameBorder=\"0\"></iframe>\n");
+      out.write("\"  height=\"");
+      out.print(layout.DDOWN_SEARCH_RESULT_PANEL_HEIGHT);
+      out.write("\" frameBorder=\"0\"></iframe>\n");
       out.write("                </td>\n");
-      out.write("                <td style=\"vertical-align: top\">\n");
+      out.write("                <td height=\"");
+      out.print(layout.DDOWN_FEAT_LABEL_PANEL_HEIGHT);
+      out.write("\" style=\"vertical-align: top\">\n");
       out.write("                ");
   if (feature_height >= 15.0) {   
       out.write("\n");
@@ -448,24 +474,15 @@ try {
       out.print(analysis_name);
       out.write("\" width=\"");
       out.print(featureLabelsPanel_width);
-      out.write("\" height=\"780\" frameBorder=\"0\"></iframe>\n");
+      out.write("\"  height=\"");
+      out.print(layout.DDOWN_FEAT_LABEL_PANEL_HEIGHT);
+      out.write("\" frameBorder=\"0\"></iframe>\n");
       out.write("                ");
   }   
       out.write("\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
-      out.write("            <!--\n");
-      out.write("            <tr>\n");
-      out.write("                <td colspan=\"2\">\n");
-      out.write("                    <iframe id=\"histPanel\" src=\"histogram.jsp?analysis_name=");
-      out.print(analysis_name);
-      out.write("\" width=\"570\" height=\"250\" frameBorder==\"0\" style=\"display: inline;\"></iframe>\n");
-      out.write("                </td>\n");
-      out.write("                <td colspan=\"2\">\n");
-      out.write("                    &nbsp;\n");
-      out.write("                </td>\n");
-      out.write("            </tr>\n");
-      out.write("            -->\n");
+      out.write("            \n");
       out.write("            \n");
       out.write("            ");
   } else {    
@@ -474,11 +491,10 @@ try {
       out.write("            \n");
       out.write("            <tr>\n");
       out.write("                \n");
-      out.write("                <td height=\"50px\">\n");
-      out.write("                    <!--\n");
-      out.write("                    &nbsp;<button name=\"histHandle\" id=\"histHandle\" onclick=\"toggleHistogramPanel()\"> Show Histogram </button>\n");
-      out.write("                    &nbsp;<button name=\"saver\" id=\"saver\" onclick=\"saveAsPDF()\"> Save Image </button>\n");
-      out.write("                    -->\n");
+      out.write("                <td height=\"");
+      out.print(layout.SEARCH_HEADER_HEIGHT);
+      out.write("px\">\n");
+      out.write("                    \n");
       out.write("                </td>\n");
       out.write("                \n");
       out.write("                <td>\n");
@@ -505,7 +521,9 @@ try {
       out.print(end);
       out.write("&analysis_name=");
       out.print(analysis_name);
-      out.write("&type=global_map\" width=\"280\" height=\"760\" frameBorder=\"0\"></iframe>\n");
+      out.write("&type=global_map\" width=\"270\" height=\"");
+      out.print(layout.HEATMAP_PANEL_HEIGHT);
+      out.write("\" frameBorder=\"0\"></iframe>\n");
       out.write("                </td>\n");
       out.write("                <td colspan=\"2\">\n");
       out.write("                    <iframe id=\"detailSearchPanel\" src=\"detailedSearchResultDisplayer.jsp?start=");
@@ -516,19 +534,13 @@ try {
       out.print(analysis_name);
       out.write("&type=global_map\" width=\"");
       out.print(detailedSearchPanel_width);
-      out.write("\" height=\"760\" frameBorder=\"0\"></iframe>\n");
+      out.write("\" height=\"");
+      out.print(layout.HEATMAP_PANEL_HEIGHT);
+      out.write("\" frameBorder=\"0\"></iframe>\n");
       out.write("                </td>\n");
       out.write("            </tr>\n");
       out.write("            \n");
-      out.write("            <!--\n");
-      out.write("            <tr>\n");
-      out.write("                <td colspan=\"3\">\n");
-      out.write("                    <iframe id=\"histPanel\" src=\"histogram.jsp?analysis_name=");
-      out.print(analysis_name);
-      out.write("\" height=\"250\" frameBorder==\"0\" style=\"display: none;\"></iframe>\n");
-      out.write("                </td>\n");
-      out.write("            </tr>\n");
-      out.write("            -->\n");
+      out.write("            \n");
       out.write("            ");
   }   
       out.write("\n");

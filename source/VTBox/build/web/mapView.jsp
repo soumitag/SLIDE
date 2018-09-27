@@ -3,6 +3,8 @@
     Created on : 23 Apr, 2017, 1:35:27 PM
     Author     : Soumita
 --%>
+<%@page import="algorithms.clustering.BinaryTree"%>
+<%@page import="graphics.layouts.ScrollViewLayout"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="structure.CompactSearchResultContainer"%>
@@ -23,52 +25,38 @@ try {
     String[] headers = database.current_sample_names;
     
     Heatmap heatmap = analysis.heatmap;
-    
-    int TABLE_HEIGHT = 760;
-    int CELL_HEIGHT = 20;
-    
-    double BORDER_STROKE_WIDTH = 0.5;
-    
     short[][][] rgb = heatmap.getRasterAsArray(imagename);
     
-    int MIN_TABLE_WIDTH = 500;
-    int CELL_WIDTH = (int)Math.max(20.0, Math.floor(MIN_TABLE_WIDTH/rgb.length));
-    int TABLE_WIDTH = (int)Math.max(MIN_TABLE_WIDTH, CELL_WIDTH*rgb.length);
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
     
-    String show_search_tags = "yes";     // default is always Yes; No is only used in print mode
-    String show_histogram = "no";       // default is always No; Yes is only used in print mode
-    
-    String print_mode = request.getParameter("print_mode");
-    if (print_mode == null) {
-        print_mode = "no";
-    } else if (print_mode.equalsIgnoreCase("yes")) {
-        show_search_tags = request.getParameter("detailed_view_incl_search_tags");
-        show_histogram = request.getParameter("detailed_view_incl_hist");
-        //int start = Integer.parseInt(request.getParameter("print_start"));
-        //int end = Integer.parseInt(request.getParameter("print_end"));
-        //heatmap.buildMapImage(start, end);
-        //rgb = heatmap.getRaster();
-    }
-    
-    
-    // used only in print mode
-    double left_buffer = 10.0;
-    double column_width = 20.0;
-    double gap = 5.0;
-    ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
-    double search_result_width = left_buffer + search_results.size()*column_width + (search_results.size()-1)*gap;
+    int TABLE_HEIGHT = (int)layout.MAP_HEIGHT;
+    int CELL_HEIGHT = (int)layout.CELL_HEIGHT;
+    double BORDER_STROKE_WIDTH = layout.BORDER_STROKE_WIDTH;
+    int CELL_WIDTH = (int)layout.CELL_WIDTH;
+    int TABLE_WIDTH = (int)layout.MAP_WIDTH;
+    int HEADER_LABEL_SIZE = (int)layout.SAMPLE_LABEL_FONT_SIZE;
+    int HEADER_HEIGHT = (int)ScrollViewLayout.COLUMN_HEADER_HEIGHT;
+
 %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style>
         
-            .container{
+            .map_container{
                 position: absolute;
                 border: 0px solid black;
                 left: 2px; 
-                top: 100px;
-                width: 250px;
+                top: <%=HEADER_HEIGHT%>px;
+                width: <%=TABLE_WIDTH%>px;
+            }
+            
+            .header_container{
+                position: absolute;
+                border: 0px solid black;
+                left: 2px; 
+                top: 0px;
+                width: <%=TABLE_WIDTH%>px;
             }
             
         </style>
@@ -82,46 +70,6 @@ try {
             
             function selectGene(i, j, entrez, genesymbol) {
                 alert('Entrez: ' + entrez + ', Genesymbol: ' + genesymbol);
-            }
-            
-            function copyElementsForPrint() {
-                
-                // copy the feature labels
-                var scrollPanel = opener.parent.document.getElementById('scrollPanel');
-                var scrollView = scrollPanel.contentDocument || scrollPanel.contentWindow.document;
-                
-                var featureLabelsPanel = scrollView.getElementById('featureLabelsPanel');
-                var featureLabels = featureLabelsPanel.contentDocument || featureLabelsPanel.contentWindow.document;
-                
-                var feature_labels_g = featureLabels.getElementById('feature_labels_g');
-                var feature_labels_g_1 = cloneToDoc(feature_labels_g);
-        
-                <% if (show_search_tags.equals("yes")) { %>
-                    // copy the search tags
-                    var detailSearchPanel = scrollView.getElementById('detailSearchPanel');
-                    var detailSearchView = detailSearchPanel.contentDocument || detailSearchPanel.contentWindow.document;
-
-                    var search_g = detailSearchView.getElementById('search_g');
-                    var search_g_1 = cloneToDoc(search_g);
-                    //alert("1");
-                    // transform and place elements
-                    //feature_labels_g_1.transform.baseVal.getItem(0).setTranslate(<%=TABLE_WIDTH%>,0);
-                    search_g_1.setAttribute('transform','translate(<%=TABLE_WIDTH%>,0)');
-                <% } else {
-                    search_result_width = 0;
-                } %>
-                
-                <% if (show_histogram.equals("yes")) { %>
-                    
-                <% } %>
-                
-                feature_labels_g_1.setAttribute('transform','translate(<%=TABLE_WIDTH+search_result_width+3%>,0)');
-                
-                var chart = document.getElementById('svg_heat_map');
-                chart.appendChild(feature_labels_g_1);
-                chart.appendChild(search_g_1);
-                
-                //alert('Done');
             }
             
             function loadHistogram() {
@@ -164,28 +112,28 @@ try {
         </script>
         
     </head>
-    <body style="overflow-y: hidden">
+    <body style="overflow-y: hidden; margin: 0px">
+        <div class="header_container" id='headerDiv' border="0">
         <svg id='svg_header' 
              xmlns:svg="http://www.w3.org/2000/svg"
              xmlns="http://www.w3.org/2000/svg"
              version="1.1"
-             width="<%=TABLE_WIDTH+80%>"
-             height="<%=TABLE_HEIGHT%>">
+             width="<%=TABLE_WIDTH%>"
+             height="<%=HEADER_HEIGHT%>">
         
         <g id="heatmap_header">
-            <% double hy = 95; %>
+            <% double hy = HEADER_HEIGHT-5; %>
             <% for(int i = 0; i < headers.length; i++) { %>
-                <% 
-                    double hx_line = (int)((i+0.5)*CELL_WIDTH);
-                    double hx_text = (int)(i*CELL_WIDTH); //(heatmap.CELL_WIDTH)/2.0 + j*heatmap.CELL_WIDTH - 5.0;
+                <%
+                    double hx_text = (int)((i+0.5)*CELL_WIDTH) + HEADER_LABEL_SIZE/2.0;
                 %>
-                <text x='<%=hx_text%>' y='<%=hy%>' font-family="Verdana" font-size="10" fill="black" transform="translate(4 -6) rotate(-45 <%=hx_text%> <%=hy%>)"> <%=headers[i]%> </text>
-                <line x1='<%=hx_line%>' y1='<%=hy%>' x2='<%=hx_line+100%>' y2='<%=hy%>' style="stroke:rgb(100,100,155); stroke-width:1" transform="translate(0 -6) rotate(-45 <%=hx_line%> <%=hy%>)"/>
+                <text x='<%=hx_text%>' y='<%=hy%>' font-family="Verdana" font-size="<%=HEADER_LABEL_SIZE%>" fill="black" transform="rotate(-90 <%=hx_text%> <%=hy%>)"> <%=headers[i]%> </text>
             <% } %>
         </g>
-        
         </svg>
-        <div class="container" id='containerDiv' border="0">
+        </div>
+        
+        <div class="map_container" id='containerDiv' border="0">
         <svg id='svg_heat_map' 
              xmlns:svg="http://www.w3.org/2000/svg"
              xmlns="http://www.w3.org/2000/svg"
@@ -228,12 +176,9 @@ try {
             </g>
         </svg>
         </div>
+        
     </body>
-    <script>
-        <% if (print_mode.equals("yes"))  {    %>
-            copyElementsForPrint();
-        <% } %>
-    </script>
+    
 </html>
 
 <%

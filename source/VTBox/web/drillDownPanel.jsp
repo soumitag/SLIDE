@@ -4,6 +4,7 @@
     Author     : Soumita
 --%>
 
+<%@page import="graphics.layouts.DrillDownPanelLayout"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.Set"%>
@@ -66,8 +67,12 @@ try {
             analysis.state_variables.pushDendrogramHistory(new Integer[]{root_node_id, start, end});
         }
     }
+    
+    DrillDownPanelLayout layout = analysis.visualization_params.drill_down_layout;
 
-    double image_height = 750.0;
+    //double image_height = 750.0;
+    double image_height = layout.GLOBAL_VIEW_FIG_HEIGHT;
+    layout.GLOBAL_VIEW_FIG_HEIGHT = layout.GLOBAL_VIEW_FIG_HEIGHT;
     num_features = end - start + 1;
     double feature_height = image_height/num_features;
     
@@ -276,21 +281,21 @@ try {
                 parent.showGlobal();
             }
             
+            function scrollGlobalTo(next_start) {
+                document.getElementById("detailHeatMapPanel").contentWindow.scrollGlobalTo(next_start);
+            }
+            
         </script>
         
     </head>
-    <body onload="askParentToShowMe()">
+    <body onload="askParentToShowMe()" style="margin: 0px; overflow: hidden">
         <div class="loader"></div>
-        <table border="0">
+        <table id="global_view_tab" border="0" height="<%=layout.GLOBAL_VIEW_TAB_HEIGHT%>px" style="padding: 0px; border-spacing: 0px">
             
             <%  if (showDendrogram.equalsIgnoreCase("yes")) {   %>
             
             <tr>
-                <td height="50px">
-                    <!--
-                    &nbsp;<button name="histHandle" id="histHandle" onclick="toggleHistogramPanel()"> Hide Histogram </button>
-                    &nbsp;<button name="saver" id="saver" onclick="saveAsPDF()"> Save Image </button>
-                    -->
+                <td height="<%=layout.SEARCH_HEADER_HEIGHT%>px">
                     &nbsp;
                     <div class="dropdown">
                     <button class="dropbtn" title="Add All Features to Feature Lists. Click Feature Lists To Create New Feature Lists.">Add To List</button>
@@ -303,12 +308,12 @@ try {
                             <%  }   %>
                         </div>
                     </div>
-                        <button type="button" onclick="loadPrevious();"> Back </button>
+                    <button type="button" onclick="loadPrevious();"> Back </button>
                 </td>
                 <td id="column_header_td" style="font-family: verdana; font-size: 10; color: black">
                     
                 </td>
-                <td>
+                <td height="<%=layout.SEARCH_HEADER_HEIGHT%>">
                     <iframe id="detailSearchHeaderPanel" src="detailedSearchResultHeader.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>" width="<%=detailedSearchPanel_width%>" height="50" frameBorder="0"></iframe>
                 </td>
                 <td id="entrez_td" style="font-family: verdana; font-size: 12; color: blue">
@@ -317,42 +322,30 @@ try {
             </tr>
             
             <tr>
-                <td style="vertical-align: top">
-                    <iframe id="dendrogramPanel" src="dendrogram.jsp?start_node_id=<%=start_node_id%>&analysis_name=<%=analysis_name%>" width="320" height="790" frameBorder="0"></iframe>
+                <td height="<%=layout.DENDROGRAM_PANEL_HEIGHT%>" style="vertical-align: top">
+                    <iframe id="dendrogramPanel" src="dendrogram.jsp?start_node_id=<%=start_node_id%>&analysis_name=<%=analysis_name%>" width="305"  height="<%=layout.DENDROGRAM_PANEL_HEIGHT%>" frameBorder="0"></iframe>
                 </td>
-                <td>
-                    <iframe id="detailHeatMapPanel" src="detailedHeatMap.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=dendrogram_map" width="260" height="820" frameBorder="0"></iframe>
+                <td height="<%=layout.DDOWN_HEATMAP_PANEL_HEIGHT%>">
+                    <iframe id="detailHeatMapPanel" src="detailedHeatMap.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=dendrogram_map" width="260"  height="<%=layout.DDOWN_HEATMAP_PANEL_HEIGHT%>" frameBorder="0"></iframe>
                 </td>
-                <td style="vertical-align: top">
-                    <iframe id="detailSearchPanel" src="detailedSearchResultDisplayer.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=dendrogram_map" width="<%=detailedSearchPanel_width%>" height="790" frameBorder="0"></iframe>
+                <td height="<%=layout.DDOWN_SEARCH_RESULT_PANEL_HEIGHT%>" style="vertical-align: top">
+                    <iframe id="detailSearchPanel" src="detailedSearchResultDisplayer.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=dendrogram_map" width="<%=detailedSearchPanel_width%>"  height="<%=layout.DDOWN_SEARCH_RESULT_PANEL_HEIGHT%>" frameBorder="0"></iframe>
                 </td>
-                <td style="vertical-align: top">
+                <td height="<%=layout.DDOWN_FEAT_LABEL_PANEL_HEIGHT%>" style="vertical-align: top">
                 <%  if (feature_height >= 15.0) {   %>
-                    <iframe id="featureLabelsPanel" src="featurelabels.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>" width="<%=featureLabelsPanel_width%>" height="780" frameBorder="0"></iframe>
+                    <iframe id="featureLabelsPanel" src="featurelabels.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>" width="<%=featureLabelsPanel_width%>"  height="<%=layout.DDOWN_FEAT_LABEL_PANEL_HEIGHT%>" frameBorder="0"></iframe>
                 <%  }   %>
                 </td>
             </tr>
-            <!--
-            <tr>
-                <td colspan="2">
-                    <iframe id="histPanel" src="histogram.jsp?analysis_name=<%=analysis_name%>" width="570" height="250" frameBorder=="0" style="display: inline;"></iframe>
-                </td>
-                <td colspan="2">
-                    &nbsp;
-                </td>
-            </tr>
-            -->
+            
             
             <%  } else {    %>
             
             
             <tr>
                 
-                <td height="50px">
-                    <!--
-                    &nbsp;<button name="histHandle" id="histHandle" onclick="toggleHistogramPanel()"> Show Histogram </button>
-                    &nbsp;<button name="saver" id="saver" onclick="saveAsPDF()"> Save Image </button>
-                    -->
+                <td height="<%=layout.SEARCH_HEADER_HEIGHT%>px">
+                    
                 </td>
                 
                 <td>
@@ -365,20 +358,14 @@ try {
             
             <tr>
                 <td>
-                    <iframe id="detailHeatMapPanel" src="detailedHeatMap.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=global_map" width="280" height="760" frameBorder="0"></iframe>
+                    <iframe id="detailHeatMapPanel" src="detailedHeatMap.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=global_map" width="270" height="<%=layout.HEATMAP_PANEL_HEIGHT%>" frameBorder="0"></iframe>
                 </td>
                 <td colspan="2">
-                    <iframe id="detailSearchPanel" src="detailedSearchResultDisplayer.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=global_map" width="<%=detailedSearchPanel_width%>" height="760" frameBorder="0"></iframe>
+                    <iframe id="detailSearchPanel" src="detailedSearchResultDisplayer.jsp?start=<%=start%>&end=<%=end%>&analysis_name=<%=analysis_name%>&type=global_map" width="<%=detailedSearchPanel_width%>" height="<%=layout.HEATMAP_PANEL_HEIGHT%>" frameBorder="0"></iframe>
                 </td>
             </tr>
             
-            <!--
-            <tr>
-                <td colspan="3">
-                    <iframe id="histPanel" src="histogram.jsp?analysis_name=<%=analysis_name%>" height="250" frameBorder=="0" style="display: none;"></iframe>
-                </td>
-            </tr>
-            -->
+            
             <%  }   %>
             
             <input type="hidden" id="start" name="start" value="<%=start%>" />

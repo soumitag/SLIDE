@@ -118,3 +118,20 @@ function set_Big_K (val) {
     document.getElementById("txtBig_K").value = val;
 }
 
+function detailedViewCellSize(sz) {
+    var detailed_view_sz = document.getElementsByName("detailed_view_sz");
+    detailed_view_sz[sz].checked = true;
+}
+
+function useSquareCells(flag){
+    if(flag){
+        document.getElementById("square_cell_flag").checked = true;
+    } else {
+        document.getElementById("square_cell_flag").checked = false;
+    }
+}
+
+function vizPanelLengths(sz) {
+    var panel_lengths = document.getElementsByName("panel_lengths");
+    panel_lengths[sz].checked = true;
+}

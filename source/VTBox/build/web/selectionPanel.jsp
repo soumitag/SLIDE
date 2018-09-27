@@ -4,6 +4,8 @@
     Author     : Soumita
 --%>
 
+<%@page import="graphics.layouts.ScrollViewLayout"%>
+<%@page import="graphics.layouts.VizualizationHomeLayout"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="structure.AnalysisContainer"%>
@@ -324,6 +326,34 @@ try {
                     <input type="radio" name="colorScheme" value="blue_black_yellow"> Blue-Black-Yellow <br>
                 </td>
             </tr>
+            
+            <tr>
+                <td colspan="4" style="padding: 10px;"> 
+                    <b><label>Detailed View Cell Size: </label></b><br>
+                    <input type="radio" name="detailed_view_sz" value="<%=ScrollViewLayout.RESOLUTION_PROFILE_8%>"> XS &nbsp;
+                    <input type="radio" name="detailed_view_sz" value="<%=ScrollViewLayout.RESOLUTION_PROFILE_12%>"> S &nbsp;
+                    <input type="radio" name="detailed_view_sz" value="<%=ScrollViewLayout.RESOLUTION_PROFILE_16%>" checked="checked"> M &nbsp;
+                    <input type="radio" name="detailed_view_sz" value="<%=ScrollViewLayout.RESOLUTION_PROFILE_20%>"> L &nbsp;
+                    <input type="radio" name="detailed_view_sz" value="<%=ScrollViewLayout.RESOLUTION_PROFILE_24%>"> XL
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="4" style="padding: 10px;">
+                    <input type="checkbox" id="square_cell_flag" name="square_cell_flag" checked> Use Square Cells in Detailed View </input>
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="4" style="padding: 10px;"> 
+                    <b><label>Visualization Panel Lengths: </label></b><br>
+                    <input type="radio" name="panel_lengths" value="<%=VizualizationHomeLayout.VISUALIZATION_PANE_LENGTH_0%>"> S &nbsp;
+                    <input type="radio" name="panel_lengths" value="<%=VizualizationHomeLayout.VISUALIZATION_PANE_LENGTH_1%>"> M &nbsp;
+                    <input type="radio" name="panel_lengths" value="<%=VizualizationHomeLayout.VISUALIZATION_PANE_LENGTH_2%>" checked="checked"> L &nbsp;
+                    <input type="radio" name="panel_lengths" value="<%=VizualizationHomeLayout.VISUALIZATION_PANE_LENGTH_3%>"> XL
+                </td>
+            </tr>
+            
             <!--
             <tr>
                 <td colspan="4" style="padding: 10px;"> 
@@ -364,7 +394,9 @@ try {
             checkLogTransform(<%=analysis.data_transformation_params.log_transform%>);
             columnScaling(<%=analysis.data_transformation_params.column_normalization%>);
             rowScaling(<%=analysis.data_transformation_params.row_normalization%>);
+            <% if (database.isTimeSeries) { %>
             groupBy(<%=analysis.data_transformation_params.getGroupByIndex()%>);
+            <% } %>
             checkHierarchical(<%=analysis.clustering_params.do_clustering%>);
             linkageFunc(<%=analysis.clustering_params.getLinkageIndex()%>);
             distFunc(<%=analysis.clustering_params.getDistanceFuncIndex()%>);
@@ -372,6 +404,10 @@ try {
             binRange(<%=analysis.visualization_params.getBinRangeTypeIndex()%>);
             binRangeStartEnd(<%=analysis.visualization_params.getBinRangeTypeIndex()%>, <%=analysis.visualization_params.bin_range_start%>, <%=analysis.visualization_params.bin_range_end%>);
             leafOrder(<%=analysis.visualization_params.getLeafOrderingStrategyIndex()%>);
+            
+            detailedViewCellSize(<%=analysis.visualization_params.detailed_view_map_layout.getResolutionProfileType()%>);
+            useSquareCells(<%=analysis.visualization_params.detailed_view_map_layout.USE_SQUARE_CELLS%>);
+            vizPanelLengths(<%=analysis.visualization_params.viz_layout.getVisualizationPanelLengthType()%>);
             
         </script>
     
@@ -402,8 +438,9 @@ try {
             checkDataClipMinMax(<%=analysis.data_transformation_params.getClippingType()%>, <%=analysis.data_transformation_params.clip_min%>, <%=analysis.data_transformation_params.clip_max%>);
             checkLogTransform(<%=analysis.data_transformation_params.log_transform%>);
             rowScaling(<%=analysis.data_transformation_params.row_normalization%>);
-            
+            <% if (database.isTimeSeries) { %>
             groupBy(<%=analysis.data_transformation_params.getGroupByIndex()%>);
+            <% } %>
             colorBins(<%=analysis.visualization_params.nBins%>);
             binRange(<%=analysis.visualization_params.getBinRangeTypeIndex()%>);
             binRangeStartEnd(<%=analysis.visualization_params.getBinRangeTypeIndex()%>, <%=analysis.visualization_params.bin_range_start%>, <%=analysis.visualization_params.bin_range_end%>);

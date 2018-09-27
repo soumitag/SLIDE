@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.ScrollViewLayout;
 import searcher.GeneObject;
 import structure.MetaData;
 import utils.Utils;
@@ -64,6 +65,7 @@ public final class featureLabelsScrollView_jsp extends org.apache.jasper.runtime
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
     
@@ -74,37 +76,25 @@ try {
     
     Data db = analysis.database;
     
-    double feature_height = 20.0;
-    double num_features = 38;
-    
     String start_str = request.getParameter("start");
-    
     double start;
     if (start_str != null && !start_str.equals("") && !start_str.equals("null")) {
         start = Integer.parseInt(start_str);
     } else {
         start = 0;
     }
+    start = (start < 0) ? 0 : start;
+    int current_start = analysis.state_variables.getDetailedViewStart();
+    start = (start >= analysis.database.metadata.nFeatures) ? current_start : start;
     
-    double end = start + num_features - 1;
-    end = Math.min(end, analysis.database.metadata.nFeatures-1);
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    int end = layout.getEnd((int)start, analysis.database.metadata.nFeatures);
     
-    double image_height = 760.0;
-    
-    ArrayList <ArrayList<CompactSearchResultContainer>> search_results = analysis.search_results;
-    
-    double left_buffer = 10.0;
-    double column_width = 20.0;
-    double gap = 5.0;
-    
-    double image_width = 200.0;
-    if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION) {
-        image_width = 200.0;
-    } else if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||
-               analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
-        image_width = 350.0;
-    }
-    
+    double feature_height = layout.CELL_HEIGHT;
+    double image_width = layout.getFeatureLabelWidth(analysis.visualizationType);
+    double image_height = layout.MAP_HEIGHT;
+    double font_weight = layout.FEATURE_LABEL_FONT_SIZE;
+ 
 
       out.write("\n");
       out.write("<html>\n");
@@ -151,21 +141,19 @@ try {
       out.write("    ");
 
             BinaryTree linkage_tree = analysis.linkage_tree;
-            
             for (int i=(int)start; i<=(int)end; i++) {
                 int index = linkage_tree.leaf_ordering.get(i);
-                
                 String genes = db.features.get(index).getFormattedFeatureName(analysis);
-                
-                double mid = feature_height*(i - start) + feature_height/2.0 + 3;
+                double mid = feature_height*(i-start) + feature_height/2.0 + font_weight/2.0;
     
       out.write("\n");
-      out.write("                \n");
       out.write("                <text id=\"label_");
       out.print(i);
       out.write("\" x=\"0\" y=\"");
       out.print(mid);
-      out.write("\" font-family=\"Verdana\" font-size=\"12\" fill=\"black\" style=\"display: inline; \" onclick=\"toggleSelection('");
+      out.write("\" font-family=\"Verdana\" font-size=\"");
+      out.print(font_weight);
+      out.write("\" fill=\"black\" style=\"display: inline; \" onclick=\"toggleSelection('");
       out.print(index);
       out.write("', '");
       out.print(genes);
@@ -174,7 +162,6 @@ try {
       out.write("')\">");
       out.print(genes);
       out.write("</text>\n");
-      out.write("    \n");
       out.write("    ");
 
             }

@@ -4,6 +4,8 @@
     Author     : Soumita
 --%>
 
+<%@page import="graphics.layouts.DrillDownPanelLayout"%>
+<%@page import="graphics.layouts.ScrollViewLayout"%>
 <%@page import="graphics.HeatmapData"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="java.util.Arrays"%>
@@ -48,20 +50,22 @@ try {
         end = num_features - 1;
     }
     
+    ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
+    DrillDownPanelLayout drill_down_layout = analysis.visualization_params.drill_down_layout;
+    
     Heatmap heatmap = analysis.heatmap;
-    int imgHeight = 750;
+    int imgHeight = (int)drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT;
     String imagename = heatmap.buildMapImage(
             start, end, 250, imgHeight, "detailed_heatmap_jsp", HeatmapData.TYPE_IMAGE);
-    //String imagewebpath = session.getAttribute("base_url") + "/temp/images/" + imagename;
-    //String imagewebpath = "http://localhost:8080/VTBox/images/" + imagename;
     
-    double scrollbox_height = (38.0/num_features)*(imgHeight*1.0);
+    
+    double scrollbox_height = ((layout.NUM_DISPLAY_FEATURES*1.0)/(num_features*1.0))*(imgHeight*1.0);
     scrollbox_height = Math.min(scrollbox_height, imgHeight);
     
-    double scrollbar_height = Math.max(scrollbox_height, 5.0);
+    double scrollbar_height = Math.max(scrollbox_height, 30.0);
     
     boolean show_scrollbar = true;
-    if (num_features<=38.0) {
+    if (num_features <= layout.NUM_DISPLAY_FEATURES) {
         show_scrollbar = false;
     }
     
@@ -83,7 +87,7 @@ try {
                     border: 0px solid black;
                     left: 20px; 
                     top: 2px;
-                    height: 750px;
+                    height: <%=drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT%>px;
                     width: 250px;
                 }
 
@@ -92,7 +96,7 @@ try {
                     border: 0px solid black;
                     left: 20px; 
                     top: 2px;
-                    height: 750px;
+                    height: <%=drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT%>px;
                     width: 270px;
                 }
                 
@@ -103,7 +107,7 @@ try {
                     border: 0px solid black;
                     left: 2px; 
                     top: 20px;
-                    height: 750px;
+                    height: <%=drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT%>px;
                     width: 250px;
                 }
 
@@ -112,8 +116,8 @@ try {
                     border: 0px solid black;
                     left: 2px; 
                     top: 0px;
-                    height: 780px;
-                    width: 270px;
+                    height: <%=drill_down_layout.DDOWN_HEATMAP_PANEL_HEIGHT%>px;
+                    width: 250px;
                 }
             
             <%  }   %>
@@ -127,6 +131,7 @@ try {
                 color: red;
                 border: 1px solid black;
                 cursor: all-scroll;
+                background-color: rgb(180,180,180);
             }
             
             .slider_marker {
@@ -194,13 +199,18 @@ try {
                 
                 //var marker_height = document.getElementById('scrollerDiv').style.height;
                 var marker_top = document.getElementById('scrollerDiv').style.top;
-                var imgH = 750.0;
+                var imgH = <%=drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT%>;
                 //var marker_height_num = parseFloat(marker_height.substring(0,marker_height.length-2));
                 var marker_top_num = parseFloat(marker_top.substring(0,marker_top.length-2));
                 var start = Math.round( (marker_top_num/imgH)*num_rows );
                 //var end = Math.floor( ((marker_top_num+marker_height_num)/imgH)*num_rows );
                                 
-                parent.updateMap(start, start+49);
+                parent.updateMap(start, start+<%=layout.NUM_DISPLAY_FEATURES%>);
+            }
+            
+            function scrollGlobalTo(next_start) {
+                var new_top = ((next_start*1.0)/(<%=db.metadata.nFeatures%>*1.0))*<%=drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT%>
+                document.getElementById('scrollerDiv').style.top = new_top + "px";
             }
             
             function showScrollerRect() {
@@ -212,13 +222,6 @@ try {
             }
             
             function showRect(start, end) {
-                //alert("Made it");
-                //alert(start);
-                //alert(end);
-                //var y = (start - MAP_START)*SCALING_FACTOR;
-                //var h = (((end-start)+1)-MAP_START)*SCALING_FACTOR;
-                //alert(y);
-                //alert(h);
                 
                 var svgns = "http://www.w3.org/2000/svg";
                 var rect = document.createElementNS(svgns, 'rect');
@@ -264,22 +267,22 @@ try {
                 <%      if(TYPE.equals("global_map"))   {   %>
                 
                 <%  if (show_scrollbar) {   %>
-                <div class="slider" id="scrollerDiv" onmouseover="showScrollerRect()" onmouseout="hideScrollerRect()"></div>
+                <div class="slider" id="scrollerDiv" title="Drag to scroll detailed view" onmouseover="showScrollerRect()" onmouseout="hideScrollerRect()"></div>
                 <div class="slider_marker" id="scrollerBox"></div>
                 <%  }   %>
                 
-                <svg width="250" height="750" id="heatmap_svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" style="position: absolute; top: 0px; left: 0px">
+                <svg width="250" height="<%=drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT%>" id="heatmap_svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" style="position: absolute; top: 0px; left: 0px">
                 <g id="heatmap_g">
-                    <image class="containerI" id='heatImg' xlink:href="<%=base_url%>HeatmapImageServer?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" x="0" y="0" height="750px" width="250px" />
-                    <rect x="0" y="0" height="750px" width="250px" style="fill: none; stroke: black; stroke-width: 1" /> 
+                    <image class="containerI" id='heatImg' xlink:href="<%=base_url%>HeatmapImageServer?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" x="0" y="0" height="<%=drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT%>px" width="250px" />
+                    <rect x="0" y="0" height="<%=drill_down_layout.GLOBAL_VIEW_FIG_HEIGHT%>px" width="250px" style="fill: none; stroke: black; stroke-width: 1" /> 
                 </g>
                
                 <%      } else if (TYPE.equals("dendrogram_map"))   {   %>
                 
-                <svg  width="250" height="770" id="heatmap_svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" style="position: absolute; top: 0px; left: 0px">
+                <svg  width="250" height="<%=drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT+20%>" id="heatmap_svg" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" style="position: absolute; top: 0px; left: 0px">
                 <g id="heatmap_g">
-                    <image class="containerI" id='heatImg' xlink:href="<%=base_url%>HeatmapImageServer?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" x="0" y="20" height="750px" width="250px" />
-                    <rect x="0" y="20" height="750px" width="250px" style="fill: none; stroke: black; stroke-width: 1" /> 
+                    <image class="containerI" id='heatImg' xlink:href="<%=base_url%>HeatmapImageServer?analysis_name=<%=analysis_name%>&imagename=<%=imagename%>" x="0" y="20" height="<%=drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT%>px" width="250px" />
+                    <rect x="0" y="20" height="<%=drill_down_layout.DENDROGRAM_VIEW_FIG_HEIGHT%>px" width="250px" style="fill: none; stroke: black; stroke-width: 1" /> 
                 </g>
                 
                 <g>

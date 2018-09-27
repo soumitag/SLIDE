@@ -5,6 +5,9 @@
  */
 package params;
 
+import graphics.layouts.DrillDownPanelLayout;
+import graphics.layouts.ScrollViewLayout;
+import graphics.layouts.VizualizationHomeLayout;
 import java.io.Serializable;
 
 /**
@@ -22,14 +25,21 @@ public class VisualizationParams implements Serializable {
     public float bin_range_end;
     public String heatmap_color_scheme;
     public String row_label_type;
+    public ScrollViewLayout detailed_view_map_layout;
+    public DrillDownPanelLayout drill_down_layout;
+    public VizualizationHomeLayout viz_layout;
     
-    public VisualizationParams() {
+    public VisualizationParams(int nCols, int visualization_type) {
         leaf_ordering_strategy = "0";
         nBins = 21;
         bin_range_type = "data_bins";
         this.bin_range_start = -1;
         this.bin_range_end = -1;
         heatmap_color_scheme = "blue_white_red";
+        this.viz_layout = new VizualizationHomeLayout();
+        double panel_lengths = this.viz_layout.getAvailableDetailedViewLength();
+        this.detailed_view_map_layout = new ScrollViewLayout(panel_lengths, true, nCols, visualization_type);
+        this.drill_down_layout = new DrillDownPanelLayout(this.viz_layout);
     }
     
     public void setLeafOrderingStrategy(String leaf_ordering_strategy) {
@@ -58,6 +68,30 @@ public class VisualizationParams implements Serializable {
     
     public void setRowLabelType(String row_label_type) {
         this.row_label_type = row_label_type;
+    }
+    
+    public void setDetailedViewMapLayout(ScrollViewLayout detailed_view_map_dims) {
+        this.detailed_view_map_layout = detailed_view_map_dims;
+    }
+    
+    public void setDrillDownPanelLayout(DrillDownPanelLayout drill_down_layout) {
+        this.drill_down_layout = drill_down_layout;
+    }
+    
+    public void setViewLayout(VizualizationHomeLayout viz_layout) {
+        this.viz_layout = viz_layout;
+    }
+    
+    public ScrollViewLayout getDetailedViewMapLayout() {
+        return this.detailed_view_map_layout;
+    }
+    
+     public DrillDownPanelLayout getDrillDownPanelLayout() {
+        return this.drill_down_layout;
+    }
+    
+    public VizualizationHomeLayout getViewLayout() {
+        return this.viz_layout;
     }
     
     public int getBinRangeTypeIndex() {

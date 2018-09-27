@@ -4,6 +4,7 @@
     Author     : Soumita
 --%>
 
+<%@page import="java.util.ArrayList"%>
 <%@page import="vtbox.SessionUtils"%>
 <%@page import="structure.AnalysisContainer"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -14,12 +15,23 @@ try {
     
     String analysis_name = request.getParameter("analysis_name");
     AnalysisContainer analysis = (AnalysisContainer)session.getAttribute(analysis_name);
+    ArrayList <String> nonstandard_metacolnames = analysis.database.metadata.getNonStandardMetaColNames();
+    
     boolean isSearchable = false;
-    if ((analysis.database.species.equalsIgnoreCase("human") || analysis.database.species.equalsIgnoreCase("mouse")) &&
-            (analysis.database.metadata.hasStandardMetaData() || (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
-                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION))) {
-        isSearchable = true;
+    
+    if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION || 
+                    analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {
+        if (analysis.database.species.equalsIgnoreCase("human") || analysis.database.species.equalsIgnoreCase("mouse")) {
+            isSearchable = true;
+        }
+    } else {
+        if ((analysis.database.metadata.hasStandardMetaData() || nonstandard_metacolnames.size() > 0)) {
+            isSearchable = true;
+        } else {
+            isSearchable = false;
+        }
     }
+    
 %>
 <html>
     <head>
@@ -45,7 +57,6 @@ try {
             }
     
             var http = createRequestObject();
-           
 
             function makeGetRequest (theGetText) {
                 //make a connection to the server ... specifying that you intend to make a GET request 
@@ -122,31 +133,43 @@ try {
                 <tr style="vertical-align: middle">
                              
                     <td valign="middle">
-                        <%  if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   %>
                         <select name="queryType" id="queryType" form="SearchForm">
-                            <option value="entrez">Entrez ID</option>
-                            <option value="genesymbol">Gene Symbol</option>
-                            <option value="refseq" >RefSeq ID</option>
-                            <option value="ensembl_gene_id" >Ensembl gene ID</option>
-                            <option value="ensembl_transcript_id" >Ensembl transcript ID</option>
-                            <option value="ensembl_protein_id" >Ensembl protein ID</option>
-                            <option value="uniprot_id" >UniProt ID</option>
-                            <option value="goid">GO ID</option>
-                            <option value="goterm">GO Term</option>
+                        <%  
+                        if (analysis.visualizationType == AnalysisContainer.GENE_LEVEL_VISUALIZATION)  {   
+                            if (analysis.database.species.equalsIgnoreCase("human") || analysis.database.species.equalsIgnoreCase("mouse")) {
+                        %>
+                                <option value="entrez">Entrez ID</option>
+                                <option value="genesymbol">Gene Symbol</option>
+                                <option value="refseq" >RefSeq ID</option>
+                                <option value="ensembl_gene_id" >Ensembl gene ID</option>
+                                <option value="ensembl_transcript_id" >Ensembl transcript ID</option>
+                                <option value="ensembl_protein_id" >Ensembl protein ID</option>
+                                <option value="uniprot_id" >UniProt ID</option>
+                                <option value="goid">GO ID</option>
+                                <option value="goterm">GO Term</option>
+                                <option value="pathid">Path ID</option>
+                                <option value="pathname">Pathway</option>
+                        <%  }    %>
+                        
+                        <%
+                                for (int i=0; i<nonstandard_metacolnames.size(); i++) {
+                                    String name = nonstandard_metacolnames.get(i);
+                        %>
+                                    <option id="<%=name%>" value="_<%=name%>" ><%=name%></option>
+                        <%      }   %>
+                        
+                        <%  } else if(analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION)  {   %>
+                        
                             <option value="pathid">Path ID</option>
                             <option value="pathname">Pathway</option>
-                        </select>
-                        <%  } else if(analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION)  {       %>
-                        <select name="queryType" id="queryType" form="SearchForm">
-                            <option value="pathid">Path ID</option>
-                            <option value="pathname">Pathway</option>
-                        </select>
-                        <%  } else if(analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION)  {       %>
-                        <select name="queryType" id="queryType" form="SearchForm">
+                        
+                        <%  } else if(analysis.visualizationType == AnalysisContainer.ONTOLOGY_LEVEL_VISUALIZATION) {  %>
+                        
                             <option value="goid">GO ID</option>
                             <option value="goterm">GO Term</option>
-                        </select>
+                        
                         <%  }   %>
+                        </select>
                     </td>
                     <td valign="middle">
                         <select name="searchType" id="searchType" form="SearchForm">

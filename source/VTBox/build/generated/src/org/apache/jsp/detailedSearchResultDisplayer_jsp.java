@@ -3,6 +3,7 @@ package org.apache.jsp;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
+import graphics.layouts.DrillDownPanelLayout;
 import vtbox.SessionUtils;
 import structure.AnalysisContainer;
 import algorithms.clustering.BinaryTree;
@@ -58,6 +59,7 @@ public final class detailedSearchResultDisplayer_jsp extends org.apache.jasper.r
       out.write("\n");
       out.write("\n");
       out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
 
 
@@ -93,7 +95,8 @@ try {
         end = num_features;
     }
     
-    double image_height = 750.0;
+    DrillDownPanelLayout layout = analysis.visualization_params.drill_down_layout;
+    double image_height = layout.GLOBAL_VIEW_FIG_HEIGHT;
     num_features = end - start + 1;
     double feature_height = image_height/num_features;
     
