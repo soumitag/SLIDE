@@ -31,7 +31,7 @@ try {
     
     ScrollViewLayout layout = analysis.visualization_params.detailed_view_map_layout;
     double TABLE_WIDTH = layout.MAP_WIDTH;
-    double TABLE_HEIGHT = layout.MAP_HEIGHT;
+    //double TABLE_HEIGHT = layout.MAP_HEIGHT;
     double BORDER_STROKE_WIDTH = layout.BORDER_STROKE_WIDTH;
     double CELL_WIDTH = layout.CELL_WIDTH;
     double CELL_HEIGHT = layout.CELL_HEIGHT;
@@ -53,6 +53,8 @@ try {
 
     String imagename = heatmap.buildMapImage(start, end, "saveviz_mapview_jsp", HeatmapData.TYPE_ARRAY);
     short[][][] rgb = heatmap.getRasterAsArray(imagename);
+    int NUM_CELLS = rgb[0].length;
+    double TABLE_HEIGHT = layout.CELL_HEIGHT * NUM_CELLS;
     
     ///int MIN_TABLE_WIDTH = 500;
     ///int CELL_WIDTH = (int)Math.max(20.0, Math.floor(MIN_TABLE_WIDTH/rgb.length));

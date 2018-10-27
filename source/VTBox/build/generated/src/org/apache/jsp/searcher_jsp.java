@@ -200,6 +200,7 @@ try {
       out.write("                                <option value=\"goterm\">GO Term</option>\n");
       out.write("                                <option value=\"pathid\">Path ID</option>\n");
       out.write("                                <option value=\"pathname\">Pathway</option>\n");
+      out.write("                                <option value=\"feature_list\">Feature List</option>\n");
       out.write("                        ");
   }    
       out.write("\n");

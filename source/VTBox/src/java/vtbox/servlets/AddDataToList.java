@@ -103,7 +103,7 @@ public class AddDataToList extends HttpServlet {
                                 for (int k = 0; k < positions.size(); k++) {
                                     int original_row_id = linkage_tree.leaf_ordering.get(positions.get(k));
                                     list_i.add(original_row_id);
-                                    System.out.println(original_row_id);
+                                    //System.out.println(original_row_id);
                                 }
                             }
                         }

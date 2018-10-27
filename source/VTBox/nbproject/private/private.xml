@@ -4,8 +4,21 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/searcher.jsp</file>
-            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/getHeatmapData.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/createSubAnalysis.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/visualizationHome.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/scrollView.jsp</file>
             <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/mapView.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/src/java/vtbox/servlets/DataUploader.java</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/uploadCompleted.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/src/java/vtbox/servlets/DoSearch.java</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/openSubAnalysis.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/displayHome.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/drillDownPanel.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/src/java/vtbox/servlets/AddDataToList.java</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/saveViz_MapView.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/WEB-INF/slide-web-config.txt</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/createFeatureList.jsp</file>
+            <file>file:/E:/SOUMITA/30_Aug_2018_wDemo_Post_Review/VTBox/web/featureLabelsScrollView.jsp</file>
         </group>
     </open-files>
 </project-private>

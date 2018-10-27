@@ -149,6 +149,7 @@ try {
                                 <option value="goterm">GO Term</option>
                                 <option value="pathid">Path ID</option>
                                 <option value="pathname">Pathway</option>
+                                <option value="feature_list">Feature List</option>
                         <%  }    %>
                         
                         <%

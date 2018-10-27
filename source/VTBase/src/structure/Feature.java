@@ -75,11 +75,14 @@ public class Feature implements Serializable {
         if(analysis.database.identifier_name.equals("entrez_2021158607524066")) {
             genes = entrez_i.toUpperCase();
         } else {
+            genes = this.identifier_aliases.get(0).toUpperCase();
+            /*
             if (analysis.database.metadata.hasStandardMetaData()) {
                 genes = (this.identifier_aliases.get(0) + " (" + entrez_i + ")").toUpperCase();
             } else {
                 genes = this.identifier_aliases.get(0).toUpperCase();
             }
+            */
         }
 
         if (analysis.visualizationType == AnalysisContainer.PATHWAY_LEVEL_VISUALIZATION ||

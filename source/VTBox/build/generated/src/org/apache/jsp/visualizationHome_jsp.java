@@ -301,7 +301,7 @@ try {
       out.write("                                    <div class=\"dropdown-content\">\n");
       out.write("                                        <a onclick=\"showModalWindow('createFeatureList.jsp?mode=input&analysis_name=");
       out.print(analysis_name);
-      out.write("', '40%', '250px')\" href=\"#\"> Create </a>\n");
+      out.write("', '40%', '500px')\" href=\"#\"> Create </a>\n");
       out.write("                                        <a onclick=\"showModalWindow('saveFeatureList.jsp?mode=input&analysis_name=");
       out.print(analysis_name);
       out.write("', '40%', '250px')\" href=\"#\"> Save </a>\n");

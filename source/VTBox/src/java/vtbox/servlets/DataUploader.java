@@ -86,7 +86,10 @@ public class DataUploader extends HttpServlet {
         
         
         if (type.equals("entrez_list")) {
-            handleEntrezListUpload(request, response, analysis_name, delimval, upload, uploadFolder);
+            handleEntrezListUpload(request, response, analysis_name, delimval, upload, uploadFolder, "sub_analysis");
+            return;
+        } else if(type.equals("entrez_feature_list")) {
+            handleEntrezListUpload(request, response, analysis_name, delimval, upload, uploadFolder, "feature_list");
             return;
         }
         
@@ -203,7 +206,8 @@ public class DataUploader extends HttpServlet {
                                         String analysis_name,
                                         String delimval,
                                         ServletFileUpload upload,
-                                        String sessionFolder) 
+                                        String sessionFolder,
+                                        String requester) 
     throws ServletException, IOException {
         
         String list_name = request.getParameter("list_name");
@@ -232,15 +236,24 @@ public class DataUploader extends HttpServlet {
                 }
             }
             
-            getServletContext().getRequestDispatcher("/createSubAnalysis.jsp?mode=file&analysis_name=" + analysis_name + "&list_name=" + list_name + "&file_name=" + filePath + "&delimval=" + delimval).forward(request, response);
+            if(requester.equals("sub_analysis")) {
+                getServletContext().getRequestDispatcher("/createSubAnalysis.jsp?mode=file&analysis_name=" + analysis_name + "&list_name=" + list_name + "&file_name=" + filePath + "&delimval=" + delimval).forward(request, response);
+            } else if (requester.equals("feature_list")) {
+                getServletContext().getRequestDispatcher("/createFeatureList.jsp?mode=file&analysis_name=" + analysis_name + "&list_name=" + list_name + "&file_name=" + filePath + "&delimval=" + delimval).forward(request, response);
+            }
             
         } catch (Exception e) {
 
             System.out.println(e);
-            getServletContext().getRequestDispatcher("/createSubAnalysis.jsp?mode=fileupload_error&analysis_name=" + analysis_name + "&list_name=" + list_name).forward(request, response);
-            
+            if(requester.equals("sub_analysis")) {
+                getServletContext().getRequestDispatcher("/createSubAnalysis.jsp?mode=fileupload_error&analysis_name=" + analysis_name + "&list_name=" + list_name).forward(request, response);
+            } else if (requester.equals("feature_list")) {
+                getServletContext().getRequestDispatcher("/createFeatureList.jsp?mode=fileupload_error&analysis_name=" + analysis_name + "&list_name=" + list_name).forward(request, response);
+            }
         }
         
     }
+    
+    
     
 }

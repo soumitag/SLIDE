@@ -107,6 +107,20 @@ public class DoSearch extends HttpServlet {
                             analysis.database.metadata.searchNonStandardMetadata(analysis.database.features, queryType, st.nextToken())
                         );
                     }
+                } else if (queryType.startsWith("feature_list")) {
+                    
+                    while(st.hasMoreTokens()) {
+                        String qString = st.nextToken().trim();
+                        ArrayList <Integer> row_ids = analysis.filterListMap.get(qString);
+                        for (int r = 0; r < row_ids.size(); r++) {
+                            String entrez_id = analysis.database.features.get(row_ids.get(r)).entrez;
+                            String gene_identifier = analysis.database.features.get(row_ids.get(r)).identifier;
+                            CompactSearchResultContainer csrc = new CompactSearchResultContainer();
+                            csrc.createGeneSearchResult(entrez_id, gene_identifier);
+                            current_search_results.add(csrc);
+                        }
+                    }
+                    
                 }
             }
 

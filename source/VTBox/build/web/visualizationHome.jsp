@@ -238,7 +238,7 @@ try {
                                 <div class="dropdown">
                                     <button name="featureList" class="dropbtn" id="createList"> Feature List </button> &nbsp;
                                     <div class="dropdown-content">
-                                        <a onclick="showModalWindow('createFeatureList.jsp?mode=input&analysis_name=<%=analysis_name%>', '40%', '250px')" href="#"> Create </a>
+                                        <a onclick="showModalWindow('createFeatureList.jsp?mode=input&analysis_name=<%=analysis_name%>', '40%', '500px')" href="#"> Create </a>
                                         <a onclick="showModalWindow('saveFeatureList.jsp?mode=input&analysis_name=<%=analysis_name%>', '40%', '250px')" href="#"> Save </a>
                                         <a onclick="showModalWindow('viewDeleteFeatureList.jsp?mode=input&analysis_name=<%=analysis_name%>', '40%', '550px')" href="#"> View / Delete </a>
                                     </div>
