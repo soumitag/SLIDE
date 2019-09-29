@@ -43,18 +43,15 @@ try {
     </head>
     <body>
         
-        <table width="100%" height="99%" cellspacing="0" cellpadding="0" border="0" style="position: absolute; top: 0px; left: 0px;"> 
-
-            <tr>
-                <td rowspan="3" align="top" valign="top" height="100%" style="border-style: solid; border-color: #E1E1E1">
-                    <iframe name="selectionPanel" id="selectionPanel" src="selectionPanel.jsp?analysis_name=<%=analysis_name%>&load_type=<%=load_type%>&isDemo=<%=isDemo%>" marginwidth="0" height="100%" width="300" frameBorder="0" style="display: inline; position: relative; top: 0px; left: 0px"></iframe>
-                </td>
-                <td height="100%" width="100%">
-                    <iframe name="visualizationPanel" id="visualizationPanel" src="visualizationHome.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" height="100%" width="100%" frameBorder="0"></iframe>
-                </td>
-            </tr>
-
-        </table>
+        <div style="position: absolute; top: 0px; left: 0px; width: 100%; height: 99%"> 
+            <div style="position: relative; top: 0px; left: 0px; width: 300px; height: 100%; float:left; border-style: solid; border-color: #E1E1E1"> 
+                <iframe name="selectionPanel" id="selectionPanel" src="selectionPanel.jsp?analysis_name=<%=analysis_name%>&load_type=<%=load_type%>&isDemo=<%=isDemo%>" marginwidth="0" height="100%" width="300" frameBorder="0" style="display: inline; position: relative; top: 0px; left: 0px"></iframe>
+            </div>
+            <div style="position: relative; top: 0px; left: 0px; width: calc(100% - 310px); height: 100%; float:left;"> 
+                <iframe name="visualizationPanel" id="visualizationPanel" src="visualizationHome.jsp?analysis_name=<%=analysis_name%>" marginwidth="0" height="100%" width="100%" frameBorder="0"></iframe>
+            </div>
+        </div>
+        
     </body>
 </html>
 
