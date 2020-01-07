@@ -77,6 +77,8 @@ Please refer to the [User Manual](https://github.com/soumitag/SLIDE/raw/master/a
 Systems-Level Interactive Data Exploration **(SLIDE)** is a user-driven interactive visualization tool for large-scale –omics data. This document describes the step-by-step guideline for using SLIDE’s functionalities. SLIDE is distributed under the BSD license. See the LICENSE.txt in the source
 distribution or [here](https://opensource.org/licenses/BSD-2-Clause).  
 
+[![HitCount](http://hits.dwyl.io/soumitag/SLIDE.svg)](http://hits.dwyl.io/soumitag/SLIDE)
+
 
 
 
