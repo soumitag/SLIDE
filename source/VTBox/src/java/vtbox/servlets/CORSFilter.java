@@ -50,7 +50,10 @@ public class CORSFilter implements Filter {
         System.out.println("CORSFilter HTTP Request: " + request.getMethod());
  
         // Authorize (allow) all domains to consume the content
-        ((HttpServletResponse) servletResponse).addHeader("X-Frame-Options", "sameorigin");        
+        ((HttpServletResponse) servletResponse).addHeader("X-XSS-Protection", "1; mode=block");
+        ((HttpServletResponse) servletResponse).addHeader("X-Frame-Options", "SAMEORIGIN");
+        ((HttpServletResponse) servletResponse).addHeader("X-Content-Type-Options", "nosniff");
+        
       
         // pass the request along the filter chain
         chain.doFilter(request, servletResponse);
