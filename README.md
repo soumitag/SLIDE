@@ -8,7 +8,7 @@ and create sub-analyses of selected feature sets. It can be used to visualize th
 
 If you use this tool, please cite the following work:  
 
-Soumita Ghosh, Abhik Datta, Kaisen Tan, Hyungwon Choi; __SLIDE – a web-based tool for interactive visualization of large-scale – omics data__, *Bioinformatics*, Volume 35, Issue 2, 15 January 2019, Pages 346–348, https://doi.org/10.1093/bioinformatics/bty534  
+Soumita Ghosh, Abhik Datta, Kaisen Tan, Hyungwon Choi; __SLIDE â€“ a web-based tool for interactive visualization of large-scale â€“ omics data__, *Bioinformatics*, Volume 35, Issue 2, 15 January 2019, Pages 346â€“348, https://doi.org/10.1093/bioinformatics/bty534  
 
 ![Feature-level visualization](bty534f1.png)
 ## Resources
@@ -74,10 +74,10 @@ Please refer to the [User Manual](https://github.com/soumitag/SLIDE/raw/master/a
 
 ## License  
 
-Systems-Level Interactive Data Exploration **(SLIDE)** is a user-driven interactive visualization tool for large-scale –omics data. This document describes the step-by-step guideline for using SLIDE’s functionalities. SLIDE is distributed under the BSD license. See the LICENSE.txt in the source
+Systems-Level Interactive Data Exploration **(SLIDE)** is a user-driven interactive visualization tool for large-scale â€“omics data. This document describes the step-by-step guideline for using SLIDEâ€™s functionalities. SLIDE is distributed under the BSD license. See the LICENSE.txt in the source
 distribution or [here](https://opensource.org/licenses/BSD-2-Clause).  
 
-[![HitCount](http://hits.dwyl.io/soumitag/SLIDE.svg)](http://hits.dwyl.io/soumitag/SLIDE)
+<!---[![HitCount](http://hits.dwyl.io/soumitag/SLIDE.svg)](http://hits.dwyl.io/soumitag/SLIDE)--->
 
 
 
