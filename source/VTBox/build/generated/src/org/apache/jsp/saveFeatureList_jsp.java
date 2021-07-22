@@ -135,6 +135,7 @@ try {
       out.write("            }\n");
       out.write("\n");
       out.write("        </script>\n");
+      out.write("\n");
       out.write("        \n");
       out.write("        <form name=\"saveFeatureListForm\" id=\"saveFeatureListForm\" method=\"get\" action=\"SerializeFeatureList\">\n");
       out.write("        <table>\n");

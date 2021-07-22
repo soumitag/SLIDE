@@ -202,6 +202,7 @@ try {
       out.write("            var right_click_end;\n");
       out.write("\n");
       out.write("        </script>\n");
+      out.write("        \n");
       out.write("    </head>\n");
       out.write("    \n");
       out.write("    <body style=\"overflow: hidden\">\n");

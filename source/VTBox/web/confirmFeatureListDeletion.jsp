@@ -42,6 +42,7 @@ try {
             }
         
         </script>
+        
     </head>
     <body>
         <form name="confirmFeatureListDeletionForm" id="confirmFeatureListDeletionForm" >

@@ -112,6 +112,7 @@ try {
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
+
     </head>
     <body>
         <svg height="<%=svg_height%>" width="<%=svg_width%>" style="position: absolute; top: 20px; left: 0px">

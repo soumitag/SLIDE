@@ -84,6 +84,7 @@ try {
             }
 
         </script>
+
         
         <form name="saveFeatureListForm" id="saveFeatureListForm" method="get" action="SerializeFeatureList">
         <table>

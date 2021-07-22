@@ -63,6 +63,7 @@ try {
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
+    
     <body>
         
         <svg height="<%=image_height%>" width="<%=image_width%>" style="position: absolute; top: 20px; left: 0px">

@@ -53,6 +53,8 @@ public class CORSFilter implements Filter {
         ((HttpServletResponse) servletResponse).addHeader("X-XSS-Protection", "1; mode=block");
         ((HttpServletResponse) servletResponse).addHeader("X-Frame-Options", "SAMEORIGIN");
         ((HttpServletResponse) servletResponse).addHeader("X-Content-Type-Options", "nosniff");
+        ((HttpServletResponse) servletResponse).addHeader("Strict-Transport-Security", "max-age=16070400; includeSubDomains");  
+        //((HttpServletResponse) servletResponse).addHeader("Content-Security-Policy", "script-src ‘self’"); 
         
       
         // pass the request along the filter chain

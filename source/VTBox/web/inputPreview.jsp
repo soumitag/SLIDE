@@ -39,6 +39,7 @@ try {
                 background-color: #dddddd;
             }
         </style>
+        
     </head>
     
     <%

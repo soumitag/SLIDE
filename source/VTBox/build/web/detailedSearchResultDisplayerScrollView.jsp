@@ -180,6 +180,7 @@ try {
             }
         
         </script>
+        
     </head>
     
     <body>

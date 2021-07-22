@@ -335,6 +335,11 @@ try {
     var mapping_data_uploaded = false;
     
 </script>
+<script> 
+            if (top != window) {
+                    top.location = window.location;
+            }
+</script>
 
 </head>
 

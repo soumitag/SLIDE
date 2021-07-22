@@ -39,6 +39,7 @@ try {
                 window.location.href = "viewDeleteFeatureList.jsp?analysis_name=<%=analysis_name%>";
             }
         </script>
+        
     </head>
     <body>
         <table cellpadding="5" style="width: 100%;" border="0">

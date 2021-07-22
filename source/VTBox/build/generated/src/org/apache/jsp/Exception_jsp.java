@@ -68,6 +68,7 @@ public final class Exception_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("                parent.showGlobal();\n");
       out.write("            }\n");
       out.write("        </script>\n");
+      out.write("        \n");
       out.write("    </head>\n");
       out.write("    ");
  if (exception_type.equals("clustering_error")) { 

@@ -149,6 +149,7 @@ try {
             var right_click_end;
 
         </script>
+        
     </head>
     
     <body style="overflow: hidden">

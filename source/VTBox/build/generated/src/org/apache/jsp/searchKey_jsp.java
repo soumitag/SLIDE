@@ -266,6 +266,7 @@ try {
       out.write("        }\n");
       out.write("        \n");
       out.write("    </script>\n");
+      out.write("\n");
       out.write("    </head>\n");
       out.write("    <body> \n");
       out.write("    \n");

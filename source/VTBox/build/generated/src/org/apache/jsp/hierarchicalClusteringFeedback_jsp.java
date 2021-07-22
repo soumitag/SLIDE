@@ -77,6 +77,7 @@ public final class hierarchicalClusteringFeedback_jsp extends org.apache.jasper.
       out.write("            }\n");
       out.write("\n");
       out.write("        </style>\n");
+      out.write("        \n");
       out.write("    </head>\n");
       out.write("    <body>\n");
       out.write("        <table border=\"0\" style=\"width: 285px\" class=\"tab1\">\n");

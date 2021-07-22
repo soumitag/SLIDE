@@ -81,6 +81,7 @@ try {
             ]]>
         </script>
         
+        
         <g id='feature_labels_g'>
     
     <%

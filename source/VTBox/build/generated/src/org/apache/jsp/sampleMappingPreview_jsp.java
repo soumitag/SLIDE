@@ -83,6 +83,7 @@ try {
       out.write("                background-color: #dddddd;\n");
       out.write("            }\n");
       out.write("        </style>\n");
+      out.write("\n");
       out.write("    </head>\n");
       out.write("    <body>\n");
       out.write("        <table style=\"border:1px solid black\">\n");

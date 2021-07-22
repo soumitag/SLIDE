@@ -123,6 +123,11 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            }\n");
       out.write("                \n");
       out.write("        </script>\n");
+      out.write("        <script> \n");
+      out.write("            if (top != window) {\n");
+      out.write("                    top.location = window.location;\n");
+      out.write("            }\n");
+      out.write("        </script>\n");
       out.write("        <style>\n");
       out.write("\n");
       out.write("            .maintable {\n");

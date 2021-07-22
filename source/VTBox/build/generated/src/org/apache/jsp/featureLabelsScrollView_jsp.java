@@ -136,6 +136,7 @@ try {
       out.write("            ]]>\n");
       out.write("        </script>\n");
       out.write("        \n");
+      out.write("        \n");
       out.write("        <g id='feature_labels_g'>\n");
       out.write("    \n");
       out.write("    ");

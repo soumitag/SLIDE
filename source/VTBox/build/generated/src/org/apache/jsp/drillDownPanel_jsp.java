@@ -360,6 +360,7 @@ try {
       out.write("            \n");
       out.write("        </script>\n");
       out.write("        \n");
+      out.write("        \n");
       out.write("    </head>\n");
       out.write("    <body onload=\"askParentToShowMe()\" style=\"margin: 0px; overflow: hidden\">\n");
       out.write("        <div class=\"loader\"></div>\n");

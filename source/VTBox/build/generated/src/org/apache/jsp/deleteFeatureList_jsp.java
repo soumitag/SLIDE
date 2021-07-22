@@ -90,6 +90,7 @@ try {
       out.write("\";\n");
       out.write("            }\n");
       out.write("        </script>\n");
+      out.write("        \n");
       out.write("    </head>\n");
       out.write("    <body>\n");
       out.write("        <table cellpadding=\"5\" style=\"width: 100%;\" border=\"0\">\n");

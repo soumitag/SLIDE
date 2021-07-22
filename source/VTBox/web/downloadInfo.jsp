@@ -28,6 +28,7 @@ try {
                     }
                 }
         </script>
+        
     </head>
     <body>
         <table>

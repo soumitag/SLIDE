@@ -28,6 +28,7 @@
                 parent.showGlobal();
             }
         </script>
+        
     </head>
     <% if (exception_type.equals("clustering_error")) { %>
     <body onload="reportClusteringError()">

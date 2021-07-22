@@ -85,6 +85,7 @@ try {
       out.write("                background-color: #dddddd;\n");
       out.write("            }\n");
       out.write("        </style>\n");
+      out.write("        \n");
       out.write("    </head>\n");
       out.write("    \n");
       out.write("    ");

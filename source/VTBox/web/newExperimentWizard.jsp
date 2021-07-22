@@ -329,7 +329,6 @@ try {
     var mapping_data_uploaded = false;
     
 </script>
-
 </head>
 
 

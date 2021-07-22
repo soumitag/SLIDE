@@ -84,6 +84,9 @@ try {
       out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("<html>\n");
+      out.write("    <head>\n");
+      out.write("        \n");
+      out.write("    </head>\n");
       out.write("    \n");
       out.write("    <body>\n");
       out.write("        \n");

@@ -129,6 +129,7 @@ try {
         <% } %>
         }
     </script>
+
     <body onload="notifyUploadCompletion()">
     </body>
 </html>

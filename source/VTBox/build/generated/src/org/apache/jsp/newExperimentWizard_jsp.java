@@ -379,7 +379,6 @@ try {
       out.write("    var mapping_data_uploaded = false;\n");
       out.write("    \n");
       out.write("</script>\n");
-      out.write("\n");
       out.write("</head>\n");
       out.write("\n");
       out.write("\n");

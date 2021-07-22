@@ -132,6 +132,7 @@ try {
       out.write("        }\n");
       out.write("        \n");
       out.write("    </style>\n");
+      out.write("\n");
       out.write("    <body>\n");
       out.write("        \n");
       out.write("               \n");

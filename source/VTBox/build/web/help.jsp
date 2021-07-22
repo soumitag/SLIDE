@@ -40,6 +40,11 @@ try {
 			}
 			
 		</script>
+                <script> 
+                if (top != window) {
+                    top.location = window.location;
+            }
+        </script>
     </head>
     <body>
         <table class="input" style="width: 100%">

@@ -40,6 +40,7 @@ try {
                 background-color: #dddddd;
             }
         </style>
+
     </head>
     <body>
         <table style="border:1px solid black">

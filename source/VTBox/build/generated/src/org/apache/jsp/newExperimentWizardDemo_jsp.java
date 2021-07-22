@@ -385,6 +385,11 @@ try {
       out.write("    var mapping_data_uploaded = false;\n");
       out.write("    \n");
       out.write("</script>\n");
+      out.write("<script> \n");
+      out.write("            if (top != window) {\n");
+      out.write("                    top.location = window.location;\n");
+      out.write("            }\n");
+      out.write("</script>\n");
       out.write("\n");
       out.write("</head>\n");
       out.write("\n");

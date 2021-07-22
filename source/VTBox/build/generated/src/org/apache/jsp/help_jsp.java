@@ -81,6 +81,11 @@ try {
       out.write("\t\t\t}\n");
       out.write("\t\t\t\n");
       out.write("\t\t</script>\n");
+      out.write("                <script> \n");
+      out.write("                if (top != window) {\n");
+      out.write("                    top.location = window.location;\n");
+      out.write("            }\n");
+      out.write("        </script>\n");
       out.write("    </head>\n");
       out.write("    <body>\n");
       out.write("        <table class=\"input\" style=\"width: 100%\">\n");

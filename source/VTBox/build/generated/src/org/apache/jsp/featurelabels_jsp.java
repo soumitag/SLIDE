@@ -114,6 +114,7 @@ try {
       out.write("    <head>\n");
       out.write("        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
       out.write("    </head>\n");
+      out.write("    \n");
       out.write("    <body>\n");
       out.write("        \n");
       out.write("        <svg height=\"");

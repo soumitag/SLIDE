@@ -201,6 +201,7 @@ try {
       out.write("\n");
       out.write("        }\n");
       out.write("    </script>\n");
+      out.write("\n");
       out.write("    <body onload=\"notifyUploadCompletion()\">\n");
       out.write("    </body>\n");
       out.write("</html>\n");
