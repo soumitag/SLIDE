@@ -1,7 +1,8 @@
 # Systems-Level Interactive Data Exploration (SLIDE)  
 ## User-driven Visualization of Large-scale -omics Data on a Web-browser  
 
-**SLIDE** is available at: http://137.132.97.109/VTBox/ 
+<!---**SLIDE** is available at: http://137.132.97.109/VTBox/ --->
+Docker for **SLIDE** will be made available soon
 
 **SLIDE** is a tool for customized visualization and interactive exploration of high throughput quantitative -omics data. SLIDE can organize and visualize quantitative -omics data in expression based heatmaps on a standard web browser. It allows users to interactively navigate through the heatmaps 
 and create sub-analyses of selected feature sets. It can be used to visualize the data at different levels of granularity through multiple simultaneous views.  
