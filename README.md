@@ -14,7 +14,7 @@ Soumita Ghosh, Abhik Datta, Kaisen Tan, Hyungwon Choi; __SLIDE – a web-based t
 ![Feature-level visualization](bty534f1.png)
 ## Resources
 
-* [Online Version](http://137.132.97.109/VTBox/) 
+<!---* [Online Version](http://137.132.97.109/VTBox/) --->
 * [User Manual](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Users_Manual.pdf)
 * [Stand-alone Version](https://github.com/soumitag/SLIDE/raw/master/application/slide.zip) (for installation on user's computer) 
 * [Windows Installation Guide](https://github.com/soumitag/SLIDE/raw/master/application/slide/SLIDE_Windows_Installation_Guide.pdf)  
@@ -22,7 +22,7 @@ Soumita Ghosh, Abhik Datta, Kaisen Tan, Hyungwon Choi; __SLIDE – a web-based t
 
 ## Setup
 
-**SLIDE** is available both as an [online version](http://137.132.97.109/VTBox/) as well as a stand-alone version (for installation on user's computer).  
+**SLIDE** is available <!---both as an [online version](http://137.132.97.109/VTBox/) as well ---> as a stand-alone version (for installation on user's computer).  
 
 ### Prerequisites (for local installation)  
 
